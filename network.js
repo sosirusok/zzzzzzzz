@@ -440,4 +440,1158 @@
   }
 
   function validateEnvelope(message, allowedTypes, roomCode) {
-    if (!hasOnlyKeys(message, ["protocol", "ónx¶‰žËkºwµçq½…¹©½ˆì(€€€€€€€€€€€Á±…å•È¹©½ˆ€ôµ•ÍÍ…”¹Á…å±½…¹©½ˆì(€€€€€€€€€€€Á±…å•È¹à€ôµ•ÍÍ…”¹Á…å±½…¹àì(€€€€€€€€€€€Á±…å•È¹ä€ôµ•ÍÍ…”¹Á…å±½…¹äì(€€€€€€€€€€€Á±…å•È¹™…¥¹œ€ôµ•ÍÍ…”¹Á…å±½…¹™…¥¹œì(€€€€€€€€€€€É•½É¹ÁÉ½™¥±”€ô±½¹•…Ñ„¡Á±…å•È¤ì(€€€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹AIM9°ìÁ±…å•ÈèÁÕ‰±¥A±…å•È¡Á±…å•È¤ô¤ì(€€€€€€€€€€€¥˜€¡ÁÉ•Ù¥½ÕÍ)½ˆ€„ôôÁ±…å•È¹©½ˆ¤ì(€€€€€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹1MM}M1Q%=8°ì(€€€€€€€€€€€€€€€Á±…å•É%èÁ±…å•È¹¥°(€€€€€€€€€€€€€€€±…ÍÍ%èÁ±…å•È¹±…ÍÍ%°(€€€€€€€€€€€€€€€©½ˆèÁ±…å•È¹©½ˆ°(€€€€€€€€€€€€€ô¤ì(€€€€€€€€€€€ô(€€€€€€€€€€€Ñ¡¥Ì¹}‰É½…‘…ÍÑI½ÍÑ•È ¤ì(€€€€€€€€€ô(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰±…ÍÌµÍ•±•Ðˆè(€€€€€€€€€¥˜€¡Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”ñðÑ¡¥Ì¹}ÍÑ…ÉÑ•¤‰É•…¬ì(€€€€€€€€€Á±…å•È¹±…ÍÍ%€ôµ•ÍÍ…”¹Á…å±½…¹±…ÍÍ%ì(€€€€€€€€€Á±…å•È¹©½ˆ€ôµ•ÍÍ…”¹Á…å±½…¹±…ÍÍ%ì(€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹1MM}M1Q%=8°ì(€€€€€€€€€€€Á±…å•É%èÁ±…å•È¹¥°(€€€€€€€€€€€±…ÍÍ%èÁ±…å•È¹±…ÍÍ%°(€€€€€€€€€€€©½ˆèÁ±…å•È¹©½ˆ°(€€€€€€€€€ô¤ì(€€€€€€€€€Ñ¡¥Ì¹}‰É½…‘…ÍÑI½ÍÑ•È ¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰¥¹ÁÕÐˆè(€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹%9AUP°ì(€€€€€€€€€€€Á±…å•É%èÁ±…å•È¹¥°(€€€€€€€€€€€¥¹ÁÕÐè±½¹•…Ñ„¡µ•ÍÍ…”¹Á…å±½…¹¥¹ÁÕÐ¤°(€€€€€€€€€ô¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰Á¥¹œˆè(€€€€€€€€€Ñ¡¥Ì¹}Í•¹¡É•½É¹½¹¹•Ñ¥½¸°€‰Á½¹œˆ°ì¹½¹”èµ•ÍÍ…”¹Á…å±½…¹¹½¹”ô¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€‘•™…Õ±Ðè(€€€€€€€€€‰É•…¬ì(€€€€€ô(€€€ô((€€€}‰¥¹‘Õ•ÍÑ½¹¹•Ñ¥½¸¡½¹¹•Ñ¥½¸°Ñ½­•¸¤ì(€€€€€½¹¹•Ñ¥½¸¹½¸ ‰‘…Ñ„ˆ°€¡µ•ÍÍ…”¤€ôøÑ¡¥Ì¹}¡…¹‘±•Õ•ÍÑ%¹‰½Õ¹¡µ•ÍÍ…”°Ñ½­•¸¤¤ì(€€€€€½¹¹•Ñ¥½¸¹½¸ ‰±½Í”ˆ°€ ¤€ôøì(€€€€€€€¥˜€¡Ñ½­•¸€„ôôÑ¡¥Ì¹}Ñ½­•¸¤É•ÑÕÉ¸ì(€€€€€€€½¹ÍÐ•ÉÉ½È€ôµ…­•ÉÉ½È ‰¡½ÍÐµ‘¥Í½¹¹•Ñ•ˆ°€‰Q¡”¡½ÍÐ½¹¹•Ñ¥½¸±½Í•¸ˆ¤ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”¤Ñ¡¥Ì¹}É•©•ÑA•¹‘¥¹]•±½µ”¡•ÉÉ½È¤ì(€€€€€€€•±Í”Ñ¡¥Ì¹}™…¥±=™™±¥¹” ‰Q¡”¡½ÍÐ‘¥Í½¹¹•Ñ•¸=™™±¥¹”µ½‘”¥Ì…Ñ¥Ù”¸ˆ°•ÉÉ½È¹½‘”°Ñ½­•¸¤ì(€€€€€ô¤ì(€€€€€½¹¹•Ñ¥½¸¹½¸ ‰•ÉÉ½Èˆ°€¡•ÉÉ½È¤€ôøì(€€€€€€€¥˜€¡Ñ½­•¸€„ôôÑ¡¥Ì¹}Ñ½­•¸¤É•ÑÕÉ¸ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”¤Ñ¡¥Ì¹}É•©•ÑA•¹‘¥¹]•±½µ”¡•ÉÉ½È¤ì(€€€€€€€•±Í”Ñ¡¥Ì¹}™…¥±=™™±¥¹” ‰Q¡”¡½ÍÐ½¹¹•Ñ¥½¸™…¥±•¸=™™±¥¹”µ½‘”¥Ì…Ñ¥Ù”¸ˆ°Á••ÉÉÉ½É½‘”¡•ÉÉ½È¤°Ñ½­•¸¤ì(€€€€€ô¤ì(€€€ô((€€€}¡…¹‘±•Õ•ÍÑ%¹‰½Õ¹¡µ•ÍÍ…”°Ñ½­•¸¤ì(€€€€€¥˜€¡Ñ½­•¸€„ôôÑ¡¥Ì¹}Ñ½­•¸¤É•ÑÕÉ¸ì(€€€€€¥˜€ …Ñ¡¥Ì¹}…±±½ÝI…Ñ”¡Ñ¡¥Ì¹}Õ•ÍÑI…Ñ”°€ÄÈÀ¤¤ì(€€€€€€€Ñ¡¥Ì¹}Õ•ÍÑ%¹Ù…±¥‘½Õ¹Ð€¬ô€Äì(€€€€€€€¥˜€¡Ñ¡¥Ì¹}Õ•ÍÑ%¹Ù…±¥‘½Õ¹Ð€øô€Ì¤ì(€€€€€€€€€Ñ¡¥Ì¹}™…¥±=™™±¥¹” ‰Q¡”¡½ÍÐ•á••‘•Ñ¡”Í…™”µ•ÍÍ…”É…Ñ”¸=™™±¥¹”µ½‘”¥Ì…Ñ¥Ù”¸ˆ°€‰É…Ñ”µ±¥µ¥Ðˆ°Ñ½­•¸¤ì(€€€€€€€ô(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô(€€€€€¥˜€ (€€€€€€€€…Ù…±¥‘…Ñ•¹Ù•±½Á”¡µ•ÍÍ…”°UMQ}%9	=U9}QeAL°Ñ¡¥Ì¹}É½½µ½‘”¤ñð(€€€€€€€µ•ÍÍ…”¹Í•Ä€ðôÑ¡¥Ì¹}Õ•ÍÑ1…ÍÑM•ÅÕ•¹”(€€€€€€¤ì(€€€€€€€Ñ¡¥Ì¹}Õ•ÍÑ%¹Ù…±¥‘½Õ¹Ð€¬ô€Äì(€€€€€€€Ñ¡¥Ì¹}•µ¥ÑÉÉ½È ‰¥¹Ù…±¥µÁ…å±½…ˆ°€‰I•©•Ñ•¥¹Ù…±¥‘…Ñ„™É½´Ñ¡”¡½ÍÐ¸ˆ°ÑÉÕ”¤ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹}Õ•ÍÑ%¹Ù…±¥‘½Õ¹Ð€øô€Ì¤ì(€€€€€€€€€Ñ¡¥Ì¹}™…¥±=™™±¥¹” ‰Q¡”¡½ÍÐÍ•¹Ð¥¹Ù…±¥‘…Ñ„¸=™™±¥¹”µ½‘”¥Ì…Ñ¥Ù”¸ˆ°€‰¥¹Ù…±¥µÁ…å±½…ˆ°Ñ½­•¸¤ì(€€€€€€€ô(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô(€€€€€Ñ¡¥Ì¹}Õ•ÍÑ1…ÍÑM•ÅÕ•¹”€ôµ•ÍÍ…”¹Í•Äì((€€€€€¥˜€¡µ•ÍÍ…”¹ÑåÁ”€ôôô€‰É•©•Ðˆ¤ì(€€€€€€€½¹ÍÐ•ÉÉ½È€ôµ…­•ÉÉ½È ‰©½¥¸µÉ•©•Ñ•ˆ°µ•ÍÍ…”¹Á…å±½…¹É•…Í½¸¤ì(€€€€€€€•ÉÉ½È¹É•©•Ñ½‘”€ôµ•ÍÍ…”¹Á…å±½…¹½‘”ì(€€€€€€€Ñ¡¥Ì¹}É•©•ÑA•¹‘¥¹]•±½µ”¡•ÉÉ½È¤ì(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô((€€€€€¥˜€¡µ•ÍÍ…”¹ÑåÁ”€ôôô€‰Ý•±½µ”ˆ¤ì(€€€€€€€½¹ÍÐÁ…å±½…€ôµ•ÍÍ…”¹Á…å±½…ì(€€€€€€€½¹ÍÐ½¹Ñ…¥¹ÍM•±˜€ôÁ…å±½…¹Á±…å•ÉÌ¹Í½µ” ¡Á±…å•È¤€ôøÁ±…å•È¹¥€ôôôÑ¡¥Ì¹}Í•±™%€˜˜€…Á±…å•È¹¥Í!½ÍÐ¤ì(€€€€€€€½¹ÍÐ½ÉÉ•Ñ!½ÍÐ€ôÁ…å±½…¹¡½ÍÑ%€ôôôÑ¡¥Ì¹}¡½ÍÑ%€˜˜Á…å±½…¹Á±…å•ÉÌ¹Í½µ” (€€€€€€€€€€¡Á±…å•È¤€ôøÁ±…å•È¹¥€ôôôÁ…å±½…¹¡½ÍÑ%€˜˜Á±…å•È¹¥Í!½ÍÐ(€€€€€€€€¤ì(€€€€€€€¥˜€¡Á…å±½…¹Í•±™%€„ôôÑ¡¥Ì¹}Í•±™%ñð€…½¹Ñ…¥¹ÍM•±˜ñð€…½ÉÉ•Ñ!½ÍÐ¤ì(€€€€€€€€€Ñ¡¥Ì¹}É•©•ÑA•¹‘¥¹]•±½µ”¡µ…­•ÉÉ½È ‰¥¹Ù…±¥µÝ•±½µ”ˆ°€‰Q¡”¡½ÍÐÍ•¹Ð…¸¥¹Ù…±¥É½ÍÑ•È¸ˆ¤¤ì(€€€€€€€€€É•ÑÕÉ¸ì(€€€€€€€ô(€€€€€€€Ñ¡¥Ì¹}Á±…å•ÉÌ€ô¹•Ü5…À¡Á…å±½…¹Á±…å•ÉÌ¹µ…À ¡Á±…å•È¤€ôømÁ±…å•È¹¥°±½¹•…Ñ„¡Á±…å•È¥t¤¤ì(€€€€€€€Ñ¡¥Ì¹}É½±”€ô€‰Õ•ÍÐˆì(€€€€€€€Ñ¡¥Ì¹}ÍÑ…ÉÑ•€ôÁ…å±½…¹ÍÑ…ÉÑ•ì(€€€€€€€Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼€ôÁ…å±½…¹ÍÑ…ÉÑ%¹™¼€ü±½¹•…Ñ„¡Á…å±½…¹ÍÑ…ÉÑ%¹™¼¤€è¹Õ±°ì(€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”€ô™…±Í”ì(€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹I•µ…¥¹¥¹œ€ô€Àì(€€€€€€€Ñ¡¥Ì¹}Í•ÑMÑ…ÑÕÌ ‰½¹¹•Ñ•ˆ°)½¥¹•É½½´€‘íÑ¡¥Ì¹}É½½µ½‘•ô¹€°¹Õ±°¤ì(€€€€€€€Ñ¡¥Ì¹}•µ¥ÑI½ÍÑ•È ¤ì(€€€€€€€Ñ¡¥Ì¹}É•Í½±Ù•A•¹‘¥¹]•±½µ” ¤ì(€€€€€€€¥˜€¡Ñ¡¥Ì¹}ÍÑ…ÉÑ•€˜˜Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼¤ì(€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹MQIP°ì¥¹™¼è±½¹•…Ñ„¡Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼¤°™É½´èÑ¡¥Ì¹}¡½ÍÑ%ô¤ì(€€€€€€€ô(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô((€€€€€¥˜€¡Ñ¡¥Ì¹}É½±”€„ôô€‰Õ•ÍÐˆ¤É•ÑÕÉ¸ì(€€€€€ÍÝ¥Ñ €¡µ•ÍÍ…”¹ÑåÁ”¤ì(€€€€€€€…Í”€‰É½ÍÑ•Èˆè(€€€€€€€€€¥˜€ (€€€€€€€€€€€€…µ•ÍÍ…”¹Á…å±½…¹Á±…å•ÉÌ¹Í½µ” ¡Á±…å•È¤€ôøÁ±…å•È¹¥€ôôôÑ¡¥Ì¹}Í•±™%€˜˜€…Á±…å•È¹¥Í!½ÍÐ¤ñð(€€€€€€€€€€€€…µ•ÍÍ…”¹Á…å±½…¹Á±…å•ÉÌ¹Í½µ” ¡Á±…å•È¤€ôøÁ±…å•È¹¥€ôôôÑ¡¥Ì¹}¡½ÍÑ%€˜˜Á±…å•È¹¥Í!½ÍÐ¤(€€€€€€€€€€¤ì(€€€€€€€€€€€Ñ¡¥Ì¹}™…¥±=™™±¥¹” ‰Q¡”¡½ÍÐÉ•µ½Ù•Ñ¡¥ÌÁ±…å•È™É½´Ñ¡”É½ÍÑ•È¸ˆ°€‰É•µ½Ù•ˆ°Ñ½­•¸¤ì(€€€€€€€€€€€É•ÑÕÉ¸ì(€€€€€€€€€ô(€€€€€€€€€Ñ¡¥Ì¹}Á±…å•ÉÌ€ô¹•Ü5…À¡µ•ÍÍ…”¹Á…å±½…¹Á±…å•ÉÌ¹µ…À ¡Á±…å•È¤€ôømÁ±…å•È¹¥°±½¹•…Ñ„¡Á±…å•È¥t¤¤ì(€€€€€€€€€Ñ¡¥Ì¹}•µ¥ÑI½ÍÑ•È ¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰½Õ¹Ñ‘½Ý¸ˆè(€€€€€€€€€ì(€€€€€€€€€€€½¹ÍÐÁ…å±½…€ôµ•ÍÍ…”¹Á…å±½…ì(€€€€€€€€€€€½¹ÍÐ•áÁ•Ñ•‘I•µ…¥¹¥¹œ€ôÑ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”(€€€€€€€€€€€€€€üÑ¡¥Ì¹}½Õ¹Ñ‘½Ý¹I•µ…¥¹¥¹œ€´€Ä(€€€€€€€€€€€€€€è=U9Q=]9}M=9Lì(€€€€€€€€€€€½¹ÍÐÙ…±¥‘=É‘•È€ô(€€€€€€€€€€€€€€…Ñ¡¥Ì¹}ÍÑ…ÉÑ•€˜˜(€€€€€€€€€€€€€•áÁ•Ñ•‘I•µ…¥¹¥¹œ€øô€À€˜˜(€€€€€€€€€€€€€Á…å±½…¹É•µ…¥¹¥¹œ€ôôô•áÁ•Ñ•‘I•µ…¥¹¥¹œì(€€€€€€€€€€€½¹ÍÐÙ…±¥‘%¹™¼€ô€…Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”ñðÍ…µ•MÑ…ÉÑ%¹™¼¡Á…å±½…¹¥¹™¼°Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼¤ì(€€€€€€€€€€€¥˜€ …Ù…±¥‘=É‘•Èñð€…Ù…±¥‘%¹™¼¤ì(€€€€€€€€€€€€€Ñ¡¥Ì¹}É•½É‘%¹Ù…±¥‘!½ÍÑ…Ñ„ (€€€€€€€€€€€€€€€€‰I•©•Ñ•…¸½ÕÐµ½˜µ½É‘•È½È¥¹½¹Í¥ÍÑ•¹Ð½Õ¹Ñ‘½Ý¸™É½´Ñ¡”¡½ÍÐ¸ˆ°(€€€€€€€€€€€€€€€Ñ½­•¸(€€€€€€€€€€€€€€¤ì(€€€€€€€€€€€€€‰É•…¬ì(€€€€€€€€€€€ô(€€€€€€€€€€€¥˜€ …Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”¤Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼€ô±½¹•…Ñ„¡Á…å±½…¹¥¹™¼¤ì(€€€€€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”€ôÑÉÕ”ì(€€€€€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹I•µ…¥¹¥¹œ€ôÁ…å±½…¹É•µ…¥¹¥¹œì(€€€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹=U9Q=]8°ì(€€€€€€€€€€€€€€¸¸¹±½¹•…Ñ„¡Á…å±½…¤°(€€€€€€€€€€€€€™É½´èÑ¡¥Ì¹}¡½ÍÑ%°(€€€€€€€€€€€ô¤ì(€€€€€€€€€ô(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰ÍÑ…ÉÐˆè(€€€€€€€€€¥˜€¡Ñ¡¥Ì¹}ÍÑ…ÉÑ•¤É•ÑÕÉ¸ì(€€€€€€€€€¥˜€ (€€€€€€€€€€€€…Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”ñð(€€€€€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹I•µ…¥¹¥¹œ€„ôô€Àñð(€€€€€€€€€€€€…Í…µ•MÑ…ÉÑ%¹™¼¡µ•ÍÍ…”¹Á…å±½…¹¥¹™¼°Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼¤(€€€€€€€€€€¤ì(€€€€€€€€€€€Ñ¡¥Ì¹}É•½É‘%¹Ù…±¥‘!½ÍÑ…Ñ„ ‰I•©•Ñ•„ÍÑ…ÉÐµ•ÍÍ…”Ý¥Ñ¡½ÕÐ„½µÁ±•Ñ•½Õ¹Ñ‘½Ý¸¸ˆ°Ñ½­•¸¤ì(€€€€€€€€€€€‰É•…¬ì(€€€€€€€€€ô(€€€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”€ô™…±Í”ì(€€€€€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹I•µ…¥¹¥¹œ€ô€Àì(€€€€€€€€€Ñ¡¥Ì¹}ÍÑ…ÉÑ•€ôÑÉÕ”ì(€€€€€€€€€Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼€ô±½¹•…Ñ„¡µ•ÍÍ…”¹Á…å±½…¹¥¹™¼¤ì(€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹MQIP°ì¥¹™¼è±½¹•…Ñ„¡Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼¤°™É½´èÑ¡¥Ì¹}¡½ÍÑ%ô¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰Í¹…ÁÍ¡½Ðˆè(€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹M9AM!=P°ì(€€€€€€€€€€€ÍÑ…Ñ”è±½¹•…Ñ„¡µ•ÍÍ…”¹Á…å±½…¹ÍÑ…Ñ”¤°(€€€€€€€€€€€™É½´èÑ¡¥Ì¹}¡½ÍÑ%°(€€€€€€€€€ô¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€…Í”€‰Á½¹œˆè(€€€€€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹A=9°ì¹½¹”èµ•ÍÍ…”¹Á…å±½…¹¹½¹”ô¤ì(€€€€€€€€€‰É•…¬ì(€€€€€€€‘•™…Õ±Ðè(€€€€€€€€€‰É•…¬ì(€€€€€ô(€€€ô((€€€}É•½É‘%¹Ù…±¥‘!½ÍÑ…Ñ„¡µ•ÍÍ…”°Ñ½­•¸¤ì(€€€€€Ñ¡¥Ì¹}Õ•ÍÑ%¹Ù…±¥‘½Õ¹Ð€¬ô€Äì(€€€€€Ñ¡¥Ì¹}•µ¥ÑÉÉ½È ‰¥¹Ù…±¥µ¡½ÍÐµ…ÕÑ¡½É¥Ñäˆ°µ•ÍÍ…”°ÑÉÕ”¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹}Õ•ÍÑ%¹Ù…±¥‘½Õ¹Ð€øô€Ì¤ì(€€€€€€€Ñ¡¥Ì¹}™…¥±=™™±¥¹” ‰Q¡”¡½ÍÐÍ•¹Ð¥¹½¹Í¥ÍÑ•¹Ð…ÕÑ¡½É¥Ñ…Ñ¥Ù”‘…Ñ„¸=™™±¥¹”µ½‘”¥Ì…Ñ¥Ù”¸ˆ°€‰¥¹Ù…±¥µ¡½ÍÐµ…ÕÑ¡½É¥Ñäˆ°Ñ½­•¸¤ì(€€€€€ô(€€€ô((€€€}Ý…¥Ñ½É]•±½µ”¡Ñ½­•¸¤ì(€€€€€É•ÑÕÉ¸¹•ÜAÉ½µ¥Í” ¡É•Í½±Ù”°É•©•Ð¤€ôøì(€€€€€€€½¹ÍÐÑ¥µ•È€ô±½‰…°¹Í•ÑQ¥µ•½ÕÐ  ¤€ôøì(€€€€€€€€€¥˜€ …Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”ñðÑ¡¥Ì¹}Á•¹‘¥¹]•±½µ”¹Ñ½­•¸€„ôôÑ½­•¸¤É•ÑÕÉ¸ì(€€€€€€€€€Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”€ô¹Õ±°ì(€€€€€€€€€É•©•Ð¡µ…­•ÉÉ½È ‰½¹¹•Ñ¥½¸µÑ¥µ•½ÕÐˆ°€‰Q¥µ•½ÕÐÝ…¥Ñ¥¹œ™½ÈÑ¡”¡½ÍÐ¸ˆ¤¤ì(€€€€€€€ô°Ñ¡¥Ì¹}½ÁÑ¥½¹Ì¹Ñ¥µ•½ÕÑ5Ì¤ì(€€€€€€€Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”€ôìÑ½­•¸°Ñ¥µ•È°É•Í½±Ù”°É•©•Ðôì(€€€€€ô¤ì(€€€ô((€€€}É•Í½±Ù•A•¹‘¥¹]•±½µ” ¤ì(€€€€€½¹ÍÐÁ•¹‘¥¹œ€ôÑ¡¥Ì¹}Á•¹‘¥¹]•±½µ”ì(€€€€€¥˜€ …Á•¹‘¥¹œ¤É•ÑÕÉ¸ì(€€€€€Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”€ô¹Õ±°ì(€€€€€±½‰…°¹±•…ÉQ¥µ•½ÕÐ¡Á•¹‘¥¹œ¹Ñ¥µ•È¤ì(€€€€€Á•¹‘¥¹œ¹É•Í½±Ù” ¤ì(€€€ô((€€€}É•©•ÑA•¹‘¥¹]•±½µ”¡•ÉÉ½È¤ì(€€€€€½¹ÍÐÁ•¹‘¥¹œ€ôÑ¡¥Ì¹}Á•¹‘¥¹]•±½µ”ì(€€€€€¥˜€ …Á•¹‘¥¹œ¤É•ÑÕÉ¸ì(€€€€€Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”€ô¹Õ±°ì(€€€€€±½‰…°¹±•…ÉQ¥µ•½ÕÐ¡Á•¹‘¥¹œ¹Ñ¥µ•È¤ì(€€€€€Á•¹‘¥¹œ¹É•©•Ð¡•ÉÉ½È¤ì(€€€ô((€€€}É•©•Ñ½¹¹•Ñ¥½¸¡½¹¹•Ñ¥½¸°½‘”°É•…Í½¸¤ì(€€€€€½¹ÍÐÉ•©•Ð€ô€ ¤€ôøì(€€€€€€€Ñ¡¥Ì¹}Í•¹¡½¹¹•Ñ¥½¸°€‰É•©•Ðˆ°ì½‘”°É•…Í½¸ô¤ì(€€€€€€€±½‰…°¹Í•ÑQ¥µ•½ÕÐ  ¤€ôøÑ¡¥Ì¹}±½Í•½¹¹•Ñ¥½¸¡½¹¹•Ñ¥½¸¤°€àÀ¤ì(€€€€€ôì(€€€€€¥˜€¡½¹¹•Ñ¥½¸€˜˜½¹¹•Ñ¥½¸¹½Á•¸¤É•©•Ð ¤ì(€€€€€•±Í”¥˜€¡½¹¹•Ñ¥½¸€˜˜ÑåÁ•½˜½¹¹•Ñ¥½¸¹½¸€ôôô€‰™Õ¹Ñ¥½¸ˆ¤½¹¹•Ñ¥½¸¹½¸ ‰½Á•¸ˆ°É•©•Ð¤ì(€€€€€•±Í”Ñ¡¥Ì¹}±½Í•½¹¹•Ñ¥½¸¡½¹¹•Ñ¥½¸¤ì(€€€ô((€€€}‘É½ÁÕ•ÍÐ¡É•½É°Ñ½­•¸¤ì(€€€€€¥˜€¡Ñ½­•¸€„ôôÑ¡¥Ì¹}Ñ½­•¸ñð€…Ñ¡¥Ì¹}½¹¹•Ñ¥½¹Ì¹¡…Ì¡É•½É¹Á±…å•É%¤¤É•ÑÕÉ¸ì(€€€€€Ñ¡¥Ì¹}½¹¹•Ñ¥½¹Ì¹‘•±•Ñ”¡É•½É¹Á±…å•É%¤ì(€€€€€½¹ÍÐÁ±…å•È€ôÑ¡¥Ì¹}Á±…å•ÉÌ¹•Ð¡É•½É¹Á±…å•É%¤ì(€€€€€Ñ¡¥Ì¹}Á±…å•ÉÌ¹‘•±•Ñ”¡É•½É¹Á±…å•É%¤ì(€€€€€Ñ¡¥Ì¹}±½Í•½¹¹•Ñ¥½¸¡É•½É¹½¹¹•Ñ¥½¸¤ì(€€€€€¥˜€¡Á±…å•È¤Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹A1eI}1Y°ìÁ±…å•ÈèÁÕ‰±¥A±…å•È¡Á±…å•È¤ô¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹}É½±”€ôôô€‰¡½ÍÐˆ¤Ñ¡¥Ì¹}‰É½…‘…ÍÑI½ÍÑ•È ¤ì(€€€ô((€€€}‰É½…‘…ÍÑI½ÍÑ•È ¤ì(€€€€€½¹ÍÐÁ±…å•ÉÌ€ôÑ¡¥Ì¹}ÁÕ‰±¥I½ÍÑ•È ¤ì(€€€€€Ñ¡¥Ì¹}‰É½…‘…ÍÐ ‰É½ÍÑ•Èˆ°ìÁ±…å•ÉÌô¤ì(€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹I=MQH°ìÁ±…å•ÉÌè±½¹•…Ñ„¡Á±…å•ÉÌ¤ô¤ì(€€€ô((€€€}•µ¥ÑI½ÍÑ•È ¤ì(€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹I=MQH°ìÁ±…å•ÉÌèÑ¡¥Ì¹}ÁÕ‰±¥I½ÍÑ•È ¤ô¤ì(€€€ô((€€€}ÁÕ‰±¥I½ÍÑ•È ¤ì(€€€€€½¹ÍÐÁ±…å•ÉÌ€ôÉÉ…ä¹™É½´¡Ñ¡¥Ì¹}Á±…å•ÉÌ¹Ù…±Õ•Ì ¤°ÁÕ‰±¥A±…å•È¤ì(€€€€€Á±…å•ÉÌ¹Í½ÉÐ ¡±•™Ð°É¥¡Ð¤€ôøì(€€€€€€€¥˜€¡±•™Ð¹¥Í!½ÍÐ€„ôôÉ¥¡Ð¹¥Í!½ÍÐ¤É•ÑÕÉ¸±•™Ð¹¥Í!½ÍÐ€ü€´Ä€è€Äì(€€€€€€€É•ÑÕÉ¸±•™Ð¹¥¹±½…±•½µÁ…É”¡É¥¡Ð¹¥¤ì(€€€€€ô¤ì(€€€€€É•ÑÕÉ¸Á±…å•ÉÌì(€€€ô((€€€}µ…­•5•ÍÍ…”¡ÑåÁ”°Á…å±½…¤ì(€€€€€¥˜€ …Ù…±¥‘…Ñ•A…å±½…¡ÑåÁ”°Á…å±½…¤¤ì(€€€€€€€Ñ¡É½Ü¹•ÜQåÁ•ÉÉ½È¡I•™ÕÍ•Ñ¼Í•¹…¸¥¹Ù…±¥€‘íMÑÉ¥¹œ¡ÑåÁ”¥ôÁ…å±½…¹€¤ì(€€€€€ô(€€€€€Ñ¡¥Ì¹}½ÕÑM•ÅÕ•¹”€¬ô€Äì(€€€€€½¹ÍÐµ•ÍÍ…”€ôì(€€€€€€€ÁÉ½Ñ½½°èAI=Q==0°(€€€€€€€Ù•ÉÍ¥½¸èYIM%=8°(€€€€€€€ÑåÁ”°(€€€€€€€É½½´èÑ¡¥Ì¹}É½½µ½‘”°(€€€€€€€Í•ÄèÑ¡¥Ì¹}½ÕÑM•ÅÕ•¹”°(€€€€€€€Á…å±½…è±½¹•…Ñ„¡Á…å±½…¤°(€€€€€ôì(€€€€€¥˜€¡©Í½¹	åÑ•1•¹Ñ ¡µ•ÍÍ…”¤€ø5MM}1%5%Q}	eQL¤ì(€€€€€€€Ñ¡É½Ü¹•ÜI…¹•ÉÉ½È ‰I•™ÕÍ•Ñ¼Í•¹…¸½Ù•ÉÍ¥é•@É@µ•ÍÍ…”¸ˆ¤ì(€€€€€ô(€€€€€É•ÑÕÉ¸µ•ÍÍ…”ì(€€€ô((€€€}Í•¹‘Q½!½ÍÐ¡ÑåÁ”°Á…å±½…¤ì(€€€€€¥˜€ …Ñ¡¥Ì¹}¡½ÍÑ½¹¹•Ñ¥½¸ñð€…Ñ¡¥Ì¹}¡½ÍÑ½¹¹•Ñ¥½¸¹½Á•¸¤É•ÑÕÉ¸™…±Í”ì(€€€€€É•ÑÕÉ¸Ñ¡¥Ì¹}Í•¹¡Ñ¡¥Ì¹}¡½ÍÑ½¹¹•Ñ¥½¸°ÑåÁ”°Á…å±½…¤ì(€€€ô((€€€}‰É½…‘…ÍÐ¡ÑåÁ”°Á…å±½…¤ì(€€€€€±•ÐÍ•¹Ð€ô€Àì(€€€€€½¹ÍÐµ•ÍÍ…”€ôÑ¡¥Ì¹}µ…­•5•ÍÍ…”¡ÑåÁ”°Á…å±½…¤ì(€€€€€™½È€¡½¹ÍÐÉ•½É½˜Ñ¡¥Ì¹}½¹¹•Ñ¥½¹Ì¹Ù…±Õ•Ì ¤¤ì(€€€€€€€¥˜€¡É•½É¹½Á•¹•€˜˜Ñ¡¥Ì¹}Í•¹‘5•ÍÍ…”¡É•½É¹½¹¹•Ñ¥½¸°µ•ÍÍ…”¤¤Í•¹Ð€¬ô€Äì(€€€€€ô(€€€€€É•ÑÕÉ¸Í•¹Ðì(€€€ô((€€€}Í•¹¡½¹¹•Ñ¥½¸°ÑåÁ”°Á…å±½…¤ì(€€€€€É•ÑÕÉ¸Ñ¡¥Ì¹}Í•¹‘5•ÍÍ…”¡½¹¹•Ñ¥½¸°Ñ¡¥Ì¹}µ…­•5•ÍÍ…”¡ÑåÁ”°Á…å±½…¤¤ì(€€€ô((€€€}Í•¹‘5•ÍÍ…”¡½¹¹•Ñ¥½¸°µ•ÍÍ…”¤ì(€€€€€¥˜€ …½¹¹•Ñ¥½¸ñð€…½¹¹•Ñ¥½¸¹½Á•¸ñðÑåÁ•½˜½¹¹•Ñ¥½¸¹Í•¹€„ôô€‰™Õ¹Ñ¥½¸ˆ¤É•ÑÕÉ¸™…±Í”ì(€€€€€ÑÉäì(€€€€€€€½¹¹•Ñ¥½¸¹Í•¹¡µ•ÍÍ…”¤ì(€€€€€€€É•ÑÕÉ¸ÑÉÕ”ì(€€€€€ô…Ñ €¡•ÉÉ½È¤ì(€€€€€€€Ñ¡¥Ì¹}•µ¥ÑÉÉ½È ‰Í•¹µ™…¥±•ˆ°Á••ÉÉÉ½É5•ÍÍ…”¡•ÉÉ½È°€‰½Õ±¹½ÐÍ•¹@É@‘…Ñ„¸ˆ¤°ÑÉÕ”¤ì(€€€€€€€É•ÑÕÉ¸™…±Í”ì(€€€€€ô(€€€ô((€€€}…±±½ÝI…Ñ”¡É…Ñ”°µ…á¥µÕµA•ÉM•½¹¤ì(€€€€€½¹ÍÐ¹½Ü€ô…Ñ”¹¹½Ü ¤ì(€€€€€¥˜€¡¹½Ü€´É…Ñ”¹ÍÑ…ÉÑ•‘Ð€øô€ÄÀÀÀ¤ì(€€€€€€€É…Ñ”¹ÍÑ…ÉÑ•‘Ð€ô¹½Üì(€€€€€€€É…Ñ”¹½Õ¹Ð€ô€Àì(€€€€€ô(€€€€€É…Ñ”¹½Õ¹Ð€¬ô€Äì(€€€€€É•ÑÕÉ¸É…Ñ”¹½Õ¹Ð€ðôµ…á¥µÕµA•ÉM•½¹ì(€€€ô((€€€}Í•ÑMÑ…ÑÕÌ¡ÍÑ…ÑÕÌ°É•…Í½¸°•ÉÉ½É½‘”¤ì(€€€€€Ñ¡¥Ì¹}ÍÑ…ÑÕÌ€ôÍÑ…ÑÕÌì(€€€€€Ñ¡¥Ì¹}µ½‘”€ôÍÑ…ÑÕÌ€ôôô€‰½¹¹•Ñ¥¹œˆ€ü€‰½¹¹•Ñ¥¹œˆ€èl‰½¹¹•Ñ•ˆ°€‰‘•É…‘•‰t¹¥¹±Õ‘•Ì¡ÍÑ…ÑÕÌ¤€ü€‰½¹±¥¹”ˆ€è€‰½™™±¥¹”ˆì(€€€€€Ñ¡¥Ì¹}É•…Í½¸€ôÉ•…Í½¸ì(€€€€€Ñ¡¥Ì¹}•ÉÉ½É½‘”€ô•ÉÉ½É½‘”ì(€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹MQQUL°Ñ¡¥Ì¹•ÑMÑ…Ñ” ¤¤ì(€€€ô((€€€}•µ¥ÑÉÉ½È¡½‘”°µ•ÍÍ…”°É•½Ù•É…‰±”¤ì(€€€€€Ñ¡¥Ì¹}•Ù•¹ÑÌ¹•µ¥Ð¡Y9QL¹II=H°ì½‘”°µ•ÍÍ…”°É•½Ù•É…‰±”èÉ•½Ù•É…‰±”€ôôôÑÉÕ”ô¤ì(€€€ô((€€€}™…¥±=™™±¥¹”¡É•…Í½¸°½‘”°Ñ½­•¸¤ì(€€€€€¥˜€¡Ñ½­•¸€„ôôÕ¹‘•™¥¹•€˜˜Ñ½­•¸€„ôôÑ¡¥Ì¹}Ñ½­•¸¤É•ÑÕÉ¸ì(€€€€€Ñ¡¥Ì¹}Ñ½­•¸€¬ô€Äì(€€€€€Ñ¡¥Ì¹}±½Í•I•Í½ÕÉ•Ì ¤ì(€€€€€Ñ¡¥Ì¹}Á±…å•ÉÌ¹±•…È ¤ì(€€€€€Ñ¡¥Ì¹}Í•±™%€ô¹Õ±°ì(€€€€€Ñ¡¥Ì¹}É½±”€ô€‰¹½¹”ˆì(€€€€€Ñ¡¥Ì¹}ÍÑ…ÉÑ•€ô™…±Í”ì(€€€€€Ñ¡¥Ì¹}ÍÑ…ÉÑ%¹™¼€ô¹Õ±°ì(€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹Ñ¥Ù”€ô™…±Í”ì(€€€€€Ñ¡¥Ì¹}½Õ¹Ñ‘½Ý¹I•µ…¥¹¥¹œ€ô€Àì(€€€€€Ñ¡¥Ì¹}Í•ÑMÑ…ÑÕÌ ‰½™™±¥¹”ˆ°É•…Í½¸°½‘”ñð€‰½™™±¥¹”ˆ¤ì(€€€€€Ñ¡¥Ì¹}•µ¥ÑI½ÍÑ•È ¤ì(€€€ô((€€€}±½Í•I•Í½ÕÉ•Ì ¤ì(€€€€€Ñ¡¥Ì¹}±•…É½Õ¹Ñ‘½Ý¹Q¥µ•ÉÌ ¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”¤ì(€€€€€€€½¹ÍÐÁ•¹‘¥¹œ€ôÑ¡¥Ì¹}Á•¹‘¥¹]•±½µ”ì(€€€€€€€Ñ¡¥Ì¹}Á•¹‘¥¹]•±½µ”€ô¹Õ±°ì(€€€€€€€±½‰…°¹±•…ÉQ¥µ•½ÕÐ¡Á•¹‘¥¹œ¹Ñ¥µ•È¤ì(€€€€€€€Á•¹‘¥¹œ¹É•©•Ð¡µ…­•ÉÉ½È ‰Í•ÍÍ¥½¸µ±½Í•ˆ°€‰Q¡”½¹¹•Ñ¥½¸…ÑÑ•µÁÐÝ…Ì±½Í•¸ˆ¤¤ì(€€€€€ô(€€€€€¥˜€¡Ñ¡¥Ì¹}¡½ÍÑ½¹¹•Ñ¥½¸¤Ñ¡¥Ì¹}±½Í•½¹¹•Ñ¥½¸¡Ñ¡¥Ì¹}¡½ÍÑ½¹¹•Ñ¥½¸¤ì(€€€€€Ñ¡¥Ì¹}¡½ÍÑ½¹¹•Ñ¥½¸€ô¹Õ±°ì(€€€€€™½È€¡½¹ÍÐÉ•½É½˜Ñ¡¥Ì¹}½¹¹•Ñ¥½¹Ì¹Ù…±Õ•Ì ¤¤Ñ¡¥Ì¹}±½Í•½¹¹•Ñ¥½¸¡É•½É¹½¹¹•Ñ¥½¸¤ì(€€€€€Ñ¡¥Ì¹}½¹¹•Ñ¥½¹Ì¹±•…È ¤ì(€€€€€¥˜€¡Ñ¡¥Ì¹}Á••È¤ì(€€€€€€€½¹ÍÐÁ••È€ôÑ¡¥Ì¹}Á••Èì(€€€€€€€Ñ¡¥Ì¹}Á••È€ô¹Õ±°ì(€€€€€€€ÑÉäì(€€€€€€€€€¥˜€ …Á••È¹‘•ÍÑÉ½å•€˜˜ÑåÁ•½˜Á••È¹‘•ÍÑÉ½ä€ôôô€‰™Õ¹Ñ¥½¸ˆ¤Á••È¹‘•ÍÑÉ½ä ¤ì(€€€€€€€ô…Ñ €¡}•ÉÉ½È¤ì(€€€€€€€€€€¼¼±•…¹ÕÀ¥Ì‰•ÍÐµ•™™½ÉÐ…¹Í•ÍÍ¥½¸Ñ½­•¹Ì¥¹½É”±…Ñ”…±±‰…­Ì¸(€€€€€€€ô(€€€€€ô(€€€ô((€€€}±½Í•½¹¹•Ñ¥½¸¡½¹¹•Ñ¥½¸¤ì(€€€€€¥˜€ …½¹¹•Ñ¥½¸ñðÑåÁ•½˜½¹¹•Ñ¥½¸¹±½Í”€„ôô€‰™Õ¹Ñ¥½¸ˆ¤É•ÑÕÉ¸ì(€€€€€ÑÉäì(€€€€€€€½¹¹•Ñ¥½¸¹±½Í” ¤ì(€€€€€ô…Ñ €¡}•ÉÉ½È¤ì(€€€€€€€€¼¼±½Í¥¹œ…¸…±É•…‘ä±½Í•A••É)L…Ñ…½¹¹•Ñ¥½¸¥Ì¡…Éµ±•ÍÌ¸(€€€€€ô(€€€ô(€ô((€½¹ÍÐ‘•™…Õ±Ñ±¥•¹Ð€ô¹•Ü9•ÑÝ½É­±¥•¹Ð ¤ì(€½¹ÍÐ…Á¤€ôì(€€€ÁÉ½Ñ½½°èAI=Q==0°(€€€Ù•ÉÍ¥½¸èYIM%=8°(€€€µ…áA±…å•ÉÌè5a}A1eIL°(€€€±…ÍÍ•Ìè1MM}%L°(€€€™…¥¹Ìè%9}%L°(€€€½Õ¹Ñ‘½Ý¹M•½¹‘Ìè=U9Q=]9}M=9L°(€€€½Õ¹Ñ‘½Ý¹ÕÉ…Ñ¥½¹5Ìè=U9Q=]9}UIQ%=9}5L°(€€€•Ù•¹ÑÌèY9QL°(€€€±¥•¹Ðè‘•™…Õ±Ñ±¥•¹Ð°(€€€É•…Ñ•±¥•¹Ðè€¡½ÁÑ¥½¹Ì¤€ôø¹•Ü9•ÑÝ½É­±¥•¹Ð¡½ÁÑ¥½¹Ì¤°(€€€•¹•É…Ñ•I½½µ½‘”°(€€€¹½Éµ…±¥é•I½½µ½‘”°(€€€¥ÍA••É)MÙ…¥±…‰±”è€ ¤€ôøÑåÁ•½˜€¡±½‰…°¹A••È¤€ôôô€‰™Õ¹Ñ¥½¸ˆ°(€ôì((€l(€€€€‰½¸ˆ°(€€€€‰½¹”ˆ°(€€€€‰½™˜ˆ°(€€€€‰½¹%¹ÁÕÐˆ°(€€€€‰½¹M¹…ÁÍ¡½Ðˆ°(€€€€‰½¹½Õ¹Ñ‘½Ý¸ˆ°(€€€€‰•ÑMÑ…Ñ”ˆ°(€€€€‰¥Í=¹±¥¹”ˆ°(€€€€‰¥Í!½ÍÐˆ°(€€€€‰É•…Ñ•I½½´ˆ°(€€€€‰¡½ÍÑI½½´ˆ°(€€€€‰©½¥¹I½½´ˆ°(€€€€‰½¹¹•ÑI½½´ˆ°(€€€€‰±•…Ù•I½½´ˆ°(€€€€‰‘•ÍÑÉ½äˆ°(€€€€‰Í•ÑA±…å•É9…µ”ˆ°(€€€€‰Í•±•Ñ±…ÍÌˆ°(€€€€‰Í•Ñ1½‰‰åAÉ•Í•¹”ˆ°(€€€€‰ÕÁ‘…Ñ•1½‰‰åAÉ•Í•¹”ˆ°(€€€€‰ÍÑ…ÉÑ…µ”ˆ°(€€€€‰Í•¹‘MÑ…Ñ•M¹…ÁÍ¡½Ðˆ°(€€€€‰Í•¹‘M¹…ÁÍ¡½Ðˆ°(€€€€‰Í•¹‘%¹ÁÕÐˆ°(€€€€‰Á¥¹œˆ°(€t¹™½É…  ¡µ•Ñ¡½¤€ôøì(€€€…Á¥mµ•Ñ¡½‘t€ô‘•™…Õ±Ñ±¥•¹Ñmµ•Ñ¡½‘t¹‰¥¹¡‘•™…Õ±Ñ±¥•¹Ð¤ì(€ô¤ì((€=‰©•Ð¹‘•™¥¹•AÉ½Á•ÉÑ¥•Ì¡…Á¤°ì(€€€ÍÑ…Ñ”èì•¹Õµ•É…‰±”èÑÉÕ”°•Ðè€ ¤€ôø‘•™…Õ±Ñ±¥•¹Ð¹•ÑMÑ…Ñ” ¤ô°(€€€½¹±¥¹”èì•¹Õµ•É…‰±”èÑÉÕ”°•Ðè€ ¤€ôø‘•™…Õ±Ñ±¥•¹Ð¹¥Í=¹±¥¹” ¤ô°(€ô¤ì((€±½‰…°¹@Å9•ÑÝ½É¬€ô=‰©•Ð¹™É••é”¡…Á¤¤ì)ô¤¡Ý¥¹‘½Ü¤ì(
+    if (!hasOnlyKeys(message, ["protocol", "version", "type", "room", "seq", "payload"])) return false;
+    if (
+      message.protocol !== PROTOCOL ||
+      message.version !== VERSION ||
+      message.room !== roomCode ||
+      !allowedTypes.has(message.type) ||
+      !isSafeInteger(message.seq, 0, Number.MAX_SAFE_INTEGER) ||
+      !validatePayload(message.type, message.payload)
+    ) {
+      return false;
+    }
+    return jsonByteLength(message) <= MESSAGE_LIMIT_BYTES;
+  }
+
+  function makeError(code, message, source) {
+    const error = new Error(message);
+    error.code = code;
+    error.source = source || null;
+    return error;
+  }
+
+  function peerErrorCode(error) {
+    return String((error && (error.type || error.code)) || "peer-error");
+  }
+
+  function peerErrorMessage(error, fallback) {
+    if (error && typeof error.message === "string" && error.message.length <= 160) return error.message;
+    return fallback;
+  }
+
+  class SafeEmitter {
+    constructor() {
+      this.listeners = new Map();
+    }
+
+    on(type, listener) {
+      if (typeof listener !== "function") throw new TypeError("Listener must be a function.");
+      if (!this.listeners.has(type)) this.listeners.set(type, new Set());
+      this.listeners.get(type).add(listener);
+      return () => this.off(type, listener);
+    }
+
+    once(type, listener) {
+      const unsubscribe = this.on(type, (detail) => {
+        unsubscribe();
+        listener(detail);
+      });
+      return unsubscribe;
+    }
+
+    off(type, listener) {
+      const listeners = this.listeners.get(type);
+      if (!listeners) return false;
+      const removed = listeners.delete(listener);
+      if (listeners.size === 0) this.listeners.delete(type);
+      return removed;
+    }
+
+    emit(type, detail) {
+      const listeners = this.listeners.get(type);
+      if (!listeners) return;
+      for (const listener of Array.from(listeners)) {
+        try {
+          listener(detail);
+        } catch (error) {
+          if (global.console && typeof global.console.error === "function") {
+            global.console.error("EP1Network listener failed", error);
+          }
+        }
+      }
+    }
+
+    clear() {
+      this.listeners.clear();
+    }
+  }
+
+  class NetworkClient {
+    constructor(options) {
+      const source = isPlainObject(options) ? options : {};
+      this._options = {
+        Peer: typeof source.Peer === "function" ? source.Peer : null,
+        peerOptions: isPlainObject(source.peerOptions) ? source.peerOptions : {},
+        timeoutMs: isSafeInteger(source.timeoutMs, 3000, 30000)
+          ? source.timeoutMs
+          : DEFAULT_TIMEOUT_MS,
+        namespace: typeof source.namespace === "string" ? hashText(source.namespace) : defaultNamespace(),
+      };
+      this._events = new SafeEmitter();
+      this._token = 0;
+      this._peer = null;
+      this._hostConnection = null;
+      this._connections = new Map();
+      this._players = new Map();
+      this._localProfile = normalizeProfile(source.player);
+      this._selfId = null;
+      this._hostId = null;
+      this._roomCode = null;
+      this._role = "none";
+      this._mode = "offline";
+      this._status = "idle";
+      this._reason = "Online connection has not been started.";
+      this._errorCode = null;
+      this._outSequence = 0;
+      this._inputSequence = 0;
+      this._guestLastSequence = -1;
+      this._guestRate = { startedAt: 0, count: 0 };
+      this._guestInvalidCount = 0;
+      this._pendingWelcome = null;
+      this._started = false;
+      this._startInfo = null;
+      this._countdownActive = false;
+      this._countdownRemaining = 0;
+      this._countdownTimers = [];
+    }
+
+    on(type, listener) {
+      return this._events.on(type, listener);
+    }
+
+    once(type, listener) {
+      return this._events.once(type, listener);
+    }
+
+    off(type, listener) {
+      return this._events.off(type, listener);
+    }
+
+    onInput(listener) {
+      return this.on(EVENTS.INPUT, listener);
+    }
+
+    onSnapshot(listener) {
+      return this.on(EVENTS.SNAPSHOT, listener);
+    }
+
+    onCountdown(listener) {
+      return this.on(EVENTS.COUNTDOWN, listener);
+    }
+
+    getState() {
+      return {
+        mode: this._mode,
+        status: this._status,
+        reason: this._reason,
+        errorCode: this._errorCode,
+        online: this._mode === "online",
+        peerJSAvailable: typeof this._getPeerConstructor() === "function",
+        role: this._role,
+        isHost: this._mode === "online" && this._role === "host",
+        roomCode: this._roomCode,
+        selfId: this._selfId,
+        hostId: this._hostId,
+        maxPlayers: MAX_PLAYERS,
+        players: this._publicRoster(),
+        countdownActive: this._countdownActive,
+        countdownRemaining: this._countdownRemaining,
+        started: this._started,
+        startInfo: this._startInfo ? cloneData(this._startInfo) : null,
+      };
+    }
+
+    isOnline() {
+      return this._mode === "online";
+    }
+
+    isHost() {
+      return this._mode === "online" && this._role === "host";
+    }
+
+    createRoom(roomCode, profile) {
+      let selectedCode = roomCode;
+      let selectedProfile = profile;
+      if (isPlainObject(roomCode) || roomCode === undefined || roomCode === null || roomCode === "") {
+        selectedProfile = isPlainObject(roomCode) ? roomCode : profile;
+        selectedCode = generateRoomCode();
+      }
+      return this.hostRoom(selectedCode, selectedProfile);
+    }
+
+    hostRoom(roomCode, profile) {
+      return this._startConnection("host", normalizeRoomCode(roomCode), profile, false);
+    }
+
+    joinRoom(roomCode, profile) {
+      return this._startConnection("guest", normalizeRoomCode(roomCode), profile, false);
+    }
+
+    connectRoom(roomCode, profile) {
+      return this._startConnection("host", normalizeRoomCode(roomCode), profile, true);
+    }
+
+    leaveRoom(reason) {
+      this._token += 1;
+      this._closeResources();
+      this._players.clear();
+      this._selfId = null;
+      this._hostId = null;
+      this._roomCode = null;
+      this._role = "none";
+      this._started = false;
+      this._startInfo = null;
+      this._countdownActive = false;
+      this._countdownRemaining = 0;
+      this._setStatus("offline", reason || "You left the room.", null);
+      this._emitRoster();
+      return this.getState();
+    }
+
+    destroy() {
+      this.leaveRoom("Network adapter was closed.");
+      this._events.clear();
+    }
+
+    setPlayerName(name) {
+      if (!isPlayerName(name)) throw new TypeError("Invalid player name.");
+      return this.setLobbyPresence({ name });
+    }
+
+    selectClass(classId) {
+      if (!CLASS_SET.has(classId)) throw new TypeError(`Unknown class: ${String(classId)}`);
+      return this.setLobbyPresence({ job: classId });
+    }
+
+    setLobbyPresence(presence) {
+      if (this._countdownActive || this._started) return false;
+      if (!isPlainObject(presence)) throw new TypeError("Lobby presence must be an object.");
+      const keys = Object.keys(presence);
+      if (keys.some((key) => !["name", "classId", "job", "x", "y", "facing"].includes(key))) {
+        throw new TypeError("Lobby presence contains an unsupported field.");
+      }
+      if (
+        presence.classId !== undefined &&
+        presence.job !== undefined &&
+        presence.classId !== presence.job
+      ) {
+        throw new TypeError("Player classId and job must match.");
+      }
+      const nextJob = presence.job === undefined
+        ? (presence.classId === undefined ? this._localProfile.job : presence.classId)
+        : presence.job;
+      const normalized = normalizeProfile({
+        name: presence.name === undefined ? this._localProfile.name : presence.name,
+        job: nextJob,
+        x: presence.x === undefined ? this._localProfile.x : presence.x,
+        y: presence.y === undefined ? this._localProfile.y : presence.y,
+        facing: presence.facing === undefined ? this._localProfile.facing : presence.facing,
+      });
+      const previousJob = this._localProfile.job;
+      this._localProfile = normalized;
+      const self = this._players.get(this._selfId);
+      if (self) {
+        self.name = normalized.name;
+        self.classId = normalized.classId;
+        self.job = normalized.job;
+        self.x = normalized.x;
+        self.y = normalized.y;
+        self.facing = normalized.facing;
+        this._emitRoster();
+        this._events.emit(EVENTS.PRESENCE, { player: publicPlayer(self) });
+        if (previousJob !== normalized.job) {
+          this._events.emit(EVENTS.CLASS_SELECTION, {
+            playerId: self.id,
+            classId: normalized.classId,
+            job: normalized.job,
+          });
+        }
+      }
+      if (!this.isOnline()) return false;
+      if (this._role === "host") {
+        this._broadcastRoster();
+        return true;
+      }
+      return this._sendToHost("presence", presenceFromProfile(normalized));
+    }
+
+    updateLobbyPresence(presence) {
+      return this.setLobbyPresence(presence);
+    }
+
+    startGame(options) {
+      if (!this.isHost()) return false;
+      if (this._started || this._countdownActive) return false;
+      const info = createStartInfo(options);
+      this._startInfo = info;
+      this._beginCountdown(info, this._token);
+      return true;
+    }
+
+    _beginCountdown(info, token) {
+      this._clearCountdownTimers();
+      this._countdownActive = true;
+      this._countdownRemaining = COUNTDOWN_SECONDS;
+
+      const publish = (remaining) => {
+        if (
+          token !== this._token ||
+          !this.isHost() ||
+          !this._countdownActive ||
+          !sameStartInfo(info, this._startInfo)
+        ) {
+          return;
+        }
+        this._countdownRemaining = remaining;
+        const payload = {
+          remaining,
+          total: COUNTDOWN_SECONDS,
+          durationMs: COUNTDOWN_DURATION_MS,
+          info: cloneData(info),
+        };
+        this._broadcast("countdown", payload);
+        this._events.emit(EVENTS.COUNTDOWN, {
+          ...cloneData(payload),
+          from: this._selfId,
+        });
+      };
+
+      publish(COUNTDOWN_SECONDS);
+      for (let elapsedSeconds = 1; elapsedSeconds < COUNTDOWN_SECONDS; elapsedSeconds += 1) {
+        const timer = global.setTimeout(() => {
+          publish(COUNTDOWN_SECONDS - elapsedSeconds);
+        }, elapsedSeconds * 1000);
+        this._countdownTimers.push(timer);
+      }
+      const startTimer = global.setTimeout(() => {
+        publish(0);
+        this._finishCountdown(info, token);
+      }, COUNTDOWN_DURATION_MS);
+      this._countdownTimers.push(startTimer);
+    }
+
+    _finishCountdown(info, token) {
+      if (
+        token !== this._token ||
+        !this.isHost() ||
+        !this._countdownActive ||
+        !sameStartInfo(info, this._startInfo)
+      ) {
+        return;
+      }
+      this._clearCountdownTimers();
+      this._countdownActive = false;
+      this._countdownRemaining = 0;
+      this._started = true;
+      this._broadcast("start", { info });
+      this._events.emit(EVENTS.START, { info: cloneData(info), from: this._selfId });
+    }
+
+    _clearCountdownTimers() {
+      for (const timer of this._countdownTimers) global.clearTimeout(timer);
+      this._countdownTimers = [];
+    }
+
+    sendStateSnapshot(snapshot) {
+      if (!validateSnapshot(snapshot)) {
+        throw new TypeError("Snapshot must be a bounded safe object containing valid 'stage' and 'tick'.");
+      }
+      if (!this.isHost()) return false;
+      const state = cloneData(snapshot);
+      this._broadcast("snapshot", { state });
+      this._events.emit(EVENTS.SNAPSHOT, { state: cloneData(state), from: this._selfId });
+      return true;
+    }
+
+    sendSnapshot(snapshot) {
+      return this.sendStateSnapshot(snapshot);
+    }
+
+    sendInput(input) {
+      this._inputSequence += 1;
+      const normalized = normalizeInput(input, this._inputSequence);
+      if (!this.isOnline()) return false;
+      if (this._role === "host") {
+        this._events.emit(EVENTS.INPUT, {
+          playerId: this._selfId,
+          input: cloneData(normalized),
+        });
+        return true;
+      }
+      return this._sendToHost("input", { input: normalized });
+    }
+
+    ping() {
+      if (!this.isOnline() || this._role !== "guest") return false;
+      const nonce = `${Date.now().toString(36)}_${randomUint32().toString(36)}`;
+      return this._sendToHost("ping", { nonce });
+    }
+
+    async _startConnection(role, roomCode, profile, fallbackToJoin) {
+      const normalizedProfile = normalizeProfile(profile === undefined ? this._localProfile : profile);
+      this._token += 1;
+      const token = this._token;
+      this._closeResources();
+      this._players.clear();
+      this._localProfile = normalizedProfile;
+      this._selfId = null;
+      this._hostId = this._hostPeerId(roomCode);
+      this._roomCode = roomCode;
+      this._role = role === "host" ? "pending-host" : "pending-guest";
+      this._started = false;
+      this._startInfo = null;
+      this._countdownActive = false;
+      this._countdownRemaining = 0;
+      this._outSequence = 0;
+      this._inputSequence = 0;
+      this._guestLastSequence = -1;
+      this._guestInvalidCount = 0;
+      this._setStatus("connecting", `Connecting to room ${roomCode}...`, null);
+
+      if (typeof this._getPeerConstructor() !== "function") {
+        this._failOffline(
+          "PeerJS is not loaded. The game is in honest offline mode; no online players are being simulated.",
+          "peerjs-missing",
+          token
+        );
+        return this.getState();
+      }
+
+      try {
+        if (role === "host") {
+          try {
+            await this._openAsHost(roomCode, token);
+          } catch (error) {
+            if (fallbackToJoin && peerErrorCode(error) === "unavailable-id" && token === this._token) {
+              this._closeResources();
+              this._role = "pending-guest";
+              this._setStatus("connecting", `Room ${roomCode} exists; joining its first creator...`, null);
+              await this._openAsGuest(roomCode, token);
+            } else {
+              throw error;
+            }
+          }
+        } else {
+          await this._openAsGuest(roomCode, token);
+        }
+      } catch (error) {
+        if (token === this._token) {
+          const code = peerErrorCode(error);
+          let reason = "The P2P connection failed. Offline mode is active.";
+          if (code === "unavailable-id") {
+            reason = "That room code is already hosted. Use joinRoom() or connectRoom().";
+          } else if (code === "peer-unavailable") {
+            reason = "No host is available for that room code. Offline mode is active.";
+          } else if (code === "join-rejected") {
+            reason = peerErrorMessage(error, "The host rejected this join request.");
+          } else if (code === "connection-timeout") {
+            reason = "The P2P connection timed out. Offline mode is active.";
+          }
+          this._failOffline(reason, code, token);
+        }
+      }
+      return this.getState();
+    }
+
+    async _openAsHost(roomCode, token) {
+      const peer = await this._openPeer(this._hostPeerId(roomCode), token);
+      if (token !== this._token) return;
+      this._bindPeerLifecycle(peer, token);
+      this._selfId = peer.id;
+      this._hostId = peer.id;
+      this._role = "host";
+      this._players.set(peer.id, {
+        id: peer.id,
+        name: this._localProfile.name,
+        classId: this._localProfile.classId,
+        job: this._localProfile.job,
+        x: this._localProfile.x,
+        y: this._localProfile.y,
+        facing: this._localProfile.facing,
+        isHost: true,
+      });
+      peer.on("connection", (connection) => this._acceptConnection(connection, token));
+      this._setStatus("connected", `Hosting room ${roomCode}.`, null);
+      this._emitRoster();
+    }
+
+    async _openAsGuest(roomCode, token) {
+      const peer = await this._openPeer(null, token);
+      if (token !== this._token) return;
+      this._bindPeerLifecycle(peer, token);
+      this._selfId = peer.id;
+      this._hostId = this._hostPeerId(roomCode);
+      this._role = "pending-guest";
+
+      let connection;
+      try {
+        connection = peer.connect(this._hostId, {
+          reliable: true,
+          serialization: "json",
+          metadata: {
+            protocol: PROTOCOL,
+            version: VERSION,
+            room: roomCode,
+            player: presenceFromProfile(this._localProfile),
+          },
+        });
+      } catch (error) {
+        this._rejectPendingWelcome(error);
+        throw error;
+      }
+      if (!connection || typeof connection.on !== "function") {
+        throw makeError("connection-failed", "PeerJS did not create a data connection.");
+      }
+      const welcomePromise = this._waitForWelcome(token);
+      this._hostConnection = connection;
+      this._bindGuestConnection(connection, token);
+      await welcomePromise;
+    }
+
+    _getPeerConstructor() {
+      return this._options.Peer || global.Peer;
+    }
+
+    _hostPeerId(roomCode) {
+      return `ep1-${this._options.namespace}-${roomCode.toLowerCase()}`;
+    }
+
+    _openPeer(requestedId, token) {
+      return new Promise((resolve, reject) => {
+        const PeerConstructor = this._getPeerConstructor();
+        let peer;
+        try {
+          peer = requestedId
+            ? new PeerConstructor(requestedId, this._options.peerOptions)
+            : new PeerConstructor(undefined, this._options.peerOptions);
+        } catch (error) {
+          reject(error);
+          return;
+        }
+        this._peer = peer;
+        let settled = false;
+        const timer = global.setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          try {
+            peer.destroy();
+          } catch (_error) {
+            // Peer construction timed out; nothing else can be recovered here.
+          }
+          if (this._peer === peer) this._peer = null;
+          reject(makeError("connection-timeout", "PeerJS open timed out."));
+        }, this._options.timeoutMs);
+
+        const cleanup = () => {
+          global.clearTimeout(timer);
+          if (typeof peer.off === "function") {
+            peer.off("open", onOpen);
+            peer.off("error", onError);
+          }
+        };
+        const onOpen = (id) => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          if (token !== this._token || !isPeerId(id)) {
+            try {
+              peer.destroy();
+            } catch (_error) {
+              // Stale sessions are intentionally discarded.
+            }
+            reject(makeError("stale-session", "The connection attempt is no longer active."));
+            return;
+          }
+          resolve(peer);
+        };
+        const onError = (error) => {
+          if (settled) return;
+          settled = true;
+          cleanup();
+          try {
+            peer.destroy();
+          } catch (_error) {
+            // Failed peers can already be destroyed by PeerJS.
+          }
+          if (this._peer === peer) this._peer = null;
+          reject(error);
+        };
+        peer.on("open", onOpen);
+        peer.on("error", onError);
+      });
+    }
+
+    _bindPeerLifecycle(peer, token) {
+      peer.on("open", () => {
+        if (token !== this._token || this._status !== "degraded") return;
+        this._setStatus("connected", "PeerJS signaling connection restored.", null);
+      });
+      peer.on("disconnected", () => {
+        if (token !== this._token) return;
+        this._setStatus(
+          "degraded",
+          "Signaling is disconnected. Existing P2P links may continue, but new players cannot join yet.",
+          "signaling-disconnected"
+        );
+        try {
+          if (!peer.destroyed && typeof peer.reconnect === "function") peer.reconnect();
+        } catch (_error) {
+          // The status remains explicitly degraded until PeerJS reconnects or closes.
+        }
+      });
+      peer.on("close", () => {
+        if (token === this._token) {
+          this._failOffline("The PeerJS connection closed. Offline mode is active.", "peer-closed", token);
+        }
+      });
+      peer.on("error", (error) => {
+        if (token !== this._token) return;
+        const code = peerErrorCode(error);
+        const recoverableForHost = this._role === "host" && ["peer-unavailable", "webrtc"].includes(code);
+        this._emitError(code, peerErrorMessage(error, "PeerJS reported an error."), recoverableForHost);
+        if (!recoverableForHost) {
+          this._failOffline("The P2P connection failed. Offline mode is active.", code, token);
+        }
+      });
+    }
+
+    _acceptConnection(connection, token) {
+      if (token !== this._token || this._role !== "host") {
+        this._closeConnection(connection);
+        return;
+      }
+      const metadata = connection && connection.metadata;
+      const playerId = connection && connection.peer;
+      const validMetadata =
+        hasOnlyKeys(metadata, ["protocol", "version", "room", "player"]) &&
+        metadata.protocol === PROTOCOL &&
+        metadata.version === VERSION &&
+        metadata.room === this._roomCode &&
+        validatePresence(metadata.player);
+
+      if (!isPeerId(playerId) || !validMetadata) {
+        this._rejectConnection(connection, "invalid-join", "Invalid join request.");
+        return;
+      }
+      if (this._countdownActive || this._started) {
+        this._rejectConnection(connection, "game-started", "This game has already started.");
+        return;
+      }
+      if (this._connections.size >= MAX_PLAYERS - 1 || this._connections.has(playerId)) {
+        this._rejectConnection(connection, "room-full", "This room is full.");
+        return;
+      }
+
+      const record = {
+        connection,
+        playerId,
+        profile: {
+          name: metadata.player.name,
+          classId: metadata.player.job,
+          job: metadata.player.job,
+          x: metadata.player.x,
+          y: metadata.player.y,
+          facing: metadata.player.facing,
+        },
+        opened: false,
+        lastSequence: -1,
+        invalidCount: 0,
+        rate: { startedAt: 0, count: 0 },
+      };
+      this._connections.set(playerId, record);
+
+      connection.on("open", () => {
+        if (token !== this._token || !this._connections.has(playerId)) {
+          this._closeConnection(connection);
+          return;
+        }
+        if (this._countdownActive || this._started) {
+          this._connections.delete(playerId);
+          this._rejectConnection(connection, "game-started", "This game has already started.");
+          return;
+        }
+        record.opened = true;
+        const player = {
+          id: playerId,
+          name: record.profile.name,
+          classId: record.profile.classId,
+          job: record.profile.job,
+          x: record.profile.x,
+          y: record.profile.y,
+          facing: record.profile.facing,
+          isHost: false,
+        };
+        this._players.set(playerId, player);
+        this._send(connection, "welcome", {
+          selfId: playerId,
+          hostId: this._hostId,
+          players: this._publicRoster(),
+          started: this._started,
+          startInfo: this._startInfo ? cloneData(this._startInfo) : null,
+        });
+        this._events.emit(EVENTS.PLAYER_JOIN, { player: publicPlayer(player) });
+        this._broadcastRoster();
+      });
+      connection.on("data", (message) => this._handleHostInbound(record, message, token));
+      connection.on("close", () => this._dropGuest(record, token));
+      connection.on("error", (error) => {
+        if (token !== this._token) return;
+        this._emitError(peerErrorCode(error), "A guest data connection failed.", true);
+        this._dropGuest(record, token);
+      });
+    }
+
+    _handleHostInbound(record, message, token) {
+      if (token !== this._token || !record.opened || !this._connections.has(record.playerId)) return;
+      if (!this._allowRate(record.rate, 120)) {
+        record.invalidCount += 1;
+        if (record.invalidCount >= 3) this._dropGuest(record, token);
+        return;
+      }
+      if (
+        !validateEnvelope(message, HOST_INBOUND_TYPES, this._roomCode) ||
+        message.seq <= record.lastSequence
+      ) {
+        record.invalidCount += 1;
+        this._emitError("invalid-payload", `Rejected invalid data from ${record.playerId}.`, true);
+        if (record.invalidCount >= 3) this._dropGuest(record, token);
+        return;
+      }
+      record.lastSequence = message.seq;
+      const player = this._players.get(record.playerId);
+      if (!player) return;
+
+      switch (message.type) {
+        case "presence":
+          if (this._countdownActive || this._started) break;
+          {
+            const previousJob = player.job;
+            player.name = message.payload.name;
+            player.classId = message.payload.job;
+            player.job = message.payload.job;
+            player.x = message.payload.x;
+            player.y = message.payload.y;
+            player.facing = message.payload.facing;
+            record.profile = cloneData(player);
+            this._events.emit(EVENTS.PRESENCE, { player: publicPlayer(player) });
+            if (previousJob !== player.job) {
+              this._events.emit(EVENTS.CLASS_SELECTION, {
+                playerId: player.id,
+                classId: player.classId,
+                job: player.job,
+              });
+            }
+            this._broadcastRoster();
+          }
+          break;
+        case "class-select":
+          if (this._countdownActive || this._started) break;
+          player.classId = message.payload.classId;
+          player.job = message.payload.classId;
+          this._events.emit(EVENTS.CLASS_SELECTION, {
+            playerId: player.id,
+            classId: player.classId,
+            job: player.job,
+          });
+          this._broadcastRoster();
+          break;
+        case "input":
+          this._events.emit(EVENTS.INPUT, {
+            playerId: player.id,
+            input: cloneData(message.payload.input),
+          });
+          break;
+        case "ping":
+          this._send(record.connection, "pong", { nonce: message.payload.nonce });
+          break;
+        default:
+          break;
+      }
+    }
+
+    _bindGuestConnection(connection, token) {
+      connection.on("data", (message) => this._handleGuestInbound(message, token));
+      connection.on("close", () => {
+        if (token !== this._token) return;
+        const error = makeError("host-disconnected", "The host connection closed.");
+        if (this._pendingWelcome) this._rejectPendingWelcome(error);
+        else this._failOffline("The host disconnected. Offline mode is active.", error.code, token);
+      });
+      connection.on("error", (error) => {
+        if (token !== this._token) return;
+        if (this._pendingWelcome) this._rejectPendingWelcome(error);
+        else this._failOffline("The host connection failed. Offline mode is active.", peerErrorCode(error), token);
+      });
+    }
+
+    _handleGuestInbound(message, token) {
+      if (token !== this._token) return;
+      if (!this._allowRate(this._guestRate, 120)) {
+        this._guestInvalidCount += 1;
+        if (this._guestInvalidCount >= 3) {
+          this._failOffline("The host exceeded the safe message rate. Offline mode is active.", "rate-limit", token);
+        }
+        return;
+      }
+      if (
+        !validateEnvelope(message, GUEST_INBOUND_TYPES, this._roomCode) ||
+        message.seq <= this._guestLastSequence
+      ) {
+        this._guestInvalidCount += 1;
+        this._emitError("invalid-payload", "Rejected invalid data from the host.", true);
+        if (this._guestInvalidCount >= 3) {
+          this._failOffline("The host sent invalid data. Offline mode is active.", "invalid-payload", token);
+        }
+        return;
+      }
+      this._guestLastSequence = message.seq;
+
+      if (message.type === "reject") {
+        const error = makeError("join-rejected", message.payload.reason);
+        error.rejectCode = message.payload.code;
+        this._rejectPendingWelcome(error);
+        return;
+      }
+
+      if (message.type === "welcome") {
+        const payload = message.payload;
+        const containsSelf = payload.players.some((player) => player.id === this._selfId && !player.isHost);
+        const correctHost = payload.hostId === this._hostId && payload.players.some(
+          (player) => player.id === payload.hostId && player.isHost
+        );
+        if (payload.selfId !== this._selfId || !containsSelf || !correctHost) {
+          this._rejectPendingWelcome(makeError("invalid-welcome", "The host sent an invalid roster."));
+          return;
+        }
+        this._players = new Map(payload.players.map((player) => [player.id, cloneData(player)]));
+        this._role = "guest";
+        this._started = payload.started;
+        this._startInfo = payload.startInfo ? cloneData(payload.startInfo) : null;
+        this._countdownActive = false;
+        this._countdownRemaining = 0;
+        this._setStatus("connected", `Joined room ${this._roomCode}.`, null);
+        this._emitRoster();
+        this._resolvePendingWelcome();
+        if (this._started && this._startInfo) {
+          this._events.emit(EVENTS.START, { info: cloneData(this._startInfo), from: this._hostId });
+        }
+        return;
+      }
+
+      if (this._role !== "guest") return;
+      switch (message.type) {
+        case "roster":
+          if (
+            !message.payload.players.some((player) => player.id === this._selfId && !player.isHost) ||
+            !message.payload.players.some((player) => player.id === this._hostId && player.isHost)
+          ) {
+            this._failOffline("The host removed this player from the roster.", "removed", token);
+            return;
+          }
+          this._players = new Map(message.payload.players.map((player) => [player.id, cloneData(player)]));
+          this._emitRoster();
+          break;
+        case "countdown":
+          {
+            const payload = message.payload;
+            const expectedRemaining = this._countdownActive
+              ? this._countdownRemaining - 1
+              : COUNTDOWN_SECONDS;
+            const validOrder =
+              !this._started &&
+              expectedRemaining >= 0 &&
+              payload.remaining === expectedRemaining;
+            const validInfo = !this._countdownActive || sameStartInfo(payload.info, this._startInfo);
+            if (!validOrder || !validInfo) {
+              this._recordInvalidHostData(
+                "Rejected an out-of-order or inconsistent countdown from the host.",
+                token
+              );
+              break;
+            }
+            if (!this._countdownActive) this._startInfo = cloneData(payload.info);
+            this._countdownActive = true;
+            this._countdownRemaining = payload.remaining;
+            this._events.emit(EVENTS.COUNTDOWN, {
+              ...cloneData(payload),
+              from: this._hostId,
+            });
+          }
+          break;
+        case "start":
+          if (this._started) return;
+          if (
+            !this._countdownActive ||
+            this._countdownRemaining !== 0 ||
+            !sameStartInfo(message.payload.info, this._startInfo)
+          ) {
+            this._recordInvalidHostData("Rejected a start message without a completed countdown.", token);
+            break;
+          }
+          this._countdownActive = false;
+          this._countdownRemaining = 0;
+          this._started = true;
+          this._startInfo = cloneData(message.payload.info);
+          this._events.emit(EVENTS.START, { info: cloneData(this._startInfo), from: this._hostId });
+          break;
+        case "snapshot":
+          this._events.emit(EVENTS.SNAPSHOT, {
+            state: cloneData(message.payload.state),
+            from: this._hostId,
+          });
+          break;
+        case "pong":
+          this._events.emit(EVENTS.PONG, { nonce: message.payload.nonce });
+          break;
+        default:
+          break;
+      }
+    }
+
+    _recordInvalidHostData(message, token) {
+      this._guestInvalidCount += 1;
+      this._emitError("invalid-host-authority", message, true);
+      if (this._guestInvalidCount >= 3) {
+        this._failOffline("The host sent inconsistent authoritative data. Offline mode is active.", "invalid-host-authority", token);
+      }
+    }
+
+    _waitForWelcome(token) {
+      return new Promise((resolve, reject) => {
+        const timer = global.setTimeout(() => {
+          if (!this._pendingWelcome || this._pendingWelcome.token !== token) return;
+          this._pendingWelcome = null;
+          reject(makeError("connection-timeout", "Timed out waiting for the host."));
+        }, this._options.timeoutMs);
+        this._pendingWelcome = { token, timer, resolve, reject };
+      });
+    }
+
+    _resolvePendingWelcome() {
+      const pending = this._pendingWelcome;
+      if (!pending) return;
+      this._pendingWelcome = null;
+      global.clearTimeout(pending.timer);
+      pending.resolve();
+    }
+
+    _rejectPendingWelcome(error) {
+      const pending = this._pendingWelcome;
+      if (!pending) return;
+      this._pendingWelcome = null;
+      global.clearTimeout(pending.timer);
+      pending.reject(error);
+    }
+
+    _rejectConnection(connection, code, reason) {
+      const reject = () => {
+        this._send(connection, "reject", { code, reason });
+        global.setTimeout(() => this._closeConnection(connection), 80);
+      };
+      if (connection && connection.open) reject();
+      else if (connection && typeof connection.on === "function") connection.on("open", reject);
+      else this._closeConnection(connection);
+    }
+
+    _dropGuest(record, token) {
+      if (token !== this._token || !this._connections.has(record.playerId)) return;
+      this._connections.delete(record.playerId);
+      const player = this._players.get(record.playerId);
+      this._players.delete(record.playerId);
+      this._closeConnection(record.connection);
+      if (player) this._events.emit(EVENTS.PLAYER_LEAVE, { player: publicPlayer(player) });
+      if (this._role === "host") this._broadcastRoster();
+    }
+
+    _broadcastRoster() {
+      const players = this._publicRoster();
+      this._broadcast("roster", { players });
+      this._events.emit(EVENTS.ROSTER, { players: cloneData(players) });
+    }
+
+    _emitRoster() {
+      this._events.emit(EVENTS.ROSTER, { players: this._publicRoster() });
+    }
+
+    _publicRoster() {
+      const players = Array.from(this._players.values(), publicPlayer);
+      players.sort((left, right) => {
+        if (left.isHost !== right.isHost) return left.isHost ? -1 : 1;
+        return left.id.localeCompare(right.id);
+      });
+      return players;
+    }
+
+    _makeMessage(type, payload) {
+      if (!validatePayload(type, payload)) {
+        throw new TypeError(`Refused to send an invalid ${String(type)} payload.`);
+      }
+      this._outSequence += 1;
+      const message = {
+        protocol: PROTOCOL,
+        version: VERSION,
+        type,
+        room: this._roomCode,
+        seq: this._outSequence,
+        payload: cloneData(payload),
+      };
+      if (jsonByteLength(message) > MESSAGE_LIMIT_BYTES) {
+        throw new RangeError("Refused to send an oversized P2P message.");
+      }
+      return message;
+    }
+
+    _sendToHost(type, payload) {
+      if (!this._hostConnection || !this._hostConnection.open) return false;
+      return this._send(this._hostConnection, type, payload);
+    }
+
+    _broadcast(type, payload) {
+      let sent = 0;
+      const message = this._makeMessage(type, payload);
+      for (const record of this._connections.values()) {
+        if (record.opened && this._sendMessage(record.connection, message)) sent += 1;
+      }
+      return sent;
+    }
+
+    _send(connection, type, payload) {
+      return this._sendMessage(connection, this._makeMessage(type, payload));
+    }
+
+    _sendMessage(connection, message) {
+      if (!connection || !connection.open || typeof connection.send !== "function") return false;
+      try {
+        connection.send(message);
+        return true;
+      } catch (error) {
+        this._emitError("send-failed", peerErrorMessage(error, "Could not send P2P data."), true);
+        return false;
+      }
+    }
+
+    _allowRate(rate, maximumPerSecond) {
+      const now = Date.now();
+      if (now - rate.startedAt >= 1000) {
+        rate.startedAt = now;
+        rate.count = 0;
+      }
+      rate.count += 1;
+      return rate.count <= maximumPerSecond;
+    }
+
+    _setStatus(status, reason, errorCode) {
+      this._status = status;
+      this._mode = status === "connecting" ? "connecting" : ["connected", "degraded"].includes(status) ? "online" : "offline";
+      this._reason = reason;
+      this._errorCode = errorCode;
+      this._events.emit(EVENTS.STATUS, this.getState());
+    }
+
+    _emitError(code, message, recoverable) {
+      this._events.emit(EVENTS.ERROR, { code, message, recoverable: recoverable === true });
+    }
+
+    _failOffline(reason, code, token) {
+      if (token !== undefined && token !== this._token) return;
+      this._token += 1;
+      this._closeResources();
+      this._players.clear();
+      this._selfId = null;
+      this._role = "none";
+      this._started = false;
+      this._startInfo = null;
+      this._countdownActive = false;
+      this._countdownRemaining = 0;
+      this._setStatus("offline", reason, code || "offline");
+      this._emitRoster();
+    }
+
+    _closeResources() {
+      this._clearCountdownTimers();
+      if (this._pendingWelcome) {
+        const pending = this._pendingWelcome;
+        this._pendingWelcome = null;
+        global.clearTimeout(pending.timer);
+        pending.reject(makeError("session-closed", "The connection attempt was closed."));
+      }
+      if (this._hostConnection) this._closeConnection(this._hostConnection);
+      this._hostConnection = null;
+      for (const record of this._connections.values()) this._closeConnection(record.connection);
+      this._connections.clear();
+      if (this._peer) {
+        const peer = this._peer;
+        this._peer = null;
+        try {
+          if (!peer.destroyed && typeof peer.destroy === "function") peer.destroy();
+        } catch (_error) {
+          // Cleanup is best-effort and session tokens ignore late callbacks.
+        }
+      }
+    }
+
+    _closeConnection(connection) {
+      if (!connection || typeof connection.close !== "function") return;
+      try {
+        connection.close();
+      } catch (_error) {
+        // Closing an already closed PeerJS DataConnection is harmless.
+      }
+    }
+  }
+
+  const defaultClient = new NetworkClient();
+  const api = {
+    protocol: PROTOCOL,
+    version: VERSION,
+    maxPlayers: MAX_PLAYERS,
+    classes: CLASS_IDS,
+    facings: FACING_IDS,
+    countdownSeconds: COUNTDOWN_SECONDS,
+    countdownDurationMs: COUNTDOWN_DURATION_MS,
+    events: EVENTS,
+    client: defaultClient,
+    createClient: (options) => new NetworkClient(options),
+    generateRoomCode,
+    normalizeRoomCode,
+    isPeerJSAvailable: () => typeof (global.Peer) === "function",
+  };
+
+  [
+    "on",
+    "once",
+    "off",
+    "onInput",
+    "onSnapshot",
+    "onCountdown",
+    "getState",
+    "isOnline",
+    "isHost",
+    "createRoom",
+    "hostRoom",
+    "joinRoom",
+    "connectRoom",
+    "leaveRoom",
+    "destroy",
+    "setPlayerName",
+    "selectClass",
+    "setLobbyPresence",
+    "updateLobbyPresence",
+    "startGame",
+    "sendStateSnapshot",
+    "sendSnapshot",
+    "sendInput",
+    "ping",
+  ].forEach((method) => {
+    api[method] = defaultClient[method].bind(defaultClient);
+  });
+
+  Object.defineProperties(api, {
+    state: { enumerable: true, get: () => defaultClient.getState() },
+    online: { enumerable: true, get: () => defaultClient.isOnline() },
+  });
+
+  global.EP1Network = Object.freeze(api);
+})(window);

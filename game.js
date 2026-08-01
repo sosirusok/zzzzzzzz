@@ -287,7 +287,438 @@
     if (session.stage.boss) spawnEnemy("boss", session.stage.boss.x, session.stage.boss.y);
     for (const fixed of session.stage.fixedEnemies || []) spawnEnemy(fixed[0], fixed[1], fixed[2]);
     for (const add of session.stage.adds || []) spawnEnemy(add[0], add[1], add[2]);
-    session.camera.x = clamp(session.stage.start„nˆ∂âûÀk∫wµÁl(ÄÄÄÅ•òÄ°ÕπÖ¡Õ°Ω–π—•ç¨ÄÅÕïÕÕ•Ω∏π—•ç¨Ä¥Äƒ¿§Å…ï—’…∏Ï(ÄÄÄÅÕïÕÕ•Ω∏π—•ç¨ÄÙÅÕπÖ¡Õ°Ω–π—•ç¨ÏÅÕïÕÕ•Ω∏π…ïµÖ•π•πúÄÙÅÕπÖ¡Õ°Ω–π—•µîÏÅÕïÕÕ•Ω∏πÕçΩ…îÄÙÅÕπÖ¡Õ°Ω–πÕçΩ…îÏ(ÄÄÄÅçΩπÕ–Å¡…Ωô•±ï5Ö¿ÄÙÅπï‹Å5Ö¿°…ΩÕ—ï…A±ÖÂï…Ã†§πµÖ¿†°¡…Ωô•±î§ÄÙ¯Åm¡…Ωô•±îπ•ê∞Å¡…Ωô•±ït§§Ï(ÄÄÄÅÕïÕÕ•Ω∏π¡±ÖÂï…ÃÄÙÅÕπÖ¡Õ°Ω–π¡±ÖÂï…ÃπµÖ¿†°¿§ÄÙ¯Ä°ÏÅ•êËÅ¿π•ê∞ÅπÖµîËÅ¡…Ωô•±ï5Ö¿πùï–°¿π•ê§¸ππÖµîÅÒÄâA1eHà∞Å©ΩàËÅ¿π®∞Å‡ËÅ¿π‡∞Å‰ËÅ¿π‰∞Å…Öë•’ÃËÄƒ¿∞ÅôÖç•πúËÅ¿πò∞ÅçΩπë•—•Ω∏ËÅ¿πå∞ÅçΩΩ±ëΩ›∏ËÅ¿πçê∞Åô’ï∞ËÅ¿πô’ï∞∞ÅÖ——Öç≠!ï±êËÅôÖ±Õî∞Å°ïÖ±A…Ωù…ïÕÃËÄ¿ÅÙ§§Ï(ÄÄÄÅÕïÕÕ•Ω∏πïπïµ•ïÃÄÙÅÕπÖ¡Õ°Ω–πïπïµ•ïÃπµÖ¿†°î§ÄÙ¯Ä°ÏÅ•êËÅîπ•ê∞Å—Â¡îËÅîπ–∞Å‡ËÅîπ‡∞Å‰ËÅîπ‰∞Å°¿ËÅîπ°¿∞ÅµÖ·!¿ËÅîπ¥∞ÅëïÖêËÅîπê∞Å…ïŸ•Ÿ•πúËÅîπ»∞ÅôÖç•πúËÅîπò∞Å…Öë•’ÃËÅîπ–ÄÙÙÙÄââΩÕÃàÄ¸Ä»–ÄËÄƒƒ∞ÅÕ—’∏ËÄ¿∞ÅÕ¡ïïêËÅ95%Mmîπ—tπÕ¡ïïêÅÙ§§Ï(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πôÖç•±•—‰ÄòòÅÕπÖ¡Õ°Ω–πôÖç•±•—‰§Å=â©ïç–πÖÕÕ•ù∏°ÕïÕÕ•Ω∏πôÖç•±•—‰∞ÅÕπÖ¡Õ°Ω–πôÖç•±•—‰§Ï(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏π≠ï‰§ÅÏÅÕïÕÕ•Ω∏π≠ï‰π‡ÄÙÅÕπÖ¡Õ°Ω–π≠ï‰π‡ÏÅÕïÕÕ•Ω∏π≠ï‰π‰ÄÙÅÕπÖ¡Õ°Ω–π≠ï‰π‰ÏÅÕïÕÕ•Ω∏π≠ï‰πôΩ’πêÄÙÅÕπÖ¡Õ°Ω–π≠ï‰πôΩ’πêÏÅÕïÕÕ•Ω∏π°ÖÕ-ï‰ÄÙÅÕπÖ¡Õ°Ω–π≠ï‰π°ÖÃÏÅÙ(ÄÄÄÅÕïÕÕ•Ω∏πÖç—•ŸÖ—ïë…ïÖÃÄÙÅπï‹ÅMï–°ÕπÖ¡Õ°Ω–πÖ…ïÖÃ§ÏÅ’¡ëÖ—ïÖµï…Ñ†§ÏÅ’¡ëÖ—ï!U†§Ï(ÄÄÄÅ•òÄ°ÕπÖ¡Õ°Ω–πïπëïêÄòòÄÖÕïÕÕ•Ω∏πïπëïê§ÅÏÅÕïÕÕ•Ω∏πïπëïêÄÙÅ—…’îÏÅÕ°Ω›Ωπë•—•Ω∏†ãÆ¬ß≤zó≤v–ÉÆ.ì≤v0É≤*ì∂3≤v”≤ûÆñÉ≤íÆÊ∂Vc™ŒÄÉ≤z#≤*◊Æ.#Æ.ê∏à∞ÄÃ¿¿¿§ÏÅÙ(ÄÅÙ((ÄÅô’πç—•Ω∏ÅôΩ…µÖ—Q•µï»°ÕïçΩπëÃ§ÅÏ(ÄÄÄÅçΩπÕ–ÅŸÖ±’îÄÙÅ5Ö—†πµÖ‡†¿∞ÅÕïçΩπëÃ§ÏÅçΩπÕ–Åµ•π’—ïÃÄÙÅ5Ö—†πô±ΩΩ»°ŸÖ±’îÄºÄÿ¿§ÏÅçΩπÕ–Å…ïÕ–ÄÙÅ5Ö—†πô±ΩΩ»°ŸÖ±’îÄîÄÿ¿§ÏÅçΩπÕ–Å—ïπ—†ÄÙÅ5Ö—†πô±ΩΩ»†°ŸÖ±’îÄîÄƒ§Ä®Äƒ¿§Ï(ÄÄÄÅ…ï—’…∏ÅÄëÌµ•π’—ïÕÙËëÌM—…•πú°…ïÕ–§π¡ÖëM—Ö…–†»∞Äà¿à•ÙËëÌ—ïπ—°ıÄÏ(ÄÅÙ(ÄÅô’πç—•Ω∏Å’¡ëÖ—ï!U†§ÅÏ(ÄÄÄÅëΩ¥π°’ëM—Öùîπ—ï·—Ωπ—ïπ–ÄÙÅÅMQÄëÌÕïÕÕ•Ω∏πÕ—Öùï%πëï·ÙÄºÄ—ÄÏ(ÄÄÄÅëΩ¥π°’ëQ•µï»π—ï·—Ωπ—ïπ–ÄÙÅôΩ…µÖ—Q•µï»°ÕïÕÕ•Ω∏π…ïµÖ•π•πú§Ï(ÄÄÄÅëΩ¥π°’ë1ΩçÖ—•Ω∏π—ï·—Ωπ—ïπ–ÄÙÅÕïÕÕ•Ω∏πÕ—Öùîπ—•—±îÏ(ÄÄÄÅëΩ¥π°’ëMçΩ…îπ—ï·—Ωπ—ïπ–ÄÙÅÕïÕÕ•Ω∏πÕçΩ…îπ—Ω1ΩçÖ±ïM—…•πú†â≠ºµ-Hà§Ï(ÄÄÄÅ±ï–Åµ•ÕÕ•Ω∏ÄÙÅÕïÕÕ•Ω∏πÕ—ÖùîπΩâ©ïç—•ŸîÏ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕ—Öùï%πëï‡ÄÙÙÙÄ»ÄòòÅÕïÕÕ•Ω∏πôÖç•±•—‰§Åµ•ÕÕ•Ω∏ÄÙÅÕïÕÕ•Ω∏πôÖç•±•—‰πëïÖêÄ¸Äã≤⁄s™÷≥ÆÜpÉ≤v”Æ>g∂Vc≤„≤jP∏àÄËÅÉ≤Çs≤Ü¿É≤.s≤êÉ∂23™“–ÄëÌ5Ö—†πµÖ‡†¿∞ÅÕïÕÕ•Ω∏πôÖç•±•—‰π°¿•ÙÄºÄëÌÕïÕÕ•Ω∏πôÖç•±•—‰πµÖ·!¡ıÄÏ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕ—Öùï%πëï‡ÄÙÙÙÄÃ§Åµ•ÕÕ•Ω∏ÄÙÅÕïÕÕ•Ω∏π°ÖÕ-ï‰Ä¸Äã™÷C≤zó≤.êÉ≤z™÷≥ÆÜpÉ≤v”Æ>g∂Vc≤„≤jP∏àÄËÅÕïÕÕ•Ω∏πÕ—ÖùîπΩâ©ïç—•ŸîÏ(ÄÄÄÅëΩ¥π°’ë5•ÕÕ•Ω∏π—ï·—Ωπ—ïπ–ÄÙÅµ•ÕÕ•Ω∏Ï(ÄÄÄÅçΩπÕ–ÅâΩÕÃÄÙÅÕïÕÕ•Ω∏πïπïµ•ïÃπô•πê†°ïπïµ‰§ÄÙ¯Åïπïµ‰π—Â¡îÄÙÙÙÄââΩÕÃà§Ï(ÄÄÄÅëΩ¥πâΩÕÕAÖπï∞π°•ëëï∏ÄÙÄÖâΩÕÃÏ(ÄÄÄÅ•òÄ°âΩÕÃ§ÅëΩ¥πâΩÕÕ•±∞πÕ—Â±îπ›•ë—†ÄÙÅÄëÌç±Öµ¿°âΩÕÃπ°¿ÄºÅâΩÕÃπµÖ·!¿Ä®Äƒ¿¿∞Ä¿∞Äƒ¿¿•ÙïÄÏ(ÄÄÄÅçΩπÕ–Å±ΩçÖ∞ÄÙÅÕïÕÕ•Ω∏π¡±ÖÂï…Ãπô•πê†°¡±ÖÂï»§ÄÙ¯Å¡±ÖÂï»π•êÄÙÙÙÅÕï±ô%ê†§§ÅÒÅÕïÕÕ•Ω∏π¡±ÖÂï…Õl¡tÏ(ÄÄÄÅëΩ¥πô•…ïµÖπÖ’ùîπ°•ëëï∏ÄÙÅ±ΩçÖ∞¸π©ΩàÄÑÙÙÄâô•…ïµÖ∏àÏ(ÄÄÄÅ•òÄ°±ΩçÖ∞¸π©ΩàÄÙÙÙÄâô•…ïµÖ∏à§ÅëΩ¥πô’ï±•±∞πÕ—Â±îπ›•ë—†ÄÙÅÄëÌç±Öµ¿°±ΩçÖ∞πô’ï∞ÄºÅ)=	Lπô•…ïµÖ∏πµÖ·’ï∞Ä®Äƒ¿¿∞Ä¿∞Äƒ¿¿•ÙïÄÏ(ÄÄÄÅ…ïπëï…IΩÕ—ï»°ëΩ¥πùÖµïIΩÕ—ï»∞Å…ΩÕ—ï…A±ÖÂï…Ã†§§Ï(ÄÅÙ(ÄÅô’πç—•Ω∏ÅÕ°Ω›M—ÖùïQΩÖÕ–°—ï·–∞Åë’…Ö—•Ω∏ÄÙÄƒ¿¿¿§ÅÏ(ÄÄÄÅëΩ¥πÕ—ÖùïQΩÖÕ–π—ï·—Ωπ—ïπ–ÄÙÅ—ï·–ÏÅëΩ¥πÕ—ÖùïQΩÖÕ–πç±ÖÕÕ1•Õ–πÖëê†â•ÃµŸ•Õ•â±îà§ÏÅÕïÕÕ•Ω∏π—ΩÖÕ—Uπ—•∞ÄÙÅ¡ï…ôΩ…µÖπçîππΩ‹†§Ä¨Åë’…Ö—•Ω∏Ï(ÄÅÙ(ÄÅô’πç—•Ω∏ÅÕ°Ω›Ωπë•—•Ω∏°—ï·–∞Åë’…Ö—•Ω∏ÄÙÄƒ–¿¿§ÅÏ(ÄÄÄÅëΩ¥πçΩπë•—•ΩπQΩÖÕ–π—ï·—Ωπ—ïπ–ÄÙÅ—ï·–ÏÅëΩ¥πçΩπë•—•ΩπQΩÖÕ–πç±ÖÕÕ1•Õ–πÖëê†â•ÃµŸ•Õ•â±îà§ÏÅÕïÕÕ•Ω∏πçΩπë•—•ΩπUπ—•∞ÄÙÅ¡ï…ôΩ…µÖπçîππΩ‹†§Ä¨Åë’…Ö—•Ω∏Ï(ÄÅÙ(ÄÅô’πç—•Ω∏ÅÕç…ïïπAΩ•π–°Öç—Ω»§ÅÏÅ…ï—’…∏ÅÏÅ‡ËÅÖç—Ω»π‡Ä¥ÅÕïÕÕ•Ω∏πçÖµï…Ñπ‡∞Å‰ËÅÖç—Ω»π‰Ä¥ÅÕïÕÕ•Ω∏πçÖµï…Ñπ‰ÅÙÏÅÙ(ÄÅô’πç—•Ω∏Åë…Ö›!ïÖ±—†°Öç—Ω»∞Å¡Ω•π–§ÅÏ(ÄÄÄÅ•òÄ°Öç—Ω»π°¿Ä¯ÙÅÖç—Ω»πµÖ·!¿ÅÒÅÖç—Ω»πëïÖê§Å…ï—’…∏Ï(ÄÄÄÅçΩπÕ–Å›•ë—†ÄÙÅÖç—Ω»π—Â¡îÄÙÙÙÄââΩÕÃàÄ¸Ä‹¿ÄËÄÃ–ÏÅçΩπÕ–Å…Ö—•ºÄÙÅç±Öµ¿°Öç—Ω»π°¿ÄºÅÖç—Ω»πµÖ·!¿∞Ä¿∞Äƒ§Ï(ÄÄÄÅçΩπ—ï·–πô•±±M—Â±îÄÙÄàåƒƒƒàÏÅçΩπ—ï·–πô•±±Iïç–°5Ö—†π…Ω’πê°¡Ω•π–π‡Ä¥Å›•ë—†ÄºÄ»§∞Å5Ö—†π…Ω’πê°¡Ω•π–π‰Ä¥Ä°95e}!%!QmÖç—Ω»π—Â¡ïtÅÒÄ––§Ä¥Ä‹§∞Å›•ë—†∞Ä‘§Ï(ÄÄÄÅçΩπ—ï·–πô•±±M—Â±îÄÙÅ…Ö—•ºÄ¯Ä∏–Ä¸Äàçîÿ…à…ààÄËÄàçôôçò»¿àÏÅçΩπ—ï·–πô•±±Iïç–°5Ö—†π…Ω’πê°¡Ω•π–π‡Ä¥Å›•ë—†ÄºÄ»Ä¨Äƒ§∞Å5Ö—†π…Ω’πê°¡Ω•π–π‰Ä¥Ä°95e}!%!QmÖç—Ω»π—Â¡ïtÅÒÄ––§Ä¥Äÿ§∞Å5Ö—†π…Ω’πê†°›•ë—†Ä¥Ä»§Ä®Å…Ö—•º§∞ÄÃ§Ï(ÄÅÙ(ÄÅô’πç—•Ω∏Åë…Ö›——Öç≠ï±±Ã°Ö——Öç¨§ÅÏ(ÄÄÄÅçΩπ—ï·–πÕÖŸî†§ÏÅçΩπ—ï·–π—…ÖπÕ±Ö—î†µÕïÕÕ•Ω∏πçÖµï…Ñπ‡∞ÄµÕïÕÕ•Ω∏πçÖµï…Ñπ‰§Ï(ÄÄÄÅçΩπ—ï·–πô•±±M—Â±îÄÙÅÖ——Öç¨π©ΩàÄÙÙÙÄâô•…ïµÖ∏àÄ¸Äâ…ùâÑ†»‘‘∞»Ã¿∞ƒ¿¿∞∏»‘§àÄËÄâ…ùâÑ†»‘‘∞»‘‘∞»‘‘∞∏ƒ‡§àÏ(ÄÄÄÅçΩπ—ï·–πÕ—…Ω≠ïM—Â±îÄÙÅ)=	MmÖ——Öç¨π©ΩâtπçΩ±Ω»ÏÅçΩπ—ï·–π±•πï]•ë—†ÄÙÄƒÏ(ÄÄÄÅçΩπ—ï·–πô•±±Iïç–°Ö——Öç¨π‡∞ÅÖ——Öç¨π‰∞ÅÖ——Öç¨π‹∞ÅÖ——Öç¨π†§Ï(ÄÄÄÅôΩ»Ä°±ï–Å‡ÄÙÅÖ——Öç¨π‡ÏÅ‡ÄÙÅÖ——Öç¨π‡Ä¨ÅÖ——Öç¨π‹ÏÅ‡Ä¨ÙÅQ%1§ÅÏÅçΩπ—ï·–πâïù•πAÖ—††§ÏÅçΩπ—ï·–πµΩŸïQº°‡∞ÅÖ——Öç¨π‰§ÏÅçΩπ—ï·–π±•πïQº°‡∞ÅÖ——Öç¨π‰Ä¨ÅÖ——Öç¨π†§ÏÅçΩπ—ï·–πÕ—…Ω≠î†§ÏÅÙ(ÄÄÄÅôΩ»Ä°±ï–Å‰ÄÙÅÖ——Öç¨π‰ÏÅ‰ÄÙÅÖ——Öç¨π‰Ä¨ÅÖ——Öç¨π†ÏÅ‰Ä¨ÙÅQ%1§ÅÏÅçΩπ—ï·–πâïù•πAÖ—††§ÏÅçΩπ—ï·–πµΩŸïQº°Ö——Öç¨π‡∞Å‰§ÏÅçΩπ—ï·–π±•πïQº°Ö——Öç¨π‡Ä¨ÅÖ——Öç¨π‹∞Å‰§ÏÅçΩπ—ï·–πÕ—…Ω≠î†§ÏÅÙ(ÄÄÄÅçΩπ—ï·–π…ïÕ—Ω…î†§Ï(ÄÅÙ(ÄÅô’πç—•Ω∏Å…ïπëï…Öµî°πΩ‹§ÅÏ(ÄÄÄÅçΩπ—ï·–πç±ïÖ…Iïç–†¿∞Ä¿∞ÅY%\π›•ë—†∞ÅY%\π°ï•ù°–§Ï(ÄÄÄÅçΩπÕ–ÅµÖ¿ÄÙÅMMQLπùï–°ÅÕ—ÖùîëÌÕïÕÕ•Ω∏πÕ—Öùï%πëï·ıÄ§Ï(ÄÄÄÅ•òÄ°µÖ¿§ÅçΩπ—ï·–πë…Ö›%µÖùî°µÖ¿∞Äµ5Ö—†π…Ω’πê°ÕïÕÕ•Ω∏πçÖµï…Ñπ‡§∞Äµ5Ö—†π…Ω’πê°ÕïÕÕ•Ω∏πçÖµï…Ñπ‰§§Ï(ÄÄÄÄººÉ™÷≥∂bTÉÆÁ∂fPÉ∂RÆÇ#≤z≤^@É™ŒÉ≤ÇWÆBc≤Z–É≤z#Æ6`É∂≤v”Æ¢„
-ﬂÆ™Æ.£
-ﬂ≤ÇC≤"cÆû0É™¬Æö≥™ŒÄ∞(ÄÄÄÄººÉ™¬g≤v É≤r≤Êc≤v`É≤.ì≤.s™¬Å!U™¬ É∂b≤z∞É≤∂sÆñÉ∂Fs≤.s∂VsÆ.ê∏(ÄÄÄÅçΩπ—ï·–πô•±±M—Â±îÄÙÄâ…ùâÑ†–∞–∞–∞∏‰–§àÏ(ÄÄÄÅçΩπ—ï·–πô•±±Iïç–†¿∞Ä¿∞ÅY%\π›•ë—†∞Ä–»§Ï(ÄÄÄÅçΩπ—ï·–πô•±±M—Â±îÄÙÄâ…ùâÑ†Ã∞Ã∞Ã∞∏‰Ã§àÏ(ÄÄÄÅçΩπ—ï·–πô•±±Iïç–†¿∞Ä–»∞Äƒ‡–∞Äƒ»ÿ§Ï(ÄÄÄÅçΩπ—ï·–πô•±±Iïç–†–ÿ¿∞Ä–»∞Äƒ‡¿∞Äƒƒÿ§Ï(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏π≠ï‰ÄòòÄÖÕïÕÕ•Ω∏π≠ï‰πôΩ’πê§ÅÏ(ÄÄÄÄÄÅçΩπÕ–Å¡Ω•π–ÄÙÅÕç…ïïπAΩ•π–°ÕïÕÕ•Ω∏π≠ï‰§ÏÅçΩπ—ï·–πô•±±M—Â±îÄÙÄàçôôê‡Ã»àÏÅçΩπ—ï·–πô•±±Iïç–°5Ö—†π…Ω’πê°¡Ω•π–π‡Ä¥Ä‘§∞Å5Ö—†π…Ω’πê°¡Ω•π–π‰Ä¥Äƒ¿§∞Äƒ¿∞Äƒ‹§ÏÅçΩπ—ï·–πô•±±M—Â±îÄÙÄàçôôò·âêàÏÅçΩπ—ï·–πô•±±Iïç–°5Ö—†π…Ω’πê°¡Ω•π–π‡Ä¨Ä–§∞Å5Ö—†π…Ω’πê°¡Ω•π–π‰Ä¥Ä‹§∞Ä‡∞Ä–§Ï(ÄÄÄÅÙ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πôÖç•±•—‰ÄòòÄÖÕïÕÕ•Ω∏πôÖç•±•—‰πëïÖê§ÅÏ(ÄÄÄÄÄÅçΩπÕ–Å¡Ω•π–ÄÙÅÕç…ïïπAΩ•π–°ÕïÕÕ•Ω∏πôÖç•±•—‰§ÏÅMMQLπë…Ö‹°çΩπ—ï·–∞ÄâôÖç•±•—‰à∞Å¡Ω•π–π‡∞Å¡Ω•π–π‰∞ÅÏÅπΩ‹∞Å°ï•ù°–ËÄ‡»ÅÙ§Ï(ÄÄÄÅÙ(ÄÄÄÅôΩ»Ä°çΩπÕ–ÅÖ——Öç¨ÅΩòÅÕïÕÕ•Ω∏πÖ——Öç≠Ã§Åë…Ö›——Öç≠ï±±Ã°Ö——Öç¨§Ï(ÄÄÄÅçΩπÕ–ÅÖç—Ω…ÃÄÙÅmtÏ(ÄÄÄÅôΩ»Ä°çΩπÕ–Åïπïµ‰ÅΩòÅÕïÕÕ•Ω∏πïπïµ•ïÃ§Å•òÄ†Öïπïµ‰πëïÖê§ÅÖç—Ω…Ãπ¡’Õ†°ÏÅ≠•πêËÄâïπïµ‰à∞ÅÖç—Ω»ËÅïπïµ‰ÅÙ§Ï(ÄÄÄÅôΩ»Ä°çΩπÕ–Å¡±ÖÂï»ÅΩòÅÕïÕÕ•Ω∏π¡±ÖÂï…Ã§ÅÖç—Ω…Ãπ¡’Õ†°ÏÅ≠•πêËÄâ¡±ÖÂï»à∞ÅÖç—Ω»ËÅ¡±ÖÂï»ÅÙ§Ï(ÄÄÄÅÖç—Ω…ÃπÕΩ…–†°Ñ∞Åà§ÄÙ¯ÅÑπÖç—Ω»π‰Ä¥ÅàπÖç—Ω»π‰§Ï(ÄÄÄÅôΩ»Ä°çΩπÕ–Åïπ—…‰ÅΩòÅÖç—Ω…Ã§ÅÏ(ÄÄÄÄÄÅçΩπÕ–ÅÖç—Ω»ÄÙÅïπ—…‰πÖç—Ω»ÏÅçΩπÕ–Å¡Ω•π–ÄÙÅÕç…ïïπAΩ•π–°Öç—Ω»§Ï(ÄÄÄÄÄÅ•òÄ°¡Ω•π–π‡ÄÄ¥ƒ»¿ÅÒÅ¡Ω•π–π‡Ä¯Ä‹ÿ¿ÅÒÅ¡Ω•π–π‰ÄÄ¥ƒ–¿ÅÒÅ¡Ω•π–π‰Ä¯Ä–Ã¿§ÅçΩπ—•π’îÏ(ÄÄÄÄÄÅ•òÄ°ïπ—…‰π≠•πêÄÙÙÙÄâïπïµ‰à§ÅÏ(ÄÄÄÄÄÄÄÅ•òÄ°Öç—Ω»π…ïŸ•Ÿ•πúÄòòÅ5Ö—†πô±ΩΩ»°πΩ‹ÄºÄƒ‡¿§ÄîÄ»ÄÙÙÙÄ¿§ÅçΩπ—•π’îÏ(ÄÄÄÄÄÄÄÅMMQLπë…Ö‹°çΩπ—ï·–∞Å95%MmÖç—Ω»π—Â¡ïtπÕ¡…•—î∞Å¡Ω•π–π‡∞Å¡Ω•π–π‰∞ÅÏÅπΩ‹∞Å°ï•ù°–ËÅ95e}!%!QmÖç—Ω»π—Â¡ït∞Åô±•¡`ËÅÖç—Ω»πôÖç•πúÄÙÙÙÄâ±ïô–à∞ÅÖ±¡°ÑËÅÖç—Ω»πÕ—’∏Ä¯Ä¿Ä¸Ä∏ÿ»ÄËÄƒÅÙ§Ï(ÄÄÄÄÄÄÄÅë…Ö›!ïÖ±—†°Öç—Ω»∞Å¡Ω•π–§Ï(ÄÄÄÄÄÅÙÅï±ÕîÅÏ(ÄÄÄÄÄÄÄÅMMQLπë…Ö‹°çΩπ—ï·–∞ÅÖç—Ω»π©Ωà∞Å¡Ω•π–π‡∞Å¡Ω•π–π‰∞ÅÏÅπΩ‹∞Å°ï•ù°–ËÅA1eI}!%!QmÖç—Ω»π©Ωât∞Åô±•¡`ËÅÖç—Ω»πôÖç•πúÄÙÙÙÄâ±ïô–à∞ÅÖ±¡°ÑËÅÖç—Ω»πçΩπë•—•Ω∏ÄÙÙÙÄâ•π©’…ïêàÄ¸Ä∏‘‡ÄËÄƒÅÙ§Ï(ÄÄÄÄÄÄÄÅ•òÄ°Öç—Ω»πçΩπë•—•Ω∏ÄÙÙÙÄâ•π©’…ïêà§ÅÏÅçΩπ—ï·–πô•±±M—Â±îÄÙÄàçôòÃ–––àÏÅçΩπ—ï·–πôΩπ–ÄÙÄââΩ±êÄƒ…¡‡ÅÕÖπÃµÕï…•òàÏÅçΩπ—ï·–π—ï·—±•ù∏ÄÙÄâçïπ—ï»àÏÅçΩπ—ï·–πô•±±Qï·–†ãÆ⁄≤à∞Å¡Ω•π–π‡∞Å¡Ω•π–π‰Ä¥Ä–‹§ÏÅÙ(ÄÄÄÄÄÄÄÅ•òÄ°Öç—Ω»π°ïÖ±A…Ωù…ïÕÃÄ¯Ä¿§ÅÏÅçΩπ—ï·–πÕ—…Ω≠ïM—Â±îÄÙÄàå–…ôôê¿àÏÅçΩπ—ï·–π±•πï]•ë—†ÄÙÄÃÏÅçΩπ—ï·–πâïù•πAÖ—††§ÏÅçΩπ—ï·–πÖ…å°¡Ω•π–π‡∞Å¡Ω•π–π‰Ä¥Ä»»∞Äƒ‰∞Äµ5Ö—†πA$ÄºÄ»∞Äµ5Ö—†πA$ÄºÄ»Ä¨Å5Ö—†πA$Ä®Ä»Ä®Åç±Öµ¿°Öç—Ω»π°ïÖ±A…Ωù…ïÕÃÄºÄÃ∞Ä¿∞Äƒ§§ÏÅçΩπ—ï·–πÕ—…Ω≠î†§ÏÅÙ(ÄÄÄÄÄÅÙ(ÄÄÄÅÙ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕ—Öùï%πëï‡Ä¯ÙÄ»§ÅÏ(ÄÄÄÄÄÅçΩπÕ–Å±ΩçÖ∞ÄÙÅÕïÕÕ•Ω∏π¡±ÖÂï…Ãπô•πê†°¡±ÖÂï»§ÄÙ¯Å¡±ÖÂï»π•êÄÙÙÙÅÕï±ô%ê†§§ÅÒÅÕïÕÕ•Ω∏π¡±ÖÂï…Õl¡tÏ(ÄÄÄÄÄÅ•òÄ°±ΩçÖ∞§ÅÏ(ÄÄÄÄÄÄÄÅçΩπÕ–Å¡Ω•π–ÄÙÅÕç…ïïπAΩ•π–°±ΩçÖ∞§ÏÅçΩπÕ–Åù…Öë•ïπ–ÄÙÅçΩπ—ï·–πç…ïÖ—ïIÖë•Ö±…Öë•ïπ–°¡Ω•π–π‡∞Å¡Ω•π–π‰∞Ä‡¿∞Å¡Ω•π–π‡∞Å¡Ω•π–π‰∞Ä»Ã‘§Ï(ÄÄÄÄÄÄÄÅù…Öë•ïπ–πÖëëΩ±Ω…M—Ω¿†¿∞Äâ…ùâÑ†¿∞¿∞¿∞¿§à§ÏÅù…Öë•ïπ–πÖëëΩ±Ω…M—Ω¿†ƒ∞Äâ…ùâÑ†¿∞¿∞¿∞∏–‡§à§Ï(ÄÄÄÄÄÄÄÅçΩπ—ï·–πô•±±M—Â±îÄÙÅù…Öë•ïπ–ÏÅçΩπ—ï·–πô•±±Iïç–†¿∞Ä¿∞ÅY%\π›•ë—†∞ÅY%\π°ï•ù°–§Ï(ÄÄÄÄÄÅÙ(ÄÄÄÅÙ(ÄÅÙ((ÄÅÖÕÂπåÅô’πç—•Ω∏ÅçΩππïç—1Ωââ‰°…ï≈’ïÕ—ïëΩëî§ÅÏ(ÄÄÄÅ•òÄ†Ö9P§ÅÏÅ’¡ëÖ—ï9ï—›Ω…≠U$†§ÏÅ…ï—’…∏ÏÅÙ(ÄÄÄÅçΩπÕ–ÅçΩëîÄÙÄ††§ÄÙ¯ÅÏÅ—…‰ÅÏÅ…ï—’…∏Å9PππΩ…µÖ±•ÈïIΩΩµΩëî°…ï≈’ïÕ—ïëΩëîÅÒÅ9Pπùïπï…Ö—ïIΩΩµΩëî†§§ÏÅÙÅçÖ—ç†Ä°}ï……Ω»§ÅÏÅ…ï—’…∏Å9Pπùïπï…Ö—ïIΩΩµΩëî†§ÏÅÙÅÙ§†§Ï(ÄÄÄÅëΩ¥π…ΩΩµΩëîπŸÖ±’îÄÙÅçΩëîÏÅëΩ¥ππï—›Ω…≠ïïëâÖç¨π—ï·—Ωπ—ïπ–ÄÙÄãÆ¬ß≤^@É≤^√™ √∂VcÆ*PÉ≤íG≤zÆ.#Æ.ê∏àÏ(ÄÄÄÅ—…‰ÅÏ(ÄÄÄÄÄÅçΩπÕ–ÅÕ—Ö—îÄÙÅÖ›Ö•–Å9PπçΩππïç—IΩΩ¥°çΩëî∞ÅÏÅπÖµîËÅëΩ¥π¡±ÖÂï…9ÖµîπŸÖ±’îπ—…•¥†§ÅÒÄâA1eHà∞Åç±ÖÕÕ%êËÅÕïÕÕ•Ω∏πÕï±ïç—ïë)Ωà∞Å‡ËÅÕïÕÕ•Ω∏π±ΩââÂA±ÖÂï»π‡∞Å‰ËÅÕïÕÕ•Ω∏π±ΩââÂA±ÖÂï»π‰∞ÅôÖç•πúËÅÕïÕÕ•Ω∏π±ΩââÂA±ÖÂï»πôÖç•πúÅÙ§Ï(ÄÄÄÄÄÅ•òÄ°Õ—Ö—îπΩπ±•πî§Å°•Õ—Ω…‰π…ï¡±ÖçïM—Ö—î°π’±∞∞Äàà∞ÅÄëÌ±ΩçÖ—•Ω∏π¡Ö—°πÖµïÙëÌ±ΩçÖ—•Ω∏πÕïÖ…ç°ÙåëÌçΩëïıÄ§Ï(ÄÄÄÅÙÅçÖ—ç†Ä°}ï……Ω»§ÅÏÄº®ÅΩôô±•πîÅ¡±Ö‰Å…ïµÖ•πÃÅ•µµïë•Ö—ï±‰ÅÖŸÖ•±Öâ±îÄ®ºÅÙ(ÄÄÄÅ’¡ëÖ—ï9ï—›Ω…≠U$†§Ï(ÄÅÙ(ÄÅô’πç—•Ω∏Åâ•πë9ï—›Ω…¨†§ÅÏ(ÄÄÄÅ•òÄ†Ö9P§Å…ï—’…∏Ï(ÄÄÄÅ9PπΩ∏†âÕ—Ö—’Ãà∞Å’¡ëÖ—ï9ï—›Ω…≠U$§ÏÅ9PπΩ∏†â…ΩÕ—ï»à∞Å’¡ëÖ—ï9ï—›Ω…≠U$§Ï(ÄÄÄÅ9PπΩπΩ’π—ëΩ›∏†°ÏÅ…ïµÖ•π•πúÅÙ§ÄÙ¯ÅÏ(ÄÄÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕç…ïï∏ÄÑÙÙÄâ±Ωââ‰à§Å…ï—’…∏Ï(ÄÄÄÄÄÅëΩ¥πçΩ’π—ëΩ›∏π°•ëëï∏ÄÙÅôÖ±ÕîÏÅëΩ¥πçΩ’π—ëΩ›∏π≈’ï…ÂMï±ïç—Ω»†âÕ—…Ωπúà§π—ï·—Ωπ—ïπ–ÄÙÅ…ïµÖ•π•πúÅÒÄâMQIPàÏ(ÄÄÄÄÄÅëΩ¥π±ΩââÂ5ïÕÕÖùîπ—ï·—Ωπ—ïπ–ÄÙÅ…ïµÖ•π•πúÄ¸ÅÄëÌ…ïµÖ•π•πù˜≤“ É∂n≤^@É≤.s≤zG∂VßÆ.#Æ.êπÄÄËÄã™ 3≤z≤vÉ≤.s≤zG∂VßÆ.#Æ.ê∏àÏ(ÄÄÄÅÙ§Ï(ÄÄÄÅ9PπΩ∏†âÕ—Ö…–à∞Ä°ÏÅ•πôºÅÙ§ÄÙ¯ÅÏÅëΩ¥πçΩ’π—ëΩ›∏π°•ëëï∏ÄÙÅ—…’îÏÅ•òÄ°ÕïÕÕ•Ω∏πÕç…ïï∏ÄÙÙÙÄâ±Ωââ‰à§ÅÕ—Ö…—I’∏°•πôº§ÏÅÙ§Ï(ÄÄÄÅ9PπΩπ%π¡’–†°ÏÅ¡±ÖÂï…%ê∞Å•π¡’–ÅÙ§ÄÙ¯ÅÏÅ•òÄ°•Õ!ΩÕ–†§§ÅÕïÕÕ•Ω∏π…ïµΩ—ï%π¡’—ÃπÕï–°¡±ÖÂï…%ê∞Å•π¡’–§ÏÅÙ§Ï(ÄÄÄÅ9PπΩπMπÖ¡Õ°Ω–†°ÏÅÕ—Ö—îÅÙ§ÄÙ¯ÅÏÅ•òÄ†Ö•Õ!ΩÕ–†§ÄòòÅÕïÕÕ•Ω∏πÕç…ïï∏ÄÙÙÙÄâùÖµîà§ÅÖ¡¡±ÂMπÖ¡Õ°Ω–°Õ—Ö—î§ÏÅÙ§Ï(ÄÄÄÅ9PπΩ∏†âï……Ω»à∞Ä°ÏÅµïÕÕÖùîÅÙ§ÄÙ¯ÅÏÅëΩ¥ππï—›Ω…≠ïïëâÖç¨π—ï·—Ωπ—ïπ–ÄÙÅµïÕÕÖùîÅÒÄã≤^√™ ¿É≤bìÆñ`àÏÅ’¡ëÖ—ï9ï—›Ω…≠U$†§ÏÅÙ§Ï(ÄÅÙ(ÄÅô’πç—•Ω∏ÅÕ—Ö…—=ôô±•πïΩ’π—ëΩ›∏†§ÅÏ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πΩôô±•πïΩ’π—ëΩ›∏§Å…ï—’…∏Ï(ÄÄÄÅ±ï–Å…ïµÖ•π•πúÄÙÄÃÏÅëΩ¥πçΩ’π—ëΩ›∏π°•ëëï∏ÄÙÅôÖ±ÕîÏÅëΩ¥πçΩ’π—ëΩ›∏π≈’ï…ÂMï±ïç—Ω»†âÕ—…Ωπúà§π—ï·—Ωπ—ïπ–ÄÙÅ…ïµÖ•π•πúÏ(ÄÄÄÅëΩ¥π±ΩââÂ5ïÕÕÖùîπ—ï·—Ωπ—ïπ–ÄÙÅÄëÌ…ïµÖ•π•πù˜≤“ É∂n≤^@É≤.s≤zG∂VßÆ.#Æ.êπÄÏ(ÄÄÄÅÕïÕÕ•Ω∏πΩôô±•πïΩ’π—ëΩ›∏ÄÙÅÕï—%π—ï…ŸÖ∞††§ÄÙ¯ÅÏ(ÄÄÄÄÄÅ…ïµÖ•π•πúÄ¥ÙÄƒÏ(ÄÄÄÄÄÅ•òÄ°…ïµÖ•π•πúÄ¯Ä¿§ÅÏÅëΩ¥πçΩ’π—ëΩ›∏π≈’ï…ÂMï±ïç—Ω»†âÕ—…Ωπúà§π—ï·—Ωπ—ïπ–ÄÙÅ…ïµÖ•π•πúÏÅëΩ¥π±ΩââÂ5ïÕÕÖùîπ—ï·—Ωπ—ïπ–ÄÙÅÄëÌ…ïµÖ•π•πù˜≤“ É∂n≤^@É≤.s≤zG∂VßÆ.#Æ.êπÄÏÅ…ï—’…∏ÏÅÙ(ÄÄÄÄÄÅç±ïÖ…%π—ï…ŸÖ∞°ÕïÕÕ•Ω∏πΩôô±•πïΩ’π—ëΩ›∏§ÏÅÕïÕÕ•Ω∏πΩôô±•πïΩ’π—ëΩ›∏ÄÙÅπ’±∞ÏÅëΩ¥πçΩ’π—ëΩ›∏π°•ëëï∏ÄÙÅ—…’îÏÅÕ—Ö…—I’∏°ÏÅÕ—ÖùîËÄ¿∞ÅÕïïêËÅ5Ö—†πô±ΩΩ»°5Ö—†π…ÖπëΩ¥†§Ä®Ä¡·ôôôôôôôò§ÅÙ§Ï(ÄÄÄÅÙ∞Äƒ¿¿¿§Ï(ÄÅÙ((ÄÅëΩ¥πïπ—ï»πÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞ÅÖÕÂπåÄ†§ÄÙ¯ÅÏ(ÄÄÄÅëΩ¥πïπ—ï»πë•ÕÖâ±ïêÄÙÅ—…’îÏÅëΩ¥πïπ—ï»π—ï·—Ωπ—ïπ–ÄÙÄã≤nCÆŒ‡É≤^C≤,ÉÆ⁄#Æ~≥≤bìÆ*PÉ≤íGäòàÏ(ÄÄÄÅ•òÄ†ÖÕïÕÕ•Ω∏π…ïÖë‰§ÅÏÅÖ›Ö•–ÅMMQLπ¡…ï±ΩÖê†§ÏÅÕïÕÕ•Ω∏π…ïÖë‰ÄÙÅ—…’îÏÅÙ(ÄÄÄÅ•òÄ°ëïâ’ùAÖ…Öµï—ï…Ãπ°ÖÃ†âëïâ’úà§ÄòòÅëïâ’ùAÖ…Öµï—ï…Ãπ°ÖÃ†âÕ—Öùîà§§ÅÏ(ÄÄÄÄÄÅÕ—Ö…—I’∏°ÏÅÕ—ÖùîËÄ¿∞ÅÕïïêËÄƒ»Ã–‘ÿ‹‡‰ÅÙ§Ï(ÄÄÄÄÄÅ±ΩÖëM—Öùî°ç±Öµ¿°9’µâï»°ëïâ’ùAÖ…Öµï—ï…Ãπùï–†âÕ—Öùîà§§ÅÒÄ¿∞Ä¿∞Ä–§∞Äƒ»Ã–‘ÿ‹‡‰§Ï(ÄÄÄÄÄÅ…ï—’…∏Ï(ÄÄÄÅÙ(ÄÄÄÅÕï—Mç…ïï∏†â±Ωââ‰à§ÏÅÕï±ïç—)Ωà†âÖ…ç°ï»à§ÏÅ’¡ëÖ—ï9ï—›Ω…≠U$†§Ï(ÄÄÄÅçΩππïç—1Ωââ‰°…ΩΩµΩëï…Ωµ1ΩçÖ—•Ω∏†§§Ï(ÄÅÙ§Ï(ÄÅëΩ¥πÕ—Ö…–πÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞Ä†§ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–ÅÕ—Ö—îÄÙÅ9P¸πùï—M—Ö—î¸∏†§Ï(ÄÄÄÅ•òÄ°Õ—Ö—î¸πΩπ±•πî§ÅÏ(ÄÄÄÄÄÅ•òÄ†ÖÕ—Ö—îπ•Õ!ΩÕ–§ÅÏÅëΩ¥π±ΩââÂ5ïÕÕÖùîπ—ï·—Ωπ—ïπ–ÄÙÄãÆ¬ß≤zó≤v–É≤.s≤zG∂VÄÉÆV3™Ê3≤û É™‚√Æ.ìÆÇêÉ≤éÛ≤„≤jP∏àÏÅ…ï—’…∏ÏÅÙ(ÄÄÄÄÄÅ9PπÕ—Ö…—Öµî°ÏÅÕ—ÖùîËÄ¿∞ÅÕïïêËÅ5Ö—†πô±ΩΩ»°5Ö—†π…ÖπëΩ¥†§Ä®Ä¡·ôôôôôôôò§ÅÙ§Ï(ÄÄÄÅÙÅï±ÕîÅÕ—Ö…—=ôô±•πïΩ’π—ëΩ›∏†§Ï(ÄÅÙ§Ï(ÄÅëΩ¥π…Ω±ï	’——ΩπÃπôΩ…Öç††°â’——Ω∏§ÄÙ¯Åâ’——Ω∏πÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞Ä†§ÄÙ¯ÅÕï±ïç—)Ωà°â’——Ω∏πëÖ—ÖÕï–π©Ωà§§§Ï(ÄÅëΩ¥ππï—›Ω…≠QΩùù±îπÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞Ä†§ÄÙ¯ÅÏÅëΩ¥ππï—›Ω…≠AÖπï∞π°•ëëï∏ÄÙÄÖëΩ¥ππï—›Ω…≠AÖπï∞π°•ëëï∏ÏÅÙ§Ï(ÄÅëΩ¥ππï—›Ω…≠±ΩÕîπÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞Ä†§ÄÙ¯ÅÏÅëΩ¥ππï—›Ω…≠AÖπï∞π°•ëëï∏ÄÙÅ—…’îÏÅÙ§Ï(ÄÅëΩ¥πçΩππïç—IΩΩ¥πÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞Ä†§ÄÙ¯ÅçΩππïç—1Ωââ‰°ëΩ¥π…ΩΩµΩëîπŸÖ±’î§§Ï(ÄÅëΩ¥πçΩ¡ÂIΩΩ¥πÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞ÅÖÕÂπåÄ†§ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–ÅÕ—Ö—îÄÙÅ9P¸πùï—M—Ö—î¸∏†§ÏÅ•òÄ†ÖÕ—Ö—î¸πΩπ±•πî§Å…ï—’…∏Ï(ÄÄÄÅ—…‰ÅÏÅÖ›Ö•–ÅπÖŸ•ùÖ—Ω»πç±•¡âΩÖ…êπ›…•—ïQï·–°ÄëÌ±ΩçÖ—•Ω∏πΩ…•ù•πÙëÌ±ΩçÖ—•Ω∏π¡Ö—°πÖµïÙåëÌÕ—Ö—îπ…ΩΩµΩëïıÄ§ÏÅëΩ¥ππï—›Ω…≠ïïëâÖç¨π—ï·—Ωπ—ïπ–ÄÙÄã≤“#Æ2 ÉÆû∂≥ÆñÉÆŒ◊≤
-≥∂Z#≤*◊Æ.#Æ.ê∏àÏÅÙÅçÖ—ç†Ä°}ï……Ω»§ÅÏÅëΩ¥ππï—›Ω…≠ïïëâÖç¨π—ï·—Ωπ—ïπ–ÄÙÅÉÆ¬§É≤ˆSÆNpËÄëÌÕ—Ö—îπ…ΩΩµΩëïıÄÏÅÙ(ÄÅÙ§Ï(ÄÅëΩ¥π¡±ÖÂï…9ÖµîπÖëëŸïπ—1•Õ—ïπï»†âç°Öπùîà∞Ä†§ÄÙ¯ÅÏÅ—…‰ÅÏÅ9P¸πÕï—A±ÖÂï…9Öµî¸∏°ëΩ¥π¡±ÖÂï…9ÖµîπŸÖ±’îπ—…•¥†§ÅÒÄâA1eHà§ÏÅÙÅçÖ—ç†Ä°}ï……Ω»§ÅÏÅëΩ¥π¡±ÖÂï…9ÖµîπŸÖ±’îÄÙÄâA1eHàÏÅÙÅ’¡ëÖ—ï9ï—›Ω…≠U$†§ÏÅÙ§Ï(ÄÅëΩ¥π…ïÕ’±—	’——Ω∏πÖëëŸïπ—1•Õ—ïπï»†âç±•ç¨à∞Ä†§ÄÙ¯ÅÏ(ÄÄÄÅëΩ¥π…ïÕ’±–π°•ëëï∏ÄÙÅ—…’îÏ(ÄÄÄÅ•òÄ†ÖÕïÕÕ•Ω∏πïπëïê§Å…ï—’…∏Ï(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏ππï·—M—ÖùîÄÑÙÙÅπ’±∞§Å±ΩÖëM—Öùî°ÕïÕÕ•Ω∏ππï·—M—Öùî∞ÅÕïÕÕ•Ω∏πÕïïê§Ï(ÄÄÄÅï±ÕîÅ•òÄ°ëΩ¥π…ïÕ’±—-•ç≠ï»π—ï·—Ωπ—ïπ–ÄÙÙÙÄâ5%MM%=8Å%1à§Å±ΩÖëM—Öùî°ÕïÕÕ•Ω∏πÕ—Öùï%πëï‡∞ÅÕïÕÕ•Ω∏πÕïïê§Ï(ÄÄÄÅï±ÕîÅÏÅÕï—Mç…ïï∏†â±Ωââ‰à§ÏÅÕïÕÕ•Ω∏πïπëïêÄÙÅôÖ±ÕîÏÅ’¡ëÖ—ï9ï—›Ω…≠U$†§ÏÅÙ(ÄÅÙ§Ï((ÄÅ›•πëΩ‹πÖëëŸïπ—1•Õ—ïπï»†â≠ïÂëΩ›∏à∞Ä°ïŸïπ–§ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–ÅçΩπ—…Ω±±ïêÄÙÅlâ-ïÂ\à∞Äâ-ïÂà∞Äâ-ïÂLà∞Äâ-ïÂà∞Äâ……Ω›U¿à∞Äâ……Ω›Ω›∏à∞Äâ……Ω›1ïô–à∞Äâ……Ω›I•ù°–à∞Äâ-ïÂ(âtÏ(ÄÄÄÅ•òÄ°lâ±Ωââ‰à∞ÄâùÖµîâtπ•πç±’ëïÃ°ÕïÕÕ•Ω∏πÕç…ïï∏§ÄòòÅçΩπ—…Ω±±ïêπ•πç±’ëïÃ°ïŸïπ–πçΩëî§§ÅïŸïπ–π¡…ïŸïπ—ïôÖ’±–†§Ï(ÄÄÄÅ•òÄ°çΩπ—…Ω±±ïêπ•πç±’ëïÃ°ïŸïπ–πçΩëî§§ÅÏ(ÄÄÄÄÄÅ•òÄ†ÖçΩπ—…Ω±Ãπ≠ïÂÃπ°ÖÃ°ïŸïπ–πçΩëî§ÄòòÄÖïŸïπ–π…ï¡ïÖ–§ÅçΩπ—…Ω±Ãπ©’Õ—A…ïÕÕïêπÖëê°ïŸïπ–πçΩëî§Ï(ÄÄÄÄÄÅçΩπ—…Ω±Ãπ≠ïÂÃπÖëê°ïŸïπ–πçΩëî§Ï(ÄÄÄÅÙ(ÄÅÙ§Ï(ÄÅ›•πëΩ‹πÖëëŸïπ—1•Õ—ïπï»†â≠ïÂ’¿à∞Ä°ïŸïπ–§ÄÙ¯ÅçΩπ—…Ω±Ãπ≠ïÂÃπëï±ï—î°ïŸïπ–πçΩëî§§Ï(ÄÅ›•πëΩ‹πÖëëŸïπ—1•Õ—ïπï»†ââ±’»à∞Ä†§ÄÙ¯ÅÏÅçΩπ—…Ω±Ãπ≠ïÂÃπç±ïÖ»†§ÏÅçΩπ—…Ω±Ãπ©’Õ—A…ïÕÕïêπç±ïÖ»†§ÏÅÙ§Ï(ÄÄêê†àπ—Ω’ç†µçΩπ—…Ω±ÃÅmëÖ—Ñµ≠ïÂtà§πôΩ…Öç††°â’——Ω∏§ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–ÅçΩëîÄÙÅâ’——Ω∏πëÖ—ÖÕï–π≠ï‰Ï(ÄÄÄÅçΩπÕ–ÅëΩ›∏ÄÙÄ°ïŸïπ–§ÄÙ¯ÅÏÅïŸïπ–π¡…ïŸïπ—ïôÖ’±–†§ÏÅ•òÄ†ÖçΩπ—…Ω±Ãπ≠ïÂÃπ°ÖÃ°çΩëî§§ÅçΩπ—…Ω±Ãπ©’Õ—A…ïÕÕïêπÖëê°çΩëî§ÏÅçΩπ—…Ω±Ãπ≠ïÂÃπÖëê°çΩëî§ÏÅÙÏ(ÄÄÄÅçΩπÕ–Å’¿ÄÙÄ°ïŸïπ–§ÄÙ¯ÅÏÅïŸïπ–π¡…ïŸïπ—ïôÖ’±–†§ÏÅçΩπ—…Ω±Ãπ≠ïÂÃπëï±ï—î°çΩëî§ÏÅÙÏ(ÄÄÄÅâ’——Ω∏πÖëëŸïπ—1•Õ—ïπï»†â¡Ω•π—ï…ëΩ›∏à∞ÅëΩ›∏§ÏÅlâ¡Ω•π—ï…’¿à∞Äâ¡Ω•π—ï…çÖπçï∞à∞Äâ¡Ω•π—ï…±ïÖŸîâtπôΩ…Öç††°πÖµî§ÄÙ¯Åâ’——Ω∏πÖëëŸïπ—1•Õ—ïπï»°πÖµî∞Å’¿§§Ï(ÄÅÙ§Ï(ÄÄêê†àπ—Ω’ç†µçΩπ—…Ω±ÃÅmëÖ—ÑµÖç—•Ω∏ÙùÖ——Öç¨ùtà§πôΩ…Öç††°â’——Ω∏§ÄÙ¯ÅÏ(ÄÄÄÅçΩπÕ–ÅëΩ›∏ÄÙÄ°ïŸïπ–§ÄÙ¯ÅÏÅïŸïπ–π¡…ïŸïπ—ïôÖ’±–†§ÏÅ•òÄ†ÖçΩπ—…Ω±Ãπ≠ïÂÃπ°ÖÃ†â-ïÂ(à§§ÅçΩπ—…Ω±Ãπ©’Õ—A…ïÕÕïêπÖëê†â-ïÂ(à§ÏÅçΩπ—…Ω±Ãπ≠ïÂÃπÖëê†â-ïÂ(à§ÏÅÙÏ(ÄÄÄÅçΩπÕ–Å’¿ÄÙÄ°ïŸïπ–§ÄÙ¯ÅÏÅïŸïπ–π¡…ïŸïπ—ïôÖ’±–†§ÏÅçΩπ—…Ω±Ãπ≠ïÂÃπëï±ï—î†â-ïÂ(à§ÏÅÙÏ(ÄÄÄÅâ’——Ω∏πÖëëŸïπ—1•Õ—ïπï»†â¡Ω•π—ï…ëΩ›∏à∞ÅëΩ›∏§ÏÅlâ¡Ω•π—ï…’¿à∞Äâ¡Ω•π—ï…çÖπçï∞à∞Äâ¡Ω•π—ï…±ïÖŸîâtπôΩ…Öç††°πÖµî§ÄÙ¯Åâ’——Ω∏πÖëëŸïπ—1•Õ—ïπï»°πÖµî∞Å’¿§§Ï(ÄÅÙ§Ï((ÄÅô’πç—•Ω∏Å±ΩΩ¿°πΩ‹§ÅÏ(ÄÄÄÅçΩπÕ–Åô…ÖµîÄÙÅ5Ö—†πµ•∏†¿∏ƒ∞Å5Ö—†πµÖ‡†¿∞Ä°πΩ‹Ä¥ÅÕïÕÕ•Ω∏π±ÖÕ—…Öµî§ÄºÄƒ¿¿¿§§ÏÅÕïÕÕ•Ω∏π±ÖÕ—…ÖµîÄÙÅπΩ‹ÏÅÕïÕÕ•Ω∏πÖçç’µ’±Ö—Ω»Ä¨ÙÅô…ÖµîÏ(ÄÄÄÅ›°•±îÄ°ÕïÕÕ•Ω∏πÖçç’µ’±Ö—Ω»Ä¯ÙÅMQ@§ÅÏ(ÄÄÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕç…ïï∏ÄÙÙÙÄâ±Ωââ‰à§Å’¡ëÖ—ï1Ωââ‰°MQ@§Ï(ÄÄÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕç…ïï∏ÄÙÙÙÄâùÖµîà§Å’¡ëÖ—ïÖµî°MQ@§Ï(ÄÄÄÄÄÅÕïÕÕ•Ω∏πÖçç’µ’±Ö—Ω»Ä¥ÙÅMQ@ÏÅçΩπ—…Ω±Ãπ©’Õ—A…ïÕÕïêπç±ïÖ»†§Ï(ÄÄÄÅÙ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕç…ïï∏ÄÙÙÙÄâ±Ωââ‰à§Å…ïπëï…1Ωââ‰°πΩ‹§Ï(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πÕç…ïï∏ÄÙÙÙÄâùÖµîà§Å…ïπëï…Öµî°πΩ‹§Ï(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏π—ΩÖÕ—Uπ—•∞ÄòòÅπΩ‹Ä¯ÅÕïÕÕ•Ω∏π—ΩÖÕ—Uπ—•∞§ÅÏÅëΩ¥πÕ—ÖùïQΩÖÕ–πç±ÖÕÕ1•Õ–π…ïµΩŸî†â•ÃµŸ•Õ•â±îà§ÏÅÕïÕÕ•Ω∏π—ΩÖÕ—Uπ—•∞ÄÙÄ¿ÏÅÙ(ÄÄÄÅ•òÄ°ÕïÕÕ•Ω∏πçΩπë•—•ΩπUπ—•∞ÄòòÅπΩ‹Ä¯ÅÕïÕÕ•Ω∏πçΩπë•—•ΩπUπ—•∞§ÅÏÅëΩ¥πçΩπë•—•ΩπQΩÖÕ–πç±ÖÕÕ1•Õ–π…ïµΩŸî†â•ÃµŸ•Õ•â±îà§ÏÅÕïÕÕ•Ω∏πçΩπë•—•ΩπUπ—•∞ÄÙÄ¿ÏÅÙ(ÄÄÄÅ…ï≈’ïÕ—π•µÖ—•Ωπ…Öµî°±ΩΩ¿§Ï(ÄÅÙ((ÄÅâ•πë9ï—›Ω…¨†§ÏÅ’¡ëÖ—ï9ï—›Ω…≠U$†§ÏÅÕï±ïç—)Ωà†âÖ…ç°ï»à§ÏÅ…ï≈’ïÕ—π•µÖ—•Ωπ…Öµî°±ΩΩ¿§Ï(ÄÅ•òÄ°ëïâ’ùAÖ…Öµï—ï…Ãπ°ÖÃ†âëïâ’úà§§ÅÏ(ÄÄÄÅ›•πëΩ‹π@≈ÖµîÄÙÅ=â©ïç–πô…ïïÈî°ÏÅÕïÕÕ•Ω∏∞Å±ΩÖëM—Öùî∞ÅÕ—Ö…—I’∏∞ÅµÖ≠ïMπÖ¡Õ°Ω–∞Å•π©’…î∞ÅÖç—•ŸÖ—ï…ïÑËÄ°•πëï‡§ÄÙ¯ÅÖç—•ŸÖ—ï…ïÑ°•πëï‡∞ÅÕïÕÕ•Ω∏πÕ—ÖùîπÖ…ïÖÕm•πëï·t§ÅÙ§Ï(ÄÅÙ)Ù§†§Ï(
+    session.camera.x = clamp(session.stage.start[0] - VIEW.width / 2, 0, Math.max(0, session.stage.width - VIEW.width));
+    session.camera.y = clamp(session.stage.start[1] - VIEW.height / 2, 0, Math.max(0, session.stage.height - VIEW.height));
+    setScreen("game");
+    dom.result.hidden = true;
+    dom.resultButton.disabled = false;
+    showStageToast(`STAGE ${session.stageIndex} / 4\n${session.stage.title}`, 1800);
+    updateHUD();
+  }
+  function startRun(info = {}) {
+    const seed = Number.isInteger(info.seed) ? info.seed : Math.floor(Math.random() * 0xffffffff);
+    session.score = 0;
+    loadStage(0, seed);
+    dom.gameCanvas.focus();
+  }
+
+  function currentInputFor(player) {
+    if (player.id === selfId()) {
+      const move = movementInput();
+      return { moveX: move.x, moveY: move.y, attack: controls.keys.has("KeyJ") || controls.justPressed.has("KeyJ") };
+    }
+    return session.remoteInputs.get(player.id) || { moveX: 0, moveY: 0, attack: false };
+  }
+  function attackRectFor(player) {
+    const job = JOBS[player.job]; const direction = DIRECTIONS[player.facing];
+    const widthTiles = job.range[0]; const depthTiles = job.range[1];
+    const lateral = widthTiles * TILE; const depth = depthTiles * TILE;
+    if (direction.x) return {
+      x: direction.x > 0 ? player.x + 8 : player.x - depth - 8,
+      y: player.y - lateral / 2, w: depth, h: lateral,
+    };
+    return {
+      x: player.x - lateral / 2,
+      y: direction.y > 0 ? player.y + 8 : player.y - depth - 8,
+      w: lateral, h: depth,
+    };
+  }
+  function damageTarget(target, amount, stun = 0) {
+    if (!target || target.dead || target.reviving) return false;
+    target.hp -= amount; target.stun = Math.max(target.stun, stun);
+    if (target.hp > 0) return true;
+    const definition = ENEMIES[target.type];
+    if (definition.revive && !target.usedSecondLife) {
+      target.usedSecondLife = true; target.reviving = true; target.reviveAt = session.tick + TICK_RATE * 3;
+      target.hp = definition.secondLife; return true;
+    }
+    target.dead = true; session.score += definition.score || 0;
+    return true;
+  }
+  function performAttack(player) {
+    const job = JOBS[player.job];
+    const rect = attackRectFor(player);
+    session.attacks.push({ ...rect, job: player.job, until: session.tick + Math.max(2, Math.round(job.cooldown * TICK_RATE * 0.45)) });
+    const candidates = session.enemies.filter((enemy) => !enemy.dead && !enemy.reviving && overlaps(rect, { x: enemy.x - enemy.radius, y: enemy.y - enemy.radius, w: enemy.radius * 2, h: enemy.radius * 2 }));
+    candidates.sort((a, b) => dist(player, a) - dist(player, b));
+    const targets = job.attack === "first-hit" ? candidates.slice(0, 1) : candidates;
+    for (const enemy of targets) damageTarget(enemy, job.damage, player.job === "medic" ? job.stun : (player.job === "fireman" ? 0.45 : 0));
+    if (session.facility && !session.facility.dead && overlaps(rect, { x: session.facility.x - 42, y: session.facility.y - 38, w: 84, h: 76 })) {
+      session.facility.hp -= job.damage;
+      if (session.facility.hp <= 0) { session.facility.hp = 0; session.facility.dead = true; session.score += 0; showStageToast("Ï†úÏ°∞ ÏãúÏÑ§ ÌååÍ¥¥ ÏôÑÎ£å", 1300); }
+    }
+  }
+  function updatePlayer(player, input, dt) {
+    player.cooldown = Math.max(0, player.cooldown - dt);
+    if (player.condition === "injured") {
+      if (player.job === "medic" && session.tick >= player.selfHealAt) {
+        player.condition = "healthy"; player.selfHealAt = 0; showCondition(`${player.name} ÏûêÍ∞Ä ÏπòÎ£å ÏôÑÎ£å`);
+      }
+      return;
+    }
+    const job = JOBS[player.job];
+    const firing = input.attack && player.job === "fireman" && player.fuel > 0;
+    if (!firing) {
+      const move = { x: input.moveX, y: input.moveY };
+      player.facing = facingFromMove(move, player.facing);
+      moveCircle(player, move.x * PLAYER_SPEED, move.y * PLAYER_SPEED, dt, session.stage.solids || [], session.stage.width, session.stage.height);
+    }
+    if (player.job === "fireman") {
+      if (firing) {
+        player.fuel = Math.max(0, player.fuel - dt);
+        if (player.cooldown <= 0) { performAttack(player); player.cooldown = job.cooldown; }
+      } else {
+        player.fuel = Math.min(job.maxFuel, player.fuel + (job.maxFuel / job.rechargeSeconds) * dt);
+      }
+    } else if (input.attack && !player.attackHeld && player.cooldown <= 0) {
+      performAttack(player); player.cooldown = job.cooldown;
+    }
+    player.attackHeld = input.attack;
+  }
+  function injure(player) {
+    if (!player || player.condition !== "healthy") return;
+    player.condition = "injured"; player.injuredAt = session.tick;
+    if (player.job === "medic") player.selfHealAt = session.tick + TICK_RATE * 10;
+    showCondition(`${player.name} Î∂ÄÏÉÅ! Î©îÎîïÏù¥ 3Ï¥àÍ∞Ñ Ï†ëÏ¥âÌïòÎ©¥ ÌöåÎ≥µÌï©ÎãàÎã§.`);
+  }
+  function updateHealing(dt) {
+    for (const medic of session.players.filter((player) => player.job === "medic" && player.condition === "healthy")) {
+      const target = session.players.find((player) => player.condition === "injured" && player.id !== medic.id && dist(player, medic) < 34);
+      for (const player of session.players) if (player !== target) player.healProgress = 0;
+      if (target) {
+        target.healProgress += dt;
+        if (target.healProgress >= JOBS.medic.healSeconds) {
+          target.condition = "healthy"; target.healProgress = 0; target.selfHealAt = 0;
+          showCondition(`${target.name} Î∂ÄÏÉÅ ÌöåÎ≥µ`);
+        }
+      }
+    }
+  }
+  function nearestHealthy(enemy) {
+    let result = null; let best = Infinity;
+    for (const player of session.players) {
+      if (player.condition !== "healthy") continue;
+      const value = dist(enemy, player);
+      if (value < best) { best = value; result = player; }
+    }
+    return { player: result, distance: best };
+  }
+  function updateEnemy(enemy, dt) {
+    if (enemy.dead) return;
+    if (enemy.reviving) {
+      if (session.tick >= enemy.reviveAt) enemy.reviving = false;
+      return;
+    }
+    enemy.stun = Math.max(0, enemy.stun - dt);
+    const definition = ENEMIES[enemy.type];
+    const targetInfo = nearestHealthy(enemy);
+    if (!targetInfo.player) return;
+    if (definition.summon) {
+      enemy.summonClock += dt;
+      const livingSummons = session.enemies.filter((other) => !other.dead && other.owner === enemy.id).length;
+      if (targetInfo.distance < definition.vision * TILE && enemy.summonClock >= 5 && livingSummons < 3) {
+        enemy.summonClock = 0;
+        const summon = spawnEnemy(definition.summon, enemy.x + (session.random() - 0.5) * 40, enemy.y + 28);
+        if (summon) summon.owner = enemy.id;
+      }
+    }
+    if (enemy.stun <= 0 && targetInfo.distance <= definition.vision * TILE) {
+      const dx = targetInfo.player.x - enemy.x; const dy = targetInfo.player.y - enemy.y;
+      const length = Math.hypot(dx, dy) || 1;
+      enemy.facing = facingFromMove({ x: dx, y: dy }, enemy.facing);
+      moveCircle(enemy, dx / length * enemy.speed, dy / length * enemy.speed, dt, session.stage.solids || [], session.stage.width, session.stage.height);
+    }
+    if (dist(enemy, targetInfo.player) < enemy.radius + targetInfo.player.radius + 2) injure(targetInfo.player);
+  }
+  function checkObjectives() {
+    const local = session.players.find((player) => player.id === selfId()) || session.players[0];
+    for (let index = 0; index < (session.stage.areas || []).length; index += 1) {
+      const area = session.stage.areas[index];
+      if (session.players.some((player) => player.condition === "healthy" && inside(player.x, player.y, area.at))) activateArea(index, area);
+    }
+    if (session.key && !session.key.found && session.players.some((player) => player.condition === "healthy" && Math.hypot(player.x - session.key.x, player.y - session.key.y) < 24)) {
+      session.key.found = true; session.hasKey = true; showStageToast("ÍµêÏû•Ïã§ Ïó¥Ïá†Î•º Ï∞æÏïòÏäµÎãàÎã§!", 1500);
+    }
+    if (session.stageIndex === 4) {
+      const boss = session.enemies.find((enemy) => enemy.type === "boss");
+      if (boss?.dead) finishStage(true, "ÍµêÏû• ÏÑ†ÏÉùÎãòÏùÑ Ïì∞Îü¨Îú®Î†∏ÏäµÎãàÎã§.");
+      return;
+    }
+    if (!local || !session.stage.exit || !inside(local.x, local.y, session.stage.exit)) return;
+    if (session.stageIndex === 2 && !session.facility?.dead) { showCondition("Ï†úÏ°∞ ÏãúÏÑ§ÏùÑ Î®ºÏ†Ä ÌååÍ¥¥Ìï¥Ïïº Ìï©ÎãàÎã§."); return; }
+    if (session.stageIndex === 3 && !session.hasKey) { showCondition("ÍµêÏû•Ïã§ Ïó¥Ïá†Í∞Ä ÌïÑÏöîÌï©ÎãàÎã§."); return; }
+    finishStage(true, `${session.stage.title} ÎèÑÏ∞© ÏßÄÏ†êÏóê ÎèÑÎã¨ÌñàÏäµÎãàÎã§.`);
+  }
+  function updateBossAdds(dt) {
+    if (session.stageIndex !== 4) return;
+    session.addClock += dt;
+    if (session.addClock >= 12) {
+      session.addClock = 0;
+      const livingAdds = session.enemies.filter((enemy) => !enemy.dead && enemy.type !== "boss").length;
+      if (livingAdds < 6) {
+        spawnEnemy(session.random() < 0.55 ? "liquid" : "tank", session.random() < 0.5 ? 118 : 522, 82);
+        showStageToast("Ï∫êÎπÑÎãõÏóêÏÑú Ï¢ÄÎπÑÍ∞Ä ÎÇòÌÉÄÎÇ¨ÏäµÎãàÎã§!", 900);
+      }
+    }
+  }
+  function allInjured() { return session.players.length > 0 && session.players.every((player) => player.condition === "injured"); }
+  function finishStage(clear, copy) {
+    if (session.ended) return;
+    session.ended = true; session.nextStage = clear && session.stageIndex < 4 ? session.stageIndex + 1 : null;
+    dom.resultKicker.textContent = clear ? (session.stageIndex === 4 ? "EPISODE CLEAR" : "STAGE CLEAR") : "MISSION FAILED";
+    dom.resultTitle.textContent = clear ? (session.stageIndex === 4 ? "Episode 1 ÏôÑÎ£å" : `${session.stageIndex}Ïä§ÌÖåÏù¥ÏßÄ ÏôÑÎ£å`) : "ÏûëÏ†Ñ Ïã§Ìå®";
+    dom.resultCopy.textContent = `${copy} ¬∑ SCORE ${session.score.toLocaleString("ko-KR")}`;
+    dom.resultButton.textContent = clear ? (session.nextStage === null ? "ÎåÄÍ∏∞Ïã§Î°ú" : "Îã§Ïùå Ïä§ÌÖåÏù¥ÏßÄ") : "Îã§Ïãú ÎèÑÏ†Ñ";
+    dom.result.hidden = false;
+  }
+  function updateGame(dt) {
+    if (session.ended) return;
+    session.tick += 1; session.remaining = Math.max(0, session.remaining - dt);
+    const netState = NET?.getState?.();
+    const guest = netState?.online && !netState.isHost;
+    const local = session.players.find((player) => player.id === selfId()) || session.players[0];
+    const localInput = currentInputFor(local);
+    if (guest) {
+      try { NET.sendInput({ tick: session.tick, moveX: localInput.moveX, moveY: localInput.moveY, aimX: DIRECTIONS[local.facing].x, aimY: DIRECTIONS[local.facing].y, attack: localInput.attack, skill: false, interact: false }); } catch (_error) { /* network may disconnect */ }
+      return;
+    }
+    for (const player of session.players) updatePlayer(player, currentInputFor(player), dt);
+    updateHealing(dt);
+    for (const enemy of [...session.enemies]) updateEnemy(enemy, dt);
+    session.attacks = session.attacks.filter((attack) => attack.until > session.tick);
+    updateBossAdds(dt); checkObjectives();
+    if (allInjured()) finishStage(false, "Î™®Îì† ÌîåÎ†àÏù¥Ïñ¥Í∞Ä Î∂ÄÏÉÅÌñàÏäµÎãàÎã§.");
+    else if (session.remaining <= 0) finishStage(false, "Ï†úÌïú ÏãúÍ∞ÑÏù¥ ÎÅùÎÇ¨ÏäµÎãàÎã§.");
+    updateCamera(); updateHUD();
+    if (netState?.online && netState.isHost && session.tick - session.lastSnapshotTick >= 4) {
+      session.lastSnapshotTick = session.tick;
+      try { NET.sendSnapshot(makeSnapshot()); } catch (_error) { /* transient connection error */ }
+    }
+  }
+  function updateCamera() {
+    const local = session.players.find((player) => player.id === selfId()) || session.players[0];
+    if (!local) return;
+    session.camera.x = clamp(local.x - VIEW.width / 2, 0, Math.max(0, session.stage.width - VIEW.width));
+    session.camera.y = clamp(local.y - VIEW.height / 2, 0, Math.max(0, session.stage.height - VIEW.height));
+  }
+  function makeSnapshot() {
+    return {
+      stage: session.stageIndex, tick: session.tick, time: Math.round(session.remaining * 20) / 20, score: session.score,
+      players: session.players.map((p) => ({ id: p.id, x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10, f: p.facing, c: p.condition, j: p.job, cd: Math.round(p.cooldown * 20) / 20, fuel: Math.round(p.fuel * 20) / 20 })),
+      enemies: session.enemies.filter((e) => !e.dead || e.type === "boss").map((e) => ({ id: e.id, t: e.type, x: Math.round(e.x * 10) / 10, y: Math.round(e.y * 10) / 10, hp: e.hp, m: e.maxHp, d: e.dead, r: e.reviving, f: e.facing })),
+      facility: session.facility ? { hp: session.facility.hp, dead: session.facility.dead } : null,
+      key: { x: session.key?.x || 0, y: session.key?.y || 0, found: Boolean(session.key?.found), has: session.hasKey }, areas: [...session.activatedAreas], ended: session.ended,
+    };
+  }
+  function applySnapshot(snapshot) {
+    if (!snapshot) return;
+    if (snapshot.stage !== session.stageIndex) loadStage(snapshot.stage, session.seed);
+    if (snapshot.tick < session.tick - 10) return;
+    session.tick = snapshot.tick; session.remaining = snapshot.time; session.score = snapshot.score;
+    const profileMap = new Map(rosterPlayers().map((profile) => [profile.id, profile]));
+    session.players = snapshot.players.map((p) => ({ id: p.id, name: profileMap.get(p.id)?.name || "PLAYER", job: p.j, x: p.x, y: p.y, radius: 10, facing: p.f, condition: p.c, cooldown: p.cd, fuel: p.fuel, attackHeld: false, healProgress: 0 }));
+    session.enemies = snapshot.enemies.map((e) => ({ id: e.id, type: e.t, x: e.x, y: e.y, hp: e.hp, maxHp: e.m, dead: e.d, reviving: e.r, facing: e.f, radius: e.t === "boss" ? 24 : 11, stun: 0, speed: ENEMIES[e.t].speed }));
+    if (session.facility && snapshot.facility) Object.assign(session.facility, snapshot.facility);
+    if (session.key) { session.key.x = snapshot.key.x; session.key.y = snapshot.key.y; session.key.found = snapshot.key.found; session.hasKey = snapshot.key.has; }
+    session.activatedAreas = new Set(snapshot.areas); updateCamera(); updateHUD();
+    if (snapshot.ended && !session.ended) { session.ended = true; showCondition("Î∞©Ïû•Ïù¥ Îã§Ïùå Ïä§ÌÖåÏù¥ÏßÄÎ•º Ï§ÄÎπÑÌïòÍ≥† ÏûàÏäµÎãàÎã§.", 3000); }
+  }
+
+  function formatTimer(seconds) {
+    const value = Math.max(0, seconds); const minutes = Math.floor(value / 60); const rest = Math.floor(value % 60); const tenth = Math.floor((value % 1) * 10);
+    return `${minutes}:${String(rest).padStart(2, "0")}:${tenth}`;
+  }
+  function updateHUD() {
+    dom.hudStage.textContent = `STAGE ${session.stageIndex} / 4`;
+    dom.hudTimer.textContent = formatTimer(session.remaining);
+    dom.hudLocation.textContent = session.stage.title;
+    dom.hudScore.textContent = session.score.toLocaleString("ko-KR");
+    let mission = session.stage.objective;
+    if (session.stageIndex === 2 && session.facility) mission = session.facility.dead ? "Ï∂úÍµ¨Î°ú Ïù¥ÎèôÌïòÏÑ∏Ïöî." : `Ï†úÏ°∞ ÏãúÏÑ§ ÌååÍ¥¥ ${Math.max(0, session.facility.hp)} / ${session.facility.maxHp}`;
+    if (session.stageIndex === 3) mission = session.hasKey ? "ÍµêÏû•Ïã§ ÏûÖÍµ¨Î°ú Ïù¥ÎèôÌïòÏÑ∏Ïöî." : session.stage.objective;
+    dom.hudMission.textContent = mission;
+    const boss = session.enemies.find((enemy) => enemy.type === "boss");
+    dom.bossPanel.hidden = !boss;
+    if (boss) dom.bossFill.style.width = `${clamp(boss.hp / boss.maxHp * 100, 0, 100)}%`;
+    const local = session.players.find((player) => player.id === selfId()) || session.players[0];
+    dom.firemanGauge.hidden = local?.job !== "fireman";
+    if (local?.job === "fireman") dom.fuelFill.style.width = `${clamp(local.fuel / JOBS.fireman.maxFuel * 100, 0, 100)}%`;
+    renderRoster(dom.gameRoster, rosterPlayers());
+  }
+  function showStageToast(text, duration = 1000) {
+    dom.stageToast.textContent = text; dom.stageToast.classList.add("is-visible"); session.toastUntil = performance.now() + duration;
+  }
+  function showCondition(text, duration = 1400) {
+    dom.conditionToast.textContent = text; dom.conditionToast.classList.add("is-visible"); session.conditionUntil = performance.now() + duration;
+  }
+  function screenPoint(actor) { return { x: actor.x - session.camera.x, y: actor.y - session.camera.y }; }
+  function drawHealth(actor, point) {
+    if (actor.hp >= actor.maxHp || actor.dead) return;
+    const width = actor.type === "boss" ? 70 : 34; const ratio = clamp(actor.hp / actor.maxHp, 0, 1);
+    context.fillStyle = "#111"; context.fillRect(Math.round(point.x - width / 2), Math.round(point.y - (ENEMY_HEIGHT[actor.type] || 44) - 7), width, 5);
+    context.fillStyle = ratio > .4 ? "#e62b2b" : "#ffcf20"; context.fillRect(Math.round(point.x - width / 2 + 1), Math.round(point.y - (ENEMY_HEIGHT[actor.type] || 44) - 6), Math.round((width - 2) * ratio), 3);
+  }
+  function drawAttackCells(attack) {
+    context.save(); context.translate(-session.camera.x, -session.camera.y);
+    context.fillStyle = attack.job === "fireman" ? "rgba(255,230,100,.25)" : "rgba(255,255,255,.18)";
+    context.strokeStyle = JOBS[attack.job].color; context.lineWidth = 1;
+    context.fillRect(attack.x, attack.y, attack.w, attack.h);
+    for (let x = attack.x; x <= attack.x + attack.w; x += TILE) { context.beginPath(); context.moveTo(x, attack.y); context.lineTo(x, attack.y + attack.h); context.stroke(); }
+    for (let y = attack.y; y <= attack.y + attack.h; y += TILE) { context.beginPath(); context.moveTo(attack.x, y); context.lineTo(attack.x + attack.w, y); context.stroke(); }
+    context.restore();
+  }
+  function renderGame(now) {
+    context.clearRect(0, 0, VIEW.width, VIEW.height);
+    const map = ASSETS.get(`stage${session.stageIndex}`);
+    if (map) context.drawImage(map, -Math.round(session.camera.x), -Math.round(session.camera.y));
+    // Íµ¨Ìòï ÎÖπÌôî ÌîÑÎ†àÏûÑÏóê Í≥†Ï†ïÎêòÏñ¥ ÏûàÎçò ÌÉÄÏù¥Î®∏¬∑Î™ÖÎã®¬∑Ï†êÏàòÎßå Í∞ÄÎ¶¨Í≥†,
+    // Í∞ôÏùÄ ÏúÑÏπòÏùò Ïã§ÏãúÍ∞Ñ HUDÍ∞Ä ÌòÑÏû¨ ÏÉÅÌÉúÎ•º ÌëúÏãúÌïúÎã§.
+    context.fillStyle = "rgba(4,4,4,.94)";
+    context.fillRect(0, 0, VIEW.width, 42);
+    context.fillStyle = "rgba(3,3,3,.93)";
+    context.fillRect(0, 42, 184, 126);
+    context.fillRect(460, 42, 180, 116);
+    if (session.key && !session.key.found) {
+      const point = screenPoint(session.key); context.fillStyle = "#ffd832"; context.fillRect(Math.round(point.x - 5), Math.round(point.y - 10), 10, 17); context.fillStyle = "#fff8bd"; context.fillRect(Math.round(point.x + 4), Math.round(point.y - 7), 8, 4);
+    }
+    if (session.facility && !session.facility.dead) {
+      const point = screenPoint(session.facility); ASSETS.draw(context, "facility", point.x, point.y, { now, height: 82 });
+    }
+    for (const attack of session.attacks) drawAttackCells(attack);
+    const actors = [];
+    for (const enemy of session.enemies) if (!enemy.dead) actors.push({ kind: "enemy", actor: enemy });
+    for (const player of session.players) actors.push({ kind: "player", actor: player });
+    actors.sort((a, b) => a.actor.y - b.actor.y);
+    for (const entry of actors) {
+      const actor = entry.actor; const point = screenPoint(actor);
+      if (point.x < -120 || point.x > 760 || point.y < -140 || point.y > 430) continue;
+      if (entry.kind === "enemy") {
+        if (actor.reviving && Math.floor(now / 180) % 2 === 0) continue;
+        ASSETS.draw(context, ENEMIES[actor.type].sprite, point.x, point.y, { now, height: ENEMY_HEIGHT[actor.type], flipX: actor.facing === "left", alpha: actor.stun > 0 ? .62 : 1 });
+        drawHealth(actor, point);
+      } else {
+        ASSETS.draw(context, actor.job, point.x, point.y, { now, height: PLAYER_HEIGHT[actor.job], flipX: actor.facing === "left", alpha: actor.condition === "injured" ? .58 : 1 });
+        if (actor.condition === "injured") { context.fillStyle = "#ff3444"; context.font = "bold 12px sans-serif"; context.textAlign = "center"; context.fillText("Î∂ÄÏÉÅ", point.x, point.y - 47); }
+        if (actor.healProgress > 0) { context.strokeStyle = "#42ffd0"; context.lineWidth = 3; context.beginPath(); context.arc(point.x, point.y - 22, 19, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp(actor.healProgress / 3, 0, 1)); context.stroke(); }
+      }
+    }
+    if (session.stageIndex >= 2) {
+      const local = session.players.find((player) => player.id === selfId()) || session.players[0];
+      if (local) {
+        const point = screenPoint(local); const gradient = context.createRadialGradient(point.x, point.y, 80, point.x, point.y, 235);
+        gradient.addColorStop(0, "rgba(0,0,0,0)"); gradient.addColorStop(1, "rgba(0,0,0,.48)");
+        context.fillStyle = gradient; context.fillRect(0, 0, VIEW.width, VIEW.height);
+      }
+    }
+  }
+
+  async function connectLobby(requestedCode) {
+    if (!NET) { updateNetworkUI(); return; }
+    const code = (() => { try { return NET.normalizeRoomCode(requestedCode || NET.generateRoomCode()); } catch (_error) { return NET.generateRoomCode(); } })();
+    dom.roomCode.value = code; dom.networkFeedback.textContent = "Î∞©Ïóê Ïó∞Í≤∞ÌïòÎäî Ï§ëÏûÖÎãàÎã§.";
+    try {
+      const state = await NET.connectRoom(code, { name: dom.playerName.value.trim() || "PLAYER", classId: session.selectedJob, x: session.lobbyPlayer.x, y: session.lobbyPlayer.y, facing: session.lobbyPlayer.facing });
+      if (state.online) history.replaceState(null, "", `${location.pathname}${location.search}#${code}`);
+    } catch (_error) { /* offline play remains immediately available */ }
+    updateNetworkUI();
+  }
+  function bindNetwork() {
+    if (!NET) return;
+    NET.on("status", updateNetworkUI); NET.on("roster", updateNetworkUI);
+    NET.onCountdown(({ remaining }) => {
+      if (session.screen !== "lobby") return;
+      dom.countdown.hidden = false; dom.countdown.querySelector("strong").textContent = remaining || "START";
+      dom.lobbyMessage.textContent = remaining ? `${remaining}Ï¥à ÌõÑÏóê ÏãúÏûëÌï©ÎãàÎã§.` : "Í≤åÏûÑÏùÑ ÏãúÏûëÌï©ÎãàÎã§.";
+    });
+    NET.on("start", ({ info }) => { dom.countdown.hidden = true; if (session.screen === "lobby") startRun(info); });
+    NET.onInput(({ playerId, input }) => { if (isHost()) session.remoteInputs.set(playerId, input); });
+    NET.onSnapshot(({ state }) => { if (!isHost() && session.screen === "game") applySnapshot(state); });
+    NET.on("error", ({ message }) => { dom.networkFeedback.textContent = message || "Ïó∞Í≤∞ Ïò§Î•ò"; updateNetworkUI(); });
+  }
+  function startOfflineCountdown() {
+    if (session.offlineCountdown) return;
+    let remaining = 3; dom.countdown.hidden = false; dom.countdown.querySelector("strong").textContent = remaining;
+    dom.lobbyMessage.textContent = `${remaining}Ï¥à ÌõÑÏóê ÏãúÏûëÌï©ÎãàÎã§.`;
+    session.offlineCountdown = setInterval(() => {
+      remaining -= 1;
+      if (remaining > 0) { dom.countdown.querySelector("strong").textContent = remaining; dom.lobbyMessage.textContent = `${remaining}Ï¥à ÌõÑÏóê ÏãúÏûëÌï©ÎãàÎã§.`; return; }
+      clearInterval(session.offlineCountdown); session.offlineCountdown = null; dom.countdown.hidden = true; startRun({ stage: 0, seed: Math.floor(Math.random() * 0xffffffff) });
+    }, 1000);
+  }
+
+  dom.enter.addEventListener("click", async () => {
+    dom.enter.disabled = true; dom.enter.textContent = "ÏõêÎ≥∏ ÏóêÏÖã Î∂àÎü¨Ïò§Îäî Ï§ë‚Ä¶";
+    if (!session.ready) { await ASSETS.preload(); session.ready = true; }
+    if (debugParameters.has("debug") && debugParameters.has("stage")) {
+      startRun({ stage: 0, seed: 123456789 });
+      loadStage(clamp(Number(debugParameters.get("stage")) || 0, 0, 4), 123456789);
+      return;
+    }
+    setScreen("lobby"); selectJob("archer"); updateNetworkUI();
+    connectLobby(roomCodeFromLocation());
+  });
+  dom.start.addEventListener("click", () => {
+    const state = NET?.getState?.();
+    if (state?.online) {
+      if (!state.isHost) { dom.lobbyMessage.textContent = "Î∞©Ïû•Ïù¥ ÏãúÏûëÌï† ÎïåÍπåÏßÄ Í∏∞Îã§Î†§ Ï£ºÏÑ∏Ïöî."; return; }
+      NET.startGame({ stage: 0, seed: Math.floor(Math.random() * 0xffffffff) });
+    } else startOfflineCountdown();
+  });
+  dom.roleButtons.forEach((button) => button.addEventListener("click", () => selectJob(button.dataset.job)));
+  dom.networkToggle.addEventListener("click", () => { dom.networkPanel.hidden = !dom.networkPanel.hidden; });
+  dom.networkClose.addEventListener("click", () => { dom.networkPanel.hidden = true; });
+  dom.connectRoom.addEventListener("click", () => connectLobby(dom.roomCode.value));
+  dom.copyRoom.addEventListener("click", async () => {
+    const state = NET?.getState?.(); if (!state?.online) return;
+    try { await navigator.clipboard.writeText(`${location.origin}${location.pathname}#${state.roomCode}`); dom.networkFeedback.textContent = "Ï¥àÎåÄ ÎßÅÌÅ¨Î•º Î≥µÏÇ¨ÌñàÏäµÎãàÎã§."; } catch (_error) { dom.networkFeedback.textContent = `Î∞© ÏΩîÎìú: ${state.roomCode}`; }
+  });
+  dom.playerName.addEventListener("change", () => { try { NET?.setPlayerName?.(dom.playerName.value.trim() || "PLAYER"); } catch (_error) { dom.playerName.value = "PLAYER"; } updateNetworkUI(); });
+  dom.resultButton.addEventListener("click", () => {
+    dom.result.hidden = true;
+    if (!session.ended) return;
+    if (session.nextStage !== null) loadStage(session.nextStage, session.seed);
+    else if (dom.resultKicker.textContent === "MISSION FAILED") loadStage(session.stageIndex, session.seed);
+    else { setScreen("lobby"); session.ended = false; updateNetworkUI(); }
+  });
+
+  window.addEventListener("keydown", (event) => {
+    const controlled = ["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyJ"];
+    if (["lobby", "game"].includes(session.screen) && controlled.includes(event.code)) event.preventDefault();
+    if (controlled.includes(event.code)) {
+      if (!controls.keys.has(event.code) && !event.repeat) controls.justPressed.add(event.code);
+      controls.keys.add(event.code);
+    }
+  });
+  window.addEventListener("keyup", (event) => controls.keys.delete(event.code));
+  window.addEventListener("blur", () => { controls.keys.clear(); controls.justPressed.clear(); });
+  $$(".touch-controls [data-key]").forEach((button) => {
+    const code = button.dataset.key;
+    const down = (event) => { event.preventDefault(); if (!controls.keys.has(code)) controls.justPressed.add(code); controls.keys.add(code); };
+    const up = (event) => { event.preventDefault(); controls.keys.delete(code); };
+    button.addEventListener("pointerdown", down); ["pointerup", "pointercancel", "pointerleave"].forEach((name) => button.addEventListener(name, up));
+  });
+  $$(".touch-controls [data-action='attack']").forEach((button) => {
+    const down = (event) => { event.preventDefault(); if (!controls.keys.has("KeyJ")) controls.justPressed.add("KeyJ"); controls.keys.add("KeyJ"); };
+    const up = (event) => { event.preventDefault(); controls.keys.delete("KeyJ"); };
+    button.addEventListener("pointerdown", down); ["pointerup", "pointercancel", "pointerleave"].forEach((name) => button.addEventListener(name, up));
+  });
+
+  function loop(now) {
+    const frame = Math.min(0.1, Math.max(0, (now - session.lastFrame) / 1000)); session.lastFrame = now; session.accumulator += frame;
+    while (session.accumulator >= STEP) {
+      if (session.screen === "lobby") updateLobby(STEP);
+      if (session.screen === "game") updateGame(STEP);
+      session.accumulator -= STEP; controls.justPressed.clear();
+    }
+    if (session.screen === "lobby") renderLobby(now);
+    if (session.screen === "game") renderGame(now);
+    if (session.toastUntil && now > session.toastUntil) { dom.stageToast.classList.remove("is-visible"); session.toastUntil = 0; }
+    if (session.conditionUntil && now > session.conditionUntil) { dom.conditionToast.classList.remove("is-visible"); session.conditionUntil = 0; }
+    requestAnimationFrame(loop);
+  }
+
+  bindNetwork(); updateNetworkUI(); selectJob("archer"); requestAnimationFrame(loop);
+  if (debugParameters.has("debug")) {
+    window.EP1Game = Object.freeze({ session, loadStage, startRun, makeSnapshot, injure, activateArea: (index) => activateArea(index, session.stage.areas[index]) });
+  }
+})();
