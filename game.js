@@ -1,2001 +1,293 @@
 (() => {
   "use strict";
 
-  const VIEW = { width: 1280, height: 720 };
-  const TAU = Math.PI * 2;
+  const DATA = window.EP1_DATA;
+  const ASSETS = window.EP1_ASSETS;
+  const NET = window.EP1Network;
+  if (!DATA || !ASSETS) throw new Error("ê²Œì„ ë°ì´í„° ë˜ëŠ” ì—ì…‹ ëª¨ë“ˆì„ ë¶ˆëŸ¬ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
 
-  const JOBS = {
-    archer: {
-      name: "ì•„ì²˜",
-      icon: "â¶",
-      color: "#db4545",
-      summary: "í™”ì‚´ ë°œì‚¬ Â· 1Ã—7 ê´€í†µ",
-      hp: 100,
-      speed: 235,
-      damage: 20,
-      basicName: "í™”ì‚´ ë°œì‚¬",
-      basicCooldown: 0.6,
-    },
-    medic: {
-      name: "ë©”ë”•",
-      icon: "âœš",
-      color: "#35cfa6",
-      summary: "ì£¼ì‚¬ê¸° íˆ¬ì²™ Â· 1Ã—5 ê¸°ì ˆ",
-      hp: 100,
-      speed: 235,
-      damage: 25,
-      basicName: "ì£¼ì‚¬ê¸° íˆ¬ì²™",
-      basicCooldown: 1,
-    },
-    chairman: {
-      name: "ì²´ì–´ë§¨",
-      icon: "â–°",
-      color: "#24a2cb",
-      summary: "ì˜ì íœ˜ë‘ë¥´ê¸° Â· 3Ã—2",
-      hp: 100,
-      speed: 235,
-      damage: 25,
-      basicName: "ì˜ì íœ˜ë‘ë¥´ê¸°",
-      basicCooldown: 0.5,
-    },
-    fireman: {
-      name: "íŒŒì´ì–´ë§¨",
-      icon: "â™¨",
-      color: "#f1ba2e",
-      summary: "ì†Œí™”ê¸° ë¶„ì‚¬ Â· 3Ã—3 ê¸°ì ˆ",
-      hp: 100,
-      speed: 235,
-      damage: 6,
-      basicName: "ì†Œí™”ê¸° ë¶„ì‚¬",
-      basicCooldown: 0.2,
-    },
+  const { TILE, TICK_RATE, PLAYER_SPEED, JOBS, ENEMIES, STAGES } = DATA;
+  const STEP = 1 / TICK_RATE;
+  const VIEW = { width: 640, height: 360 };
+  const DIRECTIONS = {
+    up: { x: 0, y: -1 },
+    down: { x: 0, y: 1 },
+    left: { x: -1, y: 0 },
+    right: { x: 1, y: 0 },
   };
-
-  const ENEMY_TYPES = {
-    shambler: { name: "ê°ì—¼ í•™ìƒ", hp: 40, speed: 62, damage: 9, radius: 20, color: "#75906d", score: 200 },
-    runner: { name: "ê´‘í­ ê°ì—¼ì²´", hp: 55, speed: 108, damage: 12, radius: 18, color: "#a55a58", score: 300 },
-    brute: { name: "ê±°ëŒ€ ê°ì—¼ì²´", hp: 130, speed: 43, damage: 17, radius: 29, color: "#6e718c", score: 500 },
-    crawler: { name: "ì ë³µ ê°ì—¼ì²´", hp: 72, speed: 122, damage: 10, radius: 16, color: "#906a93", score: 350 },
-    thrower: { name: "íˆ¬ì²™ ê°ì—¼ì²´", hp: 78, speed: 52, damage: 10, radius: 20, color: "#a88b4d", score: 450, ranged: true },
-    tank: { name: "ê°•í™” ê°ì—¼ì²´", hp: 280, speed: 36, damage: 21, radius: 38, color: "#7b8288", score: 900 },
-    boss: { name: "ì‹¬ì¸µ ë³€ì´ì²´", hp: 1200, speed: 47, damage: 24, radius: 58, color: "#321f43", score: 5000, boss: true },
+  const PLAYER_HEIGHT = { archer: 42, medic: 44, chairman: 42, fireman: 46 };
+  const ENEMY_HEIGHT = {
+    crazy: 45, giant: 66, blind: 42, athlete: 54, chef: 54, bag: 34,
+    glutton: 54, girl: 45, rabbit: 58, nurse: 56, liquid: 40, tank: 70, boss: 116,
   };
-
-  const BUILTIN_STAGES = [
-    {
-      id: 0,
-      title: "ë´‰ì‡„ êµ¬ì—­",
-      subtitle: "ì´ìƒ ì§•í›„ì˜ ì‹œì‘",
-      objective: "í†µë¡œì˜ ê°ì—¼ì²´ë¥¼ ì •ë¦¬í•˜ì„¸ìš”",
-      palette: { floor: "#27353a", tile: "#304147", line: "#3b4c51", wall: "#151f23", edge: "#647176", accent: "#e7a52b" },
-      playerSpawn: [130, 360],
-      obstacles: [
-        [0, 0, 1280, 58], [0, 662, 1280, 58], [0, 0, 58, 720], [1222, 0, 58, 720],
-        [300, 150, 120, 100], [300, 470, 120, 100], [650, 270, 110, 180], [960, 120, 110, 120], [960, 480, 110, 120],
-      ],
-      waves: [
-        [{ type: "shambler", x: 520, y: 160 }, { type: "shambler", x: 530, y: 550 }, { type: "runner", x: 830, y: 350 }],
-        [{ type: "shambler", x: 1080, y: 180 }, { type: "shambler", x: 1080, y: 540 }, { type: "brute", x: 1110, y: 355 }],
-      ],
-      decor: "corridor",
-    },
-    {
-      id: 1,
-      title: "ìš´ë™ì¥",
-      subtitle: "ë¬´ë„ˆì§„ ì§‘ê²°ì§€",
-      objective: "ìš´ë™ì¥ì˜ ì„¸ ë¬´ë¦¬ë¥¼ ëŒíŒŒí•˜ì„¸ìš”",
-      palette: { floor: "#425544", tile: "#485f49", line: "#617263", wall: "#202c27", edge: "#879383", accent: "#e2d8b0" },
-      playerSpawn: [130, 360],
-      obstacles: [
-        [0, 0, 1280, 45], [0, 675, 1280, 45], [0, 0, 45, 720], [1235, 0, 45, 720],
-        [280, 120, 42, 180], [280, 420, 42, 180], [610, 280, 150, 160], [970, 120, 160, 48], [970, 552, 160, 48],
-      ],
-      waves: [
-        [{ type: "shambler", x: 470, y: 150 }, { type: "shambler", x: 480, y: 570 }, { type: "runner", x: 540, y: 360 }],
-        [{ type: "runner", x: 850, y: 160 }, { type: "runner", x: 850, y: 560 }, { type: "brute", x: 920, y: 360 }],
-        [{ type: "crawler", x: 1110, y: 130 }, { type: "crawler", x: 1110, y: 590 }, { type: "brute", x: 1110, y: 360 }, { type: "shambler", x: 800, y: 360 }],
-      ],
-      decor: "yard",
-    },
-    {
-      id: 2,
-      title: "ê¸‰ì‹ì‹¤",
-      subtitle: "ë©ˆì¶”ì§€ ì•ŠëŠ” ì‹ì‚¬",
-      objective: "ê¸‰ì‹ì‹¤ ë‚´ë¶€ì˜ ê°ì—¼ì²´ë¥¼ ì²˜ì¹˜í•˜ì„¸ìš”",
-      palette: { floor: "#4a443b", tile: "#554d42", line: "#665e51", wall: "#28241f", edge: "#918571", accent: "#d66d42" },
-      playerSpawn: [120, 600],
-      obstacles: [
-        [0, 0, 1280, 50], [0, 670, 1280, 50], [0, 0, 50, 720], [1230, 0, 50, 720],
-        [240, 145, 210, 54], [240, 320, 210, 54], [240, 495, 210, 54],
-        [620, 145, 210, 54], [620, 320, 210, 54], [620, 495, 210, 54],
-        [1020, 250, 95, 220],
-      ],
-      waves: [
-        [{ type: "runner", x: 510, y: 250 }, { type: "shambler", x: 510, y: 450 }, { type: "thrower", x: 900, y: 160 }],
-        [{ type: "brute", x: 920, y: 560 }, { type: "runner", x: 900, y: 360 }, { type: "crawler", x: 1120, y: 110 }],
-        [{ type: "brute", x: 1130, y: 570 }, { type: "thrower", x: 1140, y: 140 }, { type: "crawler", x: 900, y: 240 }, { type: "crawler", x: 900, y: 500 }],
-      ],
-      decor: "cafeteria",
-    },
-    {
-      id: 3,
-      title: "êµì‹¤ë™",
-      subtitle: "ë‹«í˜€ ìˆë˜ ë¬¸",
-      objective: "ë³µë„ ëê¹Œì§€ ê°ì—¼ì²´ë¥¼ ë°€ì–´ë‚´ì„¸ìš”",
-      palette: { floor: "#34323f", tile: "#3d3b49", line: "#4d4a58", wall: "#1d1b24", edge: "#777381", accent: "#9a83d9" },
-      playerSpawn: [120, 355],
-      obstacles: [
-        [0, 0, 1280, 52], [0, 668, 1280, 52], [0, 0, 52, 720], [1228, 0, 52, 720],
-        [245, 105, 165, 105], [245, 505, 165, 105], [530, 255, 95, 210],
-        [745, 105, 165, 105], [745, 505, 165, 105], [1050, 250, 95, 220],
-      ],
-      waves: [
-        [{ type: "crawler", x: 470, y: 150 }, { type: "crawler", x: 470, y: 570 }, { type: "runner", x: 680, y: 360 }],
-        [{ type: "thrower", x: 850, y: 280 }, { type: "thrower", x: 850, y: 440 }, { type: "brute", x: 980, y: 360 }],
-        [{ type: "tank", x: 1120, y: 360 }, { type: "runner", x: 1110, y: 130 }, { type: "runner", x: 1110, y: 590 }, { type: "crawler", x: 930, y: 120 }, { type: "crawler", x: 930, y: 600 }],
-      ],
-      decor: "classroom",
-    },
-    {
-      id: 4,
-      title: "êµì¥ì‹¤",
-      subtitle: "ì‹¬ì¸µ ë³€ì´ì²´",
-      objective: "ë³´ìŠ¤ë¥¼ ì œì••í•˜ì„¸ìš”",
-      palette: { floor: "#2d2832", tile: "#352f3b", line: "#463d4c", wall: "#171319", edge: "#6f6574", accent: "#d32f43" },
-      playerSpawn: [160, 360],
-      obstacles: [
-        [0, 0, 1280, 54], [0, 666, 1280, 54], [0, 0, 54, 720], [1226, 0, 54, 720],
-        [315, 115, 82, 110], [315, 495, 82, 110], [865, 115, 82, 110], [865, 495, 82, 110],
-      ],
-      waves: [[{ type: "boss", x: 1010, y: 360 }]],
-      decor: "boss",
-    },
+  const JOB_STANDS = [
+    { job: "archer", x: 238, y: 78 },
+    { job: "medic", x: 315, y: 78 },
+    { job: "chairman", x: 390, y: 78 },
+    { job: "fireman", x: 470, y: 78 },
+  ];
+  const LOBBY_SOLIDS = [
+    [0, 0, 640, 42], [0, 337, 640, 23], [0, 0, 20, 360], [595, 0, 45, 360],
+    [176, 82, 37, 48], [257, 82, 42, 48], [357, 82, 42, 48],
+    [240, 187, 107, 48], [172, 249, 42, 65], [245, 250, 42, 64],
+    [314, 250, 42, 64], [382, 250, 42, 64], [0, 169, 47, 52], [559, 224, 36, 74],
   ];
 
-  const injectedData = window.EP1_DATA ?? {};
-  const injectedJobs = injectedData.JOBS ?? injectedData.jobs ?? {};
-  for (const [key, values] of Object.entries(injectedJobs)) {
-    if (!JOBS[key] || !values) continue;
-    JOBS[key] = {
-      ...JOBS[key],
-      ...values,
-      basicCooldown: Number(values.cooldown ?? JOBS[key].basicCooldown),
-      damage: Number(values.damage ?? JOBS[key].damage),
-    };
-  }
-
-  const injectedEnemies = injectedData.ENEMIES ?? injectedData.enemies ?? {};
-  const injectedColors = ["#78916f", "#a86161", "#817699", "#a18a57", "#598a8b", "#84607f"];
-  let injectedColorIndex = 0;
-  for (const [key, values] of Object.entries(injectedEnemies)) {
-    if (!values) continue;
-    const base = ENEMY_TYPES[key] ?? {
-      name: key,
-      hp: 60,
-      speed: 55,
-      damage: 10,
-      radius: 20,
-      score: 200,
-      color: injectedColors[injectedColorIndex++ % injectedColors.length],
-    };
-    ENEMY_TYPES[key] = { ...base, ...values, boss: Boolean(values.boss ?? base.boss) };
-  }
-
-  ENEMY_TYPES.facility = {
-    name: "ì œì¡°ì‹œì„¤",
-    hp: 600,
-    speed: 0,
-    damage: 0,
-    radius: 48,
-    score: 0,
-    color: "#5e7e83",
-    stationary: true,
-  };
-
-  function normalizeInjectedStages(source) {
-    if (!Array.isArray(source) || source.length < 5) return null;
-    const scaleX = VIEW.width / 960;
-    const scaleY = VIEW.height / 540;
-    return source.slice(0, 5).map((stage, index) => {
-      const fallback = BUILTIN_STAGES[index];
-      const normalizedWaves = Array.isArray(stage.waves)
-        ? stage.waves.map((wave) => {
-          const entries = Array.isArray(wave) ? wave : wave.enemies;
-          if (!Array.isArray(entries)) return [];
-          return entries.map((entry) => {
-            if (Array.isArray(entry)) return { type: entry[0], x: entry[1] * scaleX, y: entry[2] * scaleY };
-            return { ...entry, x: entry.x * scaleX, y: entry.y * scaleY };
-          });
-        }).filter((wave) => wave.length)
-        : [];
-      if (Array.isArray(stage.facility) && stage.facility.length >= 5) {
-        const [x, y, width, height] = stage.facility;
-        normalizedWaves.push([{
-          type: "facility",
-          x: (x + width / 2) * scaleX,
-          y: (y + height / 2) * scaleY,
-        }]);
-      }
-      const rawName = String(stage.name ?? fallback.title);
-      const nameParts = rawName.split("Â·").map((part) => part.trim());
-      return {
-        ...fallback,
-        id: Number(stage.id ?? index),
-        title: nameParts.at(-1) || fallback.title,
-        subtitle: index === 4 ? "ìµœì¢… ì‘ì „" : fallback.subtitle,
-        objective: stage.objective ?? fallback.objective,
-        playerSpawn: Array.isArray(stage.playerStart)
-          ? [stage.playerStart[0] * scaleX, stage.playerStart[1] * scaleY]
-          : fallback.playerSpawn,
-        obstacles: Array.isArray(stage.walls)
-          ? stage.walls.map(([x, y, w, h]) => [x * scaleX, y * scaleY, w * scaleX, h * scaleY])
-          : fallback.obstacles,
-        waves: Array.isArray(stage.waves) ? normalizedWaves : fallback.waves,
-        decor: ({ briefing: "corridor", office: "boss" })[stage.theme] ?? stage.theme ?? fallback.decor,
-        exit: Array.isArray(stage.exit)
-          ? [stage.exit[0] * scaleX, stage.exit[1] * scaleY, stage.exit[2] * scaleX, stage.exit[3] * scaleY]
-          : null,
-        keysRequired: Number(stage.keysRequired ?? 0),
-        keySpots: Array.isArray(stage.keySpots)
-          ? stage.keySpots.map(([x, y]) => [x * scaleX, y * scaleY])
-          : [],
-        bossTime: Number(stage.bossTime ?? 0),
-        reinforcements: stage.reinforcements && Array.isArray(stage.reinforcements.entries)
-          ? {
-            every: Number(stage.reinforcements.every ?? 13),
-            entries: stage.reinforcements.entries.map(([type, x, y]) => ({ type, x: x * scaleX, y: y * scaleY })),
-          }
-          : null,
-      };
-    });
-  }
-
-  const STAGES = normalizeInjectedStages(injectedData.STAGES ?? injectedData.stages) ?? BUILTIN_STAGES;
-
-  class NetworkAdapter extends EventTarget {
-    async connect() {
-      throw new Error("NetworkAdapter.connect() must be implemented by a backend adapter.");
-    }
-
-    sendInput() {}
-    sendEvent() {}
-    disconnect() {}
-  }
-
-  class LocalNetworkAdapter extends NetworkAdapter {
-    constructor() {
-      super();
-      this.mode = "local";
-    }
-
-    async connect() {
-      return { playerId: "local-player", isHost: true, mode: "local" };
-    }
-  }
-
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
   const dom = {
-    entrance: document.querySelector("#entrance-screen"),
-    lobby: document.querySelector("#lobby-screen"),
-    game: document.querySelector("#game-screen"),
-    enter: document.querySelector("#enter-button"),
-    start: document.querySelector("#start-button"),
-    startStage: document.querySelector("#start-stage"),
-    jobCards: [...document.querySelectorAll(".job-card")],
-    selectedRoleSummary: document.querySelector("#selected-role-summary"),
-    localPlayerJob: document.querySelector("#local-player-job"),
-    localPlayerAvatar: document.querySelector("#local-player-avatar"),
-    connectionStatus: document.querySelector("#connection-status"),
-    connectionStatusText: document.querySelector("#connection-status-text"),
-    roomLabel: document.querySelector("#room-label"),
-    playerList: document.querySelector("#player-list"),
-    playerCount: document.querySelector("#player-count"),
-    playerName: document.querySelector("#player-name"),
-    roomCode: document.querySelector("#room-code"),
-    connectRoom: document.querySelector("#connect-room-button"),
-    copyRoom: document.querySelector("#copy-room-button"),
-    networkFeedback: document.querySelector("#network-feedback"),
-    canvas: document.querySelector("#game-canvas"),
-    stageBanner: document.querySelector("#stage-banner"),
-    stageNumber: document.querySelector("#stage-number"),
-    stageTitle: document.querySelector("#stage-title"),
-    stageSubtitle: document.querySelector("#stage-subtitle"),
-    hudRoleIcon: document.querySelector("#hud-role-icon"),
-    hudRoleName: document.querySelector("#hud-role-name"),
-    hudHpText: document.querySelector("#hud-hp-text"),
-    healthFill: document.querySelector("#health-fill"),
-    hudStage: document.querySelector("#hud-stage"),
-    hudObjective: document.querySelector("#hud-objective"),
-    hudProgress: document.querySelector("#hud-progress"),
-    hudTimer: document.querySelector("#hud-timer"),
-    basicSkillName: document.querySelector("#basic-skill-name"),
-    basicCooldown: document.querySelector("#basic-cooldown"),
-    rolePortrait: document.querySelector(".role-portrait"),
-    combatMessage: document.querySelector("#combat-message"),
-    pause: document.querySelector("#pause-button"),
-    dialog: document.querySelector("#game-dialog"),
-    dialogKicker: document.querySelector("#dialog-kicker"),
-    dialogTitle: document.querySelector("#dialog-title"),
-    dialogCopy: document.querySelector("#dialog-copy"),
-    dialogStats: document.querySelector("#dialog-stats"),
-    dialogPrimary: document.querySelector("#dialog-primary"),
-    dialogSecondary: document.querySelector("#dialog-secondary"),
-    touchControls: document.querySelector("#touch-controls"),
+    entrance: $("#entrance-screen"), lobby: $("#lobby-screen"), game: $("#game-screen"),
+    enter: $("#enter-button"), lobbyCanvas: $("#lobby-canvas"), gameCanvas: $("#game-canvas"),
+    lobbyRoster: $("#lobby-roster"), gameRoster: $("#game-roster"), lobbyMessage: $("#lobby-message"),
+    roleButtons: $$("[data-job]"), networkToggle: $("#network-toggle"), networkPanel: $("#network-panel"),
+    networkClose: $("#network-close"), playerName: $("#player-name"), roomCode: $("#room-code"),
+    connectRoom: $("#connect-room-button"), copyRoom: $("#copy-room-button"), networkFeedback: $("#network-feedback"),
+    start: $("#start-button"), countdown: $("#countdown"), hudStage: $("#hud-stage"),
+    hudTimer: $("#hud-timer"), hudLocation: $("#hud-location"), hudScore: $("#hud-score"),
+    hudMission: $("#hud-mission"), bossPanel: $("#boss-panel"), bossFill: $("#boss-fill"),
+    firemanGauge: $("#fireman-gauge"), fuelFill: $("#fuel-fill"), stageToast: $("#stage-toast"),
+    conditionToast: $("#condition-toast"), result: $("#result-dialog"), resultKicker: $("#result-kicker"),
+    resultTitle: $("#result-title"), resultCopy: $("#result-copy"), resultButton: $("#result-button"),
   };
+  const lobbyContext = dom.lobbyCanvas.getContext("2d");
+  const context = dom.gameCanvas.getContext("2d");
+  lobbyContext.imageSmoothingEnabled = false;
+  context.imageSmoothingEnabled = false;
 
-  const ctx = dom.canvas.getContext("2d");
-  const input = {
-    keys: new Set(),
-    mouse: { x: VIEW.width * 0.7, y: VIEW.height / 2, down: false, touched: false },
-  };
-
-  const game = {
+  const controls = { keys: new Set(), justPressed: new Set() };
+  const debugParameters = new URLSearchParams(location.search);
+  const session = {
     screen: "entrance",
+    ready: false,
     selectedJob: "archer",
+    lobbyPlayer: { x: 320, y: 212, facing: "up" },
+    lobbyPresenceAt: 0,
+    lobbyBolts: [],
+    offlineCountdown: null,
+    seed: 1,
+    random: Math.random,
+    tick: 0,
     stageIndex: 0,
-    stage: null,
-    player: null,
+    stage: STAGES[0],
+    remaining: STAGES[0].time,
+    score: 0,
+    camera: { x: 0, y: 0 },
+    players: [],
     enemies: [],
-    projectiles: [],
-    enemyProjectiles: [],
-    particles: [],
-    effects: [],
-    floatingText: [],
-    waveIndex: -1,
-    waveDelay: 0,
-    stageEnding: false,
-    elapsed: 0,
-    stageElapsed: 0,
-    kills: 0,
-    totalStageEnemies: 0,
-    runStats: { kills: 0, damage: 0, healing: 0, startedAt: 0 },
-    lastTime: performance.now(),
-    messageTimer: 0,
-    screenShake: 0,
-    network: new LocalNetworkAdapter(),
-    networkTick: 0,
-    keyItem: null,
-    keyCollected: false,
-    reinforcementsIn: 0,
-    timeExpired: false,
-    lobbyConnecting: false,
-    p2pListenersBound: false,
+    attacks: [],
+    activatedAreas: new Set(),
+    facility: null,
+    key: null,
+    hasKey: false,
+    addClock: 0,
+    toastUntil: 0,
+    conditionUntil: 0,
+    accumulator: 0,
+    lastFrame: performance.now(),
+    ended: false,
+    nextStage: null,
+    remoteInputs: new Map(),
+    lastSnapshotTick: 0,
+    lastSentInput: "",
   };
 
-  function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
-
-  function distance(a, b) {
-    return Math.hypot(a.x - b.x, a.y - b.y);
-  }
-
-  function normalize(x, y) {
-    const length = Math.hypot(x, y) || 1;
-    return { x: x / length, y: y / length };
-  }
-
-  function angleDiff(a, b) {
-    return Math.atan2(Math.sin(a - b), Math.cos(a - b));
-  }
-
-  function seededNoise(x, y, seed) {
-    const value = Math.sin(x * 12.9898 + y * 78.233 + seed * 39.425) * 43758.5453;
-    return value - Math.floor(value);
-  }
-
-  function getLoadedSprite(name) {
-    return window.ZOMBIE_ASSETS?.get?.(name) ?? null;
-  }
-
-  function drawLoadedSprite(name, targetHeight, facingAngle = 0) {
-    const sprite = getLoadedSprite(name);
-    if (!sprite || !sprite.width || !sprite.height) return false;
-    const targetWidth = targetHeight * (sprite.width / sprite.height);
-    const facingLeft = Math.cos(facingAngle) < 0;
-    ctx.save();
-    if (facingLeft) ctx.scale(-1, 1);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(sprite, -targetWidth / 2, -targetHeight * 0.82, targetWidth, targetHeight);
-    ctx.restore();
-    return true;
-  }
-
-  function circleIntersectsRect(circle, rect) {
-    const closestX = clamp(circle.x, rect.x, rect.x + rect.w);
-    const closestY = clamp(circle.y, rect.y, rect.y + rect.h);
-    const dx = circle.x - closestX;
-    const dy = circle.y - closestY;
-    return dx * dx + dy * dy < circle.radius * circle.radius;
-  }
-
-  function pointInObstacle(x, y, padding = 0) {
-    return game.stage.obstacles.some(([rx, ry, rw, rh]) => (
-      x > rx - padding && x < rx + rw + padding && y > ry - padding && y < ry + rh + padding
-    ));
-  }
-
-  function findSafeSpawn(x, y, radius) {
-    const spawn = { x, y, radius };
-    for (let pass = 0; pass < 4; pass += 1) {
-      let adjusted = false;
-      for (const [rx, ry, rw, rh] of game.stage.obstacles) {
-        if (!circleIntersectsRect(spawn, { x: rx, y: ry, w: rw, h: rh })) continue;
-        const closestX = clamp(spawn.x, rx, rx + rw);
-        const closestY = clamp(spawn.y, ry, ry + rh);
-        const dx = spawn.x - closestX;
-        const dy = spawn.y - closestY;
-        const edgeDistance = Math.hypot(dx, dy);
-        if (edgeDistance > 0) {
-          const correction = radius - edgeDistance + 2;
-          spawn.x += (dx / edgeDistance) * correction;
-          spawn.y += (dy / edgeDistance) * correction;
-        } else {
-          const exits = [
-            { distance: Math.abs(spawn.x - rx), x: rx - radius - 2, y: spawn.y },
-            { distance: Math.abs(rx + rw - spawn.x), x: rx + rw + radius + 2, y: spawn.y },
-            { distance: Math.abs(spawn.y - ry), x: spawn.x, y: ry - radius - 2 },
-            { distance: Math.abs(ry + rh - spawn.y), x: spawn.x, y: ry + rh + radius + 2 },
-          ];
-          exits.sort((left, right) => left.distance - right.distance);
-          spawn.x = exits[0].x;
-          spawn.y = exits[0].y;
-        }
-        spawn.x = clamp(spawn.x, radius, VIEW.width - radius);
-        spawn.y = clamp(spawn.y, radius, VIEW.height - radius);
-        adjusted = true;
-      }
-      if (!adjusted) break;
-    }
-    return spawn;
-  }
-
-  function moveEntity(entity, dx, dy) {
-    entity.x += dx;
-    for (const [x, y, w, h] of game.stage.obstacles) {
-      if (circleIntersectsRect(entity, { x, y, w, h })) {
-        entity.x -= dx;
-        break;
-      }
-    }
-    entity.y += dy;
-    for (const [x, y, w, h] of game.stage.obstacles) {
-      if (circleIntersectsRect(entity, { x, y, w, h })) {
-        entity.y -= dy;
-        break;
-      }
-    }
-    entity.x = clamp(entity.x, entity.radius, VIEW.width - entity.radius);
-    entity.y = clamp(entity.y, entity.radius, VIEW.height - entity.radius);
-  }
-
-  function setScreen(name) {
-    game.screen = name;
-    dom.entrance.hidden = name !== "entrance";
-    dom.lobby.hidden = name !== "lobby";
-    dom.game.hidden = !["game", "paused", "dialog"].includes(name);
-    if (name === "game") {
-      requestAnimationFrame(() => dom.canvas.focus({ preventScroll: true }));
-    }
-  }
-
-  function selectJob(jobKey) {
-    if (!JOBS[jobKey]) return;
-    game.selectedJob = jobKey;
-    const job = JOBS[jobKey];
-    for (const card of dom.jobCards) {
-      const selected = card.dataset.job === jobKey;
-      card.classList.toggle("is-selected", selected);
-      card.setAttribute("aria-pressed", String(selected));
-    }
-    dom.selectedRoleSummary.textContent = job.summary;
-    const localPlayerJob = document.querySelector("#local-player-job");
-    const localPlayerAvatar = document.querySelector("#local-player-avatar");
-    if (localPlayerJob) localPlayerJob.textContent = job.name;
-    if (localPlayerAvatar) {
-      localPlayerAvatar.className = `mini-avatar ${jobKey}`;
-      localPlayerAvatar.textContent = job.icon;
-    }
-    if (window.EP1Network) {
-      try {
-        window.EP1Network.selectClass(jobKey);
-        renderLobbyRoster(window.EP1Network.getState());
-      } catch (_error) {
-        // Local selection remains available if P2P is unavailable.
-      }
-    }
-    game.network.sendEvent({ type: "role-selected", role: jobKey });
-  }
-
-  function createPlayer() {
-    const job = JOBS[game.selectedJob];
-    return {
-      x: game.stage.playerSpawn[0],
-      y: game.stage.playerSpawn[1],
-      radius: 18,
-      job: game.selectedJob,
-      hp: job.hp,
-      maxHp: job.hp,
-      speed: job.speed,
-      aim: 0,
-      primaryCooldown: 0,
-      invulnerable: 0,
-      hitFlash: 0,
-      moving: false,
-      fireFuelMax: Number(job.maxFuel ?? 13.5),
-      fireFuel: Number(job.maxFuel ?? 13.5),
+  function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+  function inside(x, y, rect) { return x >= rect[0] && x <= rect[0] + rect[2] && y >= rect[1] && y <= rect[1] + rect[3]; }
+  function overlaps(a, b) { return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }
+  function makeRandom(seed) {
+    let state = (seed >>> 0) || 0x9e3779b9;
+    return () => {
+      state ^= state << 13; state ^= state >>> 17; state ^= state << 5;
+      return (state >>> 0) / 4294967296;
     };
   }
-
-  function updateRoleHud() {
-    const job = JOBS[game.selectedJob];
-    dom.hudRoleIcon.textContent = job.icon;
-    dom.hudRoleName.textContent = job.name;
-    dom.basicSkillName.textContent = job.basicName;
-    dom.rolePortrait.style.background = job.color;
-  }
-
-  function startRun(startStage = 0) {
-    game.runStats = { kills: 0, damage: 0, healing: 0, startedAt: performance.now() };
-    game.elapsed = 0;
-    loadStage(clamp(Number(startStage) || 0, 0, STAGES.length - 1), false);
-    setScreen("game");
-    game.network.sendEvent({ type: "run-start", stage: game.stageIndex, role: game.selectedJob });
-  }
-
-  function loadStage(index, preservePlayer = true) {
-    const previousPlayer = game.player;
-    game.stageIndex = index;
-    game.stage = STAGES[index];
-    game.enemies = [];
-    game.projectiles = [];
-    game.enemyProjectiles = [];
-    game.particles = [];
-    game.effects = [];
-    game.floatingText = [];
-    game.waveIndex = -1;
-    game.waveDelay = 1.15;
-    game.stageEnding = false;
-    game.stageElapsed = 0;
-    game.kills = 0;
-    game.keyCollected = false;
-    game.keyItem = Array.isArray(game.stage.keySpots) && game.stage.keySpots.length
-      ? (() => {
-        const [x, y] = game.stage.keySpots[(index * 3 + 1) % game.stage.keySpots.length];
-        return { x, y, active: false };
-      })()
-      : null;
-    game.reinforcementsIn = Number(game.stage.reinforcements?.every ?? 0);
-    game.timeExpired = false;
-    game.totalStageEnemies = game.stage.waves.reduce((total, wave) => total + wave.length, 0);
-    game.player = createPlayer();
-    if (preservePlayer && previousPlayer) {
-      game.player.hp = Math.min(game.player.maxHp, previousPlayer.hp + Math.ceil(game.player.maxHp * 0.32));
-    }
-    updateRoleHud();
-    dom.hudStage.textContent = `STAGE ${game.stage.id}`;
-    dom.hudObjective.textContent = game.stage.objective;
-    dom.stageNumber.textContent = `STAGE ${game.stage.id}`;
-    dom.stageTitle.textContent = game.stage.title;
-    dom.stageSubtitle.textContent = game.stage.subtitle;
-    dom.stageBanner.classList.remove("is-visible");
-    void dom.stageBanner.offsetWidth;
-    dom.stageBanner.classList.add("is-visible");
-    showMessage(`${game.stage.title} ì§„ì…`, 2.1);
-    updateHud();
-  }
-
-  function spawnWave(index) {
-    const wave = game.stage.waves[index];
-    if (!wave) return;
-    for (const descriptor of wave) {
-      spawnEnemy(descriptor.type, descriptor.x, descriptor.y);
-    }
-    showMessage(`WAVE ${index + 1} / ${game.stage.waves.length}`, 1.8);
-    burstParticles(VIEW.width / 2, 100, "#ffbd2f", 16, 110);
-  }
-
-  function spawnEnemy(typeKey, x, y, countsForObjective = true) {
-    const type = ENEMY_TYPES[typeKey];
-    if (!type) return;
-    const safeSpawn = findSafeSpawn(x, y, type.radius);
-    game.enemies.push({
-      id: `${typeKey}-${performance.now()}-${Math.random()}`,
-      type: typeKey,
-      x: safeSpawn.x,
-      y: safeSpawn.y,
-      radius: type.radius,
-      hp: type.hp,
-      maxHp: type.hp,
-      speed: type.speed,
-      damage: type.damage,
-      color: type.color,
-      score: type.score,
-      ranged: Boolean(type.ranged),
-      boss: Boolean(type.boss),
-      stationary: Boolean(type.stationary),
-      summon: type.summon ?? null,
-      summonEvery: Number(type.summonEvery ?? 0),
-      secondLife: Number(type.secondLife ?? 0),
-      reviveDelay: Number(type.reviveDelay ?? 0),
-      revived: false,
-      reviveTimer: 0,
-      angle: Math.PI,
-      contactCooldown: 0,
-      attackCooldown: 1.2 + Math.random(),
-      specialCooldown: type.boss ? 2.8 : 0,
-      summonCooldown: type.boss ? 8 : Number(type.summonEvery ?? 0),
-      stunned: 0,
-      hitFlash: 0,
-      vx: 0,
-      vy: 0,
-      alive: true,
-      countsForObjective,
-      bob: Math.random() * TAU,
-    });
-  }
-
-  function showMessage(text, seconds = 1.4) {
-    dom.combatMessage.textContent = text;
-    dom.combatMessage.classList.add("is-visible");
-    game.messageTimer = seconds;
-  }
-
-  function getAimVector() {
-    if (!input.mouse.touched) {
-      const nearest = getNearestEnemy(game.player.x, game.player.y);
-      if (nearest) return normalize(nearest.x - game.player.x, nearest.y - game.player.y);
-    }
-    return { x: Math.cos(game.player.aim), y: Math.sin(game.player.aim) };
-  }
-
-  function getNearestEnemy(x, y, maxDistance = Infinity) {
-    let nearest = null;
-    let nearestDistance = maxDistance;
-    for (const enemy of game.enemies) {
-      if (!enemy.alive) continue;
-      const current = Math.hypot(enemy.x - x, enemy.y - y);
-      if (current < nearestDistance) {
-        nearest = enemy;
-        nearestDistance = current;
-      }
-    }
-    return nearest;
-  }
-
-  function spawnProjectile(options) {
-    game.projectiles.push({
-      x: options.x,
-      y: options.y,
-      vx: options.vx,
-      vy: options.vy,
-      radius: options.radius ?? 6,
-      damage: options.damage,
-      life: options.life ?? 1.3,
-      color: options.color ?? "#fff",
-      pierce: options.pierce ?? 0,
-      stun: options.stun ?? 0,
-      knockback: options.knockback ?? 110,
-      hitIds: new Set(),
-      trail: options.trail ?? true,
-    });
-  }
-
-  function performBasicAttack() {
-    const player = game.player;
-    const job = JOBS[player.job];
-    if (player.primaryCooldown > 0 || game.screen !== "game") return;
-    if (player.job === "fireman" && player.fireFuel <= 0) return;
-    player.primaryCooldown = job.basicCooldown;
-    const aim = getAimVector();
-    player.aim = Math.atan2(aim.y, aim.x);
-    const startX = player.x + aim.x * 26;
-    const startY = player.y + aim.y * 26;
-
-    if (player.job === "archer") {
-      spawnProjectile({ x: startX, y: startY, vx: aim.x * 680, vy: aim.y * 680, damage: job.damage, color: "#ff7669", radius: 5, pierce: 99, knockback: 0, life: 0.48 });
-      addMuzzle(startX, startY, "#ff7669");
-    } else if (player.job === "medic") {
-      spawnProjectile({ x: startX, y: startY, vx: aim.x * 535, vy: aim.y * 535, damage: job.damage, color: "#62e4c1", radius: 7, stun: Number(job.stun ?? 1), knockback: 0, life: 0.43 });
-      addMuzzle(startX, startY, "#62e4c1");
-    } else if (player.job === "chairman") {
-      meleeAttack({ range: 94, arc: 1.85, damage: job.damage, stun: 0, knockback: 0, color: "#59c5e6" });
-    } else if (player.job === "fireman") {
-      coneAttack({ range: 155, arc: 1.25, damage: job.damage, stun: Number(job.stun ?? 0.24), knockback: 60, color: "#eaf4f4" });
-    }
-    game.network.sendEvent({ type: "attack", angle: player.aim, role: player.job });
-  }
-
-  function meleeAttack({ range, arc, damage, stun, knockback, color }) {
-    const player = game.player;
-    for (const enemy of game.enemies) {
-      const dx = enemy.x - player.x;
-      const dy = enemy.y - player.y;
-      const d = Math.hypot(dx, dy);
-      const delta = Math.abs(angleDiff(Math.atan2(dy, dx), player.aim));
-      if (d <= range + enemy.radius && delta <= arc / 2) {
-        damageEnemy(enemy, damage, { stun, knockback, sourceX: player.x, sourceY: player.y });
-      }
-    }
-    game.effects.push({ type: "slash", x: player.x, y: player.y, angle: player.aim, range, arc, life: 0.22, maxLife: 0.22, color });
-    game.screenShake = Math.max(game.screenShake, 3);
-  }
-
-  function coneAttack({ range, arc, damage, stun, knockback, color, dense = false }) {
-    const player = game.player;
-    for (const enemy of game.enemies) {
-      const dx = enemy.x - player.x;
-      const dy = enemy.y - player.y;
-      const d = Math.hypot(dx, dy);
-      const delta = Math.abs(angleDiff(Math.atan2(dy, dx), player.aim));
-      if (d <= range + enemy.radius && delta <= arc / 2) {
-        damageEnemy(enemy, damage, { stun, knockback, sourceX: player.x, sourceY: player.y });
-      }
-    }
-    game.effects.push({ type: "cone", x: player.x, y: player.y, angle: player.aim, range, arc, life: dense ? 0.55 : 0.18, maxLife: dense ? 0.55 : 0.18, color });
-    for (let i = 0; i < (dense ? 26 : 9); i += 1) {
-      const angle = player.aim + (Math.random() - 0.5) * arc;
-      const speed = 90 + Math.random() * range * 1.4;
-      game.particles.push({ x: player.x + Math.cos(angle) * 28, y: player.y + Math.sin(angle) * 28, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 0.28 + Math.random() * 0.32, maxLife: 0.6, color, size: 2 + Math.random() * 5 });
-    }
-  }
-
-  function damageEnemy(enemy, damage, options = {}) {
-    if (!enemy.alive || enemy.reviveTimer > 0) return;
-    enemy.hp -= damage;
-    enemy.hitFlash = 0.11;
-    enemy.stunned = Math.max(enemy.stunned, options.stun ?? 0);
-    const direction = normalize(enemy.x - (options.sourceX ?? enemy.x), enemy.y - (options.sourceY ?? enemy.y));
-    enemy.vx += direction.x * (options.knockback ?? 0);
-    enemy.vy += direction.y * (options.knockback ?? 0);
-    game.runStats.damage += damage;
-    floatText(enemy.x, enemy.y - enemy.radius - 7, Math.round(damage), options.critical ? "#fff0a7" : "#ffffff");
-    burstParticles(enemy.x, enemy.y, enemy.color, Math.min(7, 2 + Math.ceil(damage / 15)), 95);
-    if (enemy.hp <= 0) killEnemy(enemy);
-  }
-
-  function killEnemy(enemy) {
-    if (!enemy.alive) return;
-    if (enemy.secondLife > 0 && !enemy.revived) {
-      enemy.revived = true;
-      enemy.hp = enemy.secondLife;
-      enemy.reviveTimer = Math.max(0.2, enemy.reviveDelay || 3);
-      enemy.stunned = enemy.reviveTimer;
-      floatText(enemy.x, enemy.y - enemy.radius - 8, "ë¶€í™œ", "#d8c5ff");
-      showMessage("ê±°ëŒ€ ì¢€ë¹„ê°€ ë‹¤ì‹œ ì¼ì–´ë‚©ë‹ˆë‹¤!", 1.3);
-      return;
-    }
-    enemy.alive = false;
-    if (enemy.countsForObjective) game.kills += 1;
-    game.runStats.kills += 1;
-    burstParticles(enemy.x, enemy.y, enemy.color, enemy.boss ? 55 : 18, enemy.boss ? 330 : 180);
-    game.effects.push({ type: "ring", x: enemy.x, y: enemy.y, radius: enemy.radius, maxRadius: enemy.boss ? 220 : 80, life: enemy.boss ? 0.8 : 0.35, maxLife: enemy.boss ? 0.8 : 0.35, color: enemy.color });
-    game.screenShake = enemy.boss ? 16 : Math.max(game.screenShake, 4);
-  }
-
-  function damagePlayer(amount, source) {
-    const player = game.player;
-    if (!player || player.invulnerable > 0 || game.screen !== "game") return;
-    player.hp = Math.max(0, player.hp - amount);
-    player.invulnerable = 0.7;
-    player.hitFlash = 0.18;
-    game.screenShake = Math.max(game.screenShake, 7);
-    const direction = normalize(player.x - source.x, player.y - source.y);
-    moveEntity(player, direction.x * 24, direction.y * 24);
-    floatText(player.x, player.y - 32, `-${amount}`, "#ff6258");
-    burstParticles(player.x, player.y, "#ff554b", 12, 150);
-    if (player.hp <= 0) showGameOver();
-  }
-
-  function addMuzzle(x, y, color) {
-    game.effects.push({ type: "ring", x, y, radius: 3, maxRadius: 20, life: 0.13, maxLife: 0.13, color });
-    burstParticles(x, y, color, 5, 90);
-  }
-
-  function burstParticles(x, y, color, count, speed) {
-    for (let i = 0; i < count; i += 1) {
-      const angle = Math.random() * TAU;
-      const velocity = speed * (0.25 + Math.random() * 0.75);
-      const life = 0.28 + Math.random() * 0.5;
-      game.particles.push({ x, y, vx: Math.cos(angle) * velocity, vy: Math.sin(angle) * velocity, life, maxLife: life, color, size: 2 + Math.random() * 4 });
-    }
-  }
-
-  function floatText(x, y, text, color) {
-    game.floatingText.push({ x, y, text: String(text), color, life: 0.75, maxLife: 0.75 });
-  }
-
-  function update(dt) {
-    if (game.screen !== "game" || !game.player) return;
-    game.elapsed += dt;
-    game.stageElapsed += dt;
-    game.messageTimer -= dt;
-    if (game.messageTimer <= 0) dom.combatMessage.classList.remove("is-visible");
-
-    updatePlayer(dt);
-    updateStageMechanics(dt);
-    updateWaves(dt);
-    updateEnemies(dt);
-    updateProjectiles(dt);
-    updateEnemyProjectiles(dt);
-    updateEffects(dt);
-
-    game.enemies = game.enemies.filter((enemy) => enemy.alive);
-    game.projectiles = game.projectiles.filter((projectile) => projectile.life > 0);
-    game.enemyProjectiles = game.enemyProjectiles.filter((projectile) => projectile.life > 0);
-    game.particles = game.particles.filter((particle) => particle.life > 0);
-    game.effects = game.effects.filter((effect) => effect.life > 0);
-    game.floatingText = game.floatingText.filter((item) => item.life > 0);
-    game.screenShake = Math.max(0, game.screenShake - dt * 24);
-
-    game.networkTick -= dt;
-    if (game.networkTick <= 0) {
-      game.networkTick = 0.1;
-      game.network.sendInput({
-        x: game.player.x,
-        y: game.player.y,
-        aim: game.player.aim,
-        moving: game.player.moving,
-        timestamp: performance.now(),
-      });
-    }
-    updateHud();
-  }
-
-  function updatePlayer(dt) {
-    const player = game.player;
-    const job = JOBS[player.job];
-    player.primaryCooldown = Math.max(0, player.primaryCooldown - dt);
-    player.invulnerable = Math.max(0, player.invulnerable - dt);
-    player.hitFlash = Math.max(0, player.hitFlash - dt);
-
-    let moveX = 0;
-    let moveY = 0;
-    if (input.keys.has("KeyW") || input.keys.has("ArrowUp")) moveY -= 1;
-    if (input.keys.has("KeyS") || input.keys.has("ArrowDown")) moveY += 1;
-    if (input.keys.has("KeyA") || input.keys.has("ArrowLeft")) moveX -= 1;
-    if (input.keys.has("KeyD") || input.keys.has("ArrowRight")) moveX += 1;
-    const attacking = input.mouse.down || input.keys.has("Space");
-    if (player.job === "fireman") {
-      if (attacking) {
-        player.fireFuel = Math.max(0, player.fireFuel - dt);
-      } else {
-        player.fireFuel = Math.min(player.fireFuelMax, player.fireFuel + (player.fireFuelMax / Number(job.recharge ?? 9)) * dt);
-      }
-    }
-    const movement = normalize(moveX, moveY);
-    const movementLocked = player.job === "fireman" && attacking && player.fireFuel > 0;
-    player.moving = Boolean(moveX || moveY) && !movementLocked;
-    if (player.moving) moveEntity(player, movement.x * player.speed * dt, movement.y * player.speed * dt);
-
-    if (input.mouse.touched) {
-      player.aim = Math.atan2(input.mouse.y - player.y, input.mouse.x - player.x);
-    } else {
-      const nearest = getNearestEnemy(player.x, player.y);
-      if (nearest) player.aim = Math.atan2(nearest.y - player.y, nearest.x - player.x);
-    }
-
-    if (attacking) performBasicAttack();
-  }
-
-  function updateWaves(dt) {
-    if (game.stageEnding) return;
-    const aliveObjectiveEnemies = game.enemies.filter((enemy) => enemy.alive && enemy.countsForObjective).length;
-    if (aliveObjectiveEnemies > 0) return;
-
-    if (game.waveIndex < game.stage.waves.length - 1) {
-      game.waveDelay -= dt;
-      if (game.waveDelay <= 0) {
-        game.waveIndex += 1;
-        spawnWave(game.waveIndex);
-        game.waveDelay = 1.25;
-      }
-      return;
-    }
-
-    if (game.keyItem && !game.keyCollected) {
-      if (!game.keyItem.active) {
-        game.keyItem.active = true;
-        dom.hudObjective.textContent = "êµì¥ì‹¤ ì—´ì‡ ë¥¼ ì°¾ìœ¼ì„¸ìš”";
-        showMessage("êµì¥ì‹¤ ì—´ì‡ ê°€ ë‚˜íƒ€ë‚¬ìŠµë‹ˆë‹¤!", 1.8);
-      }
-      return;
-    }
-
-    if (game.stage.exit) {
-      dom.hudObjective.textContent = "ë„ì°© ì§€ì ìœ¼ë¡œ ì´ë™í•˜ì„¸ìš”";
-      if (!playerInsideRect(game.player, game.stage.exit)) return;
-    }
-
-    scheduleStageClear();
-  }
-
-  function updateStageMechanics(dt) {
-    if (game.stage.bossTime > 0 && !game.timeExpired && game.stageElapsed >= game.stage.bossTime) {
-      game.timeExpired = true;
-      game.stageEnding = true;
-      showGameOver("ì œí•œì‹œê°„ 3ë¶„ 5ì´ˆê°€ ëë‚¬ìŠµë‹ˆë‹¤.");
-      return;
-    }
-
-    if (game.keyItem?.active && !game.keyCollected && distance(game.player, game.keyItem) <= 34) {
-      game.keyCollected = true;
-      game.keyItem.active = false;
-      dom.hudObjective.textContent = "êµì¥ì‹¤ ì¶œêµ¬ë¡œ ì´ë™í•˜ì„¸ìš”";
-      burstParticles(game.keyItem.x, game.keyItem.y, "#ffe07a", 25, 160);
-      showMessage("êµì¥ì‹¤ ì—´ì‡  íšë“!", 1.6);
-    }
-
-    const reinforcements = game.stage.reinforcements;
-    const bossAlive = game.enemies.some((enemy) => enemy.alive && enemy.boss);
-    if (reinforcements && bossAlive && game.waveIndex >= 0) {
-      game.reinforcementsIn -= dt;
-      if (game.reinforcementsIn <= 0 && game.enemies.length < 12) {
-        for (const entry of reinforcements.entries) spawnEnemy(entry.type, entry.x, entry.y, false);
-        game.reinforcementsIn = reinforcements.every;
-        showMessage("ìºë¹„ë‹›ì—ì„œ ì¦ì›ì´ ë‚˜íƒ€ë‚¬ìŠµë‹ˆë‹¤!", 1.4);
-      }
-    }
-  }
-
-  function playerInsideRect(player, rect) {
-    const [x, y, width, height] = rect;
-    return player.x >= x && player.x <= x + width && player.y >= y && player.y <= y + height;
-  }
-
-  function scheduleStageClear() {
-    if (game.stageEnding) return;
-    game.stageEnding = true;
-    const scheduledStage = game.stageIndex;
-    window.setTimeout(() => {
-      if (game.stageIndex !== scheduledStage || game.player?.hp <= 0 || game.timeExpired) return;
-      if (game.screen === "game") showStageClear();
-      else game.stageEnding = false;
-    }, 650);
-  }
-
-  function updateEnemies(dt) {
-    const player = game.player;
-    for (const enemy of game.enemies) {
-      if (!enemy.alive) continue;
-      enemy.hitFlash = Math.max(0, enemy.hitFlash - dt);
-      enemy.contactCooldown = Math.max(0, enemy.contactCooldown - dt);
-      enemy.attackCooldown = Math.max(0, enemy.attackCooldown - dt);
-      enemy.specialCooldown = Math.max(0, enemy.specialCooldown - dt);
-      enemy.summonCooldown = Math.max(0, enemy.summonCooldown - dt);
-      enemy.bob += dt * (enemy.speed / 20);
-
-      if (enemy.reviveTimer > 0) {
-        enemy.reviveTimer = Math.max(0, enemy.reviveTimer - dt);
-        continue;
-      }
-
-      if (enemy.stationary) continue;
-
-      if (Math.abs(enemy.vx) + Math.abs(enemy.vy) > 1) {
-        moveEntity(enemy, enemy.vx * dt, enemy.vy * dt);
-        enemy.vx *= Math.pow(0.012, dt);
-        enemy.vy *= Math.pow(0.012, dt);
-      }
-
-      if (enemy.stunned > 0) {
-        enemy.stunned -= dt;
-        continue;
-      }
-
-      if (enemy.summon && enemy.summonCooldown <= 0 && game.enemies.length < 14) {
-        const angle = Math.random() * TAU;
-        spawnEnemy(
-          enemy.summon,
-          clamp(enemy.x + Math.cos(angle) * (enemy.radius + 42), 70, VIEW.width - 70),
-          clamp(enemy.y + Math.sin(angle) * (enemy.radius + 42), 70, VIEW.height - 70),
-          false,
-        );
-        enemy.summonCooldown = Math.max(2, enemy.summonEvery || 8);
-      }
-
-      const dx = player.x - enemy.x;
-      const dy = player.y - enemy.y;
-      const d = Math.hypot(dx, dy) || 1;
-      const direction = { x: dx / d, y: dy / d };
-      enemy.angle = Math.atan2(dy, dx);
-
-      if (enemy.boss) {
-        updateBoss(enemy, dt, direction, d);
-      } else if (enemy.ranged) {
-        if (d > 270) moveEntity(enemy, direction.x * enemy.speed * dt, direction.y * enemy.speed * dt);
-        if (d < 195) moveEntity(enemy, -direction.x * enemy.speed * 0.65 * dt, -direction.y * enemy.speed * 0.65 * dt);
-        if (enemy.attackCooldown <= 0 && d < 520) {
-          spawnEnemyProjectile(enemy, direction, 265, 10, "#e3b84f");
-          enemy.attackCooldown = 2.1 + Math.random() * 0.45;
-        }
-      } else {
-        let speed = enemy.speed;
-        if (enemy.type === "crawler" && d < 210) speed *= 1.35;
-        moveEntity(enemy, direction.x * speed * dt, direction.y * speed * dt);
-      }
-
-      if (d < enemy.radius + player.radius + 3 && enemy.contactCooldown <= 0) {
-        damagePlayer(enemy.damage, enemy);
-        enemy.contactCooldown = enemy.boss ? 1.15 : 0.9;
-      }
-    }
-
-    separateEnemies();
-  }
-
-  function updateBoss(enemy, dt, direction, playerDistance) {
-    if (playerDistance > enemy.radius + game.player.radius + 6) {
-      moveEntity(enemy, direction.x * enemy.speed * dt, direction.y * enemy.speed * dt);
-    }
-  }
-
-  function separateEnemies() {
-    for (let i = 0; i < game.enemies.length; i += 1) {
-      const a = game.enemies[i];
-      if (!a.alive) continue;
-      for (let j = i + 1; j < game.enemies.length; j += 1) {
-        const b = game.enemies[j];
-        if (!b.alive) continue;
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const d = Math.hypot(dx, dy) || 1;
-        const overlap = a.radius + b.radius - d;
-        if (overlap > 0) {
-          const nx = dx / d;
-          const ny = dy / d;
-          moveEntity(a, -nx * overlap * 0.25, -ny * overlap * 0.25);
-          moveEntity(b, nx * overlap * 0.25, ny * overlap * 0.25);
-        }
-      }
-    }
-  }
-
-  function spawnEnemyProjectile(enemy, direction, speed, damage, color, radius = 6) {
-    game.enemyProjectiles.push({
-      x: enemy.x + direction.x * (enemy.radius + 8),
-      y: enemy.y + direction.y * (enemy.radius + 8),
-      vx: direction.x * speed,
-      vy: direction.y * speed,
-      radius,
-      damage,
-      color,
-      life: 4,
-    });
-  }
-
-  function updateProjectiles(dt) {
-    for (const projectile of game.projectiles) {
-      projectile.life -= dt;
-      if (projectile.life <= 0) continue;
-      const previousX = projectile.x;
-      const previousY = projectile.y;
-      projectile.x += projectile.vx * dt;
-      projectile.y += projectile.vy * dt;
-      if (projectile.trail && Math.random() < 0.72) {
-        game.particles.push({ x: previousX, y: previousY, vx: -projectile.vx * 0.03, vy: -projectile.vy * 0.03, life: 0.15, maxLife: 0.15, color: projectile.color, size: projectile.radius * 0.55 });
-      }
-      if (pointInObstacle(projectile.x, projectile.y, projectile.radius)) {
-        projectile.life = 0;
-        addMuzzle(projectile.x, projectile.y, projectile.color);
-        continue;
-      }
-      for (const enemy of game.enemies) {
-        if (!enemy.alive || projectile.hitIds.has(enemy.id)) continue;
-        if (Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y) <= projectile.radius + enemy.radius) {
-          projectile.hitIds.add(enemy.id);
-          damageEnemy(enemy, projectile.damage, {
-            stun: projectile.stun,
-            knockback: projectile.knockback,
-            sourceX: previousX,
-            sourceY: previousY,
-          });
-          if (projectile.pierce > 0) projectile.pierce -= 1;
-          else projectile.life = 0;
-          if (projectile.life <= 0) break;
-        }
-      }
-      if (projectile.x < -30 || projectile.x > VIEW.width + 30 || projectile.y < -30 || projectile.y > VIEW.height + 30) projectile.life = 0;
-    }
-  }
-
-  function updateEnemyProjectiles(dt) {
-    const player = game.player;
-    for (const projectile of game.enemyProjectiles) {
-      projectile.life -= dt;
-      projectile.x += projectile.vx * dt;
-      projectile.y += projectile.vy * dt;
-      if (pointInObstacle(projectile.x, projectile.y, projectile.radius)) {
-        projectile.life = 0;
-        continue;
-      }
-      if (Math.hypot(projectile.x - player.x, projectile.y - player.y) <= projectile.radius + player.radius) {
-        damagePlayer(projectile.damage, projectile);
-        projectile.life = 0;
-      }
-      if (projectile.x < -30 || projectile.x > VIEW.width + 30 || projectile.y < -30 || projectile.y > VIEW.height + 30) projectile.life = 0;
-    }
-  }
-
-  function updateEffects(dt) {
-    for (const particle of game.particles) {
-      particle.life -= dt;
-      particle.x += particle.vx * dt;
-      particle.y += particle.vy * dt;
-      particle.vx *= Math.pow(0.08, dt);
-      particle.vy *= Math.pow(0.08, dt);
-    }
-    for (const effect of game.effects) effect.life -= dt;
-    for (const item of game.floatingText) {
-      item.life -= dt;
-      item.y -= dt * 34;
-    }
-  }
-
-  function updateHud() {
-    const player = game.player;
-    if (!player || !game.stage) return;
-    const hpRatio = clamp(player.hp / player.maxHp, 0, 1);
-    dom.hudHpText.textContent = `${Math.ceil(player.hp)} / ${player.maxHp}`;
-    dom.healthFill.style.width = `${hpRatio * 100}%`;
-    const job = JOBS[player.job];
-    if (player.job === "fireman") {
-      const fuelRatio = clamp(player.fireFuel / player.fireFuelMax, 0, 1);
-      dom.basicCooldown.style.height = `${(1 - fuelRatio) * 100}%`;
-      dom.basicSkillName.textContent = `ì†Œí™”ê¸° ë¶„ì‚¬ ${player.fireFuel.toFixed(1)}ì´ˆ`;
-    } else {
-      dom.basicCooldown.style.height = `${clamp(player.primaryCooldown / job.basicCooldown, 0, 1) * 100}%`;
-    }
-    if (game.stageIndex === 4) {
-      const boss = game.enemies.find((enemy) => enemy.boss);
-      dom.hudProgress.textContent = boss ? `BOSS ${Math.ceil((boss.hp / boss.maxHp) * 100)}%` : "BOSS 0%";
-    } else if (game.keyItem && !game.keyCollected && game.keyItem.active) {
-      dom.hudProgress.textContent = "KEY 0 / 1";
-    } else if (game.keyCollected) {
-      dom.hudProgress.textContent = "KEY 1 / 1";
-    } else if (game.stage.exit && game.waveIndex >= game.stage.waves.length - 1 && game.enemies.every((enemy) => !enemy.countsForObjective)) {
-      dom.hudProgress.textContent = "EXIT";
-    } else {
-      dom.hudProgress.textContent = `${game.kills} / ${game.totalStageEnemies}`;
-    }
-    const displayedTime = game.stage.bossTime > 0
-      ? Math.max(0, game.stage.bossTime - game.stageElapsed)
-      : game.stageElapsed;
-    const minutes = Math.floor(displayedTime / 60);
-    const seconds = Math.floor(displayedTime % 60);
-    dom.hudTimer.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  }
-
-  function render() {
-    if (!game.stage || !game.player || !["game", "paused", "dialog"].includes(game.screen)) return;
-    const shakeX = game.screenShake ? (Math.random() - 0.5) * game.screenShake : 0;
-    const shakeY = game.screenShake ? (Math.random() - 0.5) * game.screenShake : 0;
-    ctx.save();
-    ctx.translate(shakeX, shakeY);
-    drawMap();
-    drawEffects(false);
-    for (const projectile of game.projectiles) drawProjectile(projectile);
-    for (const projectile of game.enemyProjectiles) drawProjectile(projectile, true);
-    for (const enemy of game.enemies) drawEnemy(enemy);
-    drawPlayer(game.player);
-    drawEffects(true);
-    drawBossBar();
-    ctx.restore();
-
-    if (game.screen === "paused") {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
-      ctx.fillRect(0, 0, VIEW.width, VIEW.height);
-    }
-  }
-
-  function drawMap() {
-    const { palette } = game.stage;
-    ctx.fillStyle = palette.floor;
-    ctx.fillRect(-10, -10, VIEW.width + 20, VIEW.height + 20);
-    const tileSize = 48;
-    for (let y = 0; y < VIEW.height; y += tileSize) {
-      for (let x = 0; x < VIEW.width; x += tileSize) {
-        const noise = seededNoise(x / tileSize, y / tileSize, game.stageIndex);
-        ctx.globalAlpha = 0.17 + noise * 0.08;
-        ctx.fillStyle = noise > 0.52 ? palette.tile : palette.floor;
-        ctx.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
-      }
-    }
-    ctx.globalAlpha = 1;
-    drawStageDecor();
-    for (const [x, y, w, h] of game.stage.obstacles) drawObstacle(x, y, w, h);
-    drawStageObjectives();
-  }
-
-  function drawStageObjectives() {
-    const combatComplete = game.waveIndex >= game.stage.waves.length - 1
-      && !game.enemies.some((enemy) => enemy.alive && enemy.countsForObjective);
-    if (game.stage.exit) {
-      const [x, y, width, height] = game.stage.exit;
-      const unlocked = combatComplete && (!game.keyItem || game.keyCollected);
-      ctx.save();
-      ctx.fillStyle = unlocked ? "rgba(73, 222, 128, 0.2)" : "rgba(239, 68, 68, 0.14)";
-      ctx.strokeStyle = unlocked ? "#4ade80" : "#ef4444";
-      ctx.lineWidth = 4;
-      ctx.setLineDash([10, 7]);
-      ctx.fillRect(x, y, width, height);
-      ctx.strokeRect(x, y, width, height);
-      ctx.setLineDash([]);
-      ctx.fillStyle = unlocked ? "#d9ffe7" : "#ffd6d6";
-      ctx.font = "900 14px system-ui";
-      ctx.textAlign = "center";
-      ctx.fillText(unlocked ? "EXIT" : "LOCK", x + width / 2, y + height / 2 + 5);
-      ctx.restore();
-    }
-
-    if (game.keyItem?.active && !game.keyCollected) {
-      const pulse = 1 + Math.sin(game.stageElapsed * 6) * 0.14;
-      ctx.save();
-      ctx.translate(game.keyItem.x, game.keyItem.y);
-      ctx.scale(pulse, pulse);
-      ctx.shadowColor = "#ffe27a";
-      ctx.shadowBlur = 22;
-      ctx.strokeStyle = "#ffe27a";
-      ctx.lineWidth = 7;
-      ctx.beginPath();
-      ctx.arc(-8, 0, 11, 0, TAU);
-      ctx.moveTo(3, 0);
-      ctx.lineTo(28, 0);
-      ctx.lineTo(28, 10);
-      ctx.moveTo(18, 0);
-      ctx.lineTo(18, 8);
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-
-  function drawStageDecor() {
-    const decor = game.stage.decor;
-    ctx.save();
-    if (decor === "corridor") {
-      ctx.fillStyle = "rgba(236, 181, 48, 0.1)";
-      for (let x = 100; x < 1180; x += 90) ctx.fillRect(x, 346, 48, 28);
-      ctx.fillStyle = "rgba(255,255,255,0.055)";
-      ctx.fillRect(80, 325, 1120, 4);
-      ctx.fillRect(80, 391, 1120, 4);
-    } else if (decor === "yard") {
-      ctx.strokeStyle = "rgba(235, 238, 216, 0.23)";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(95, 90, 1090, 540);
-      ctx.beginPath();
-      ctx.moveTo(640, 90);
-      ctx.lineTo(640, 630);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(640, 360, 92, 0, TAU);
-      ctx.stroke();
-    } else if (decor === "cafeteria") {
-      ctx.fillStyle = "rgba(215, 209, 177, 0.1)";
-      for (let x = 100; x < 1180; x += 120) ctx.fillRect(x, 92, 54, 7);
-      ctx.fillStyle = "rgba(134, 61, 42, 0.16)";
-      ctx.fillRect(1130, 90, 45, 545);
-    } else if (decor === "classroom") {
-      ctx.strokeStyle = "rgba(212, 205, 231, 0.12)";
-      ctx.lineWidth = 5;
-      ctx.setLineDash([28, 18]);
-      ctx.beginPath();
-      ctx.moveTo(80, 360);
-      ctx.lineTo(1200, 360);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    } else if (decor === "boss") {
-      const glow = ctx.createRadialGradient(680, 360, 10, 680, 360, 290);
-      glow.addColorStop(0, "rgba(181, 29, 58, 0.22)");
-      glow.addColorStop(1, "rgba(181, 29, 58, 0)");
-      ctx.fillStyle = glow;
-      ctx.fillRect(350, 30, 660, 660);
-      ctx.strokeStyle = "rgba(202, 44, 70, 0.22)";
-      ctx.lineWidth = 8;
-      ctx.beginPath();
-      ctx.arc(680, 360, 180, 0, TAU);
-      ctx.stroke();
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      for (let i = 0; i < 8; i += 1) {
-        const angle = (i / 8) * TAU;
-        ctx.moveTo(680 + Math.cos(angle) * 205, 360 + Math.sin(angle) * 205);
-        ctx.lineTo(680 + Math.cos(angle) * 270, 360 + Math.sin(angle) * 270);
-      }
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function drawObstacle(x, y, w, h) {
-    const { palette } = game.stage;
-    ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
-    ctx.fillRect(x + 8, y + 10, w, h);
-    ctx.fillStyle = palette.wall;
-    ctx.fillRect(x, y, w, h);
-    ctx.fillStyle = palette.edge;
-    ctx.fillRect(x, y, w, Math.min(8, h));
-    ctx.fillStyle = "rgba(255,255,255,0.045)";
-    ctx.fillRect(x + 8, y + 14, Math.max(0, w - 16), Math.max(0, h - 24));
-    ctx.strokeStyle = "rgba(0,0,0,0.45)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-  }
-
-  function drawPlayer(player) {
-    ctx.save();
-    ctx.translate(player.x, player.y);
-    ctx.globalAlpha = player.invulnerable > 0 && Math.floor(player.invulnerable * 14) % 2 ? 0.45 : 1;
-    drawShadow(player.radius);
-    if (drawLoadedSprite(player.job, 68, player.aim)) {
-      if (player.hitFlash > 0) {
-        ctx.globalCompositeOperation = "screen";
-        ctx.globalAlpha = 0.38;
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(0, -10, 25, 0, TAU);
-        ctx.fill();
-      }
-      ctx.restore();
-      return;
-    }
-    ctx.rotate(player.aim);
-    ctx.fillStyle = player.hitFlash > 0 ? "#fff" : JOBS[player.job].color;
-    ctx.fillRect(-13, -15, 27, 33);
-    ctx.fillStyle = "#e9d2bd";
-    ctx.beginPath();
-    ctx.arc(0, -19, 11, 0, TAU);
-    ctx.fill();
-    ctx.fillStyle = "#16222d";
-    ctx.beginPath();
-    ctx.arc(-2, -22, 11, Math.PI, TAU);
-    ctx.fill();
-    ctx.fillStyle = "#f4f6f7";
-    ctx.fillRect(8, -5, 20, 6);
-    ctx.fillStyle = JOBS[player.job].color;
-    ctx.fillRect(24, -7, 9, 10);
-    ctx.fillStyle = "#121a21";
-    ctx.fillRect(-11, 18, 8, 10);
-    ctx.fillRect(4, 18, 8, 10);
-    ctx.rotate(-player.aim);
-    ctx.fillStyle = "#fff";
-    ctx.font = "900 11px system-ui";
-    ctx.textAlign = "center";
-    ctx.fillText(JOBS[player.job].icon, 0, 8);
-    ctx.restore();
-  }
-
-  function drawEnemy(enemy) {
-    if (!enemy.alive) return;
-    ctx.save();
-    ctx.translate(enemy.x, enemy.y + Math.sin(enemy.bob) * (enemy.boss ? 1.5 : 2.5));
-    drawShadow(enemy.radius);
-    const spriteName = enemy.type === "liquid" && !getLoadedSprite("liquid") ? "liquidBoss" : enemy.type;
-    if (!enemy.boss && drawLoadedSprite(spriteName, enemy.radius * 3.35, enemy.angle)) {
-      if (enemy.hitFlash > 0) {
-        ctx.globalCompositeOperation = "screen";
-        ctx.globalAlpha = 0.42;
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(0, -enemy.radius * 0.25, enemy.radius * 1.18, 0, TAU);
-        ctx.fill();
-      }
-      if (enemy.stunned > 0) {
-        ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = "#ffe96b";
-        for (let i = 0; i < 3; i += 1) {
-          const angle = game.stageElapsed * 5 + (i / 3) * TAU;
-          ctx.fillRect(Math.cos(angle) * (enemy.radius + 8) - 3, -enemy.radius - 16 + Math.sin(angle) * 5, 6, 6);
-        }
-      }
-      ctx.restore();
-      if (enemy.hp < enemy.maxHp) drawHealthBar(enemy.x, enemy.y - enemy.radius - 17, enemy.hp / enemy.maxHp, enemy.radius * 2.2);
-      return;
-    }
-    ctx.rotate(enemy.angle);
-    const color = enemy.hitFlash > 0 ? "#ffffff" : enemy.color;
-
-    if (enemy.boss) {
-      ctx.fillStyle = "rgba(177, 32, 65, 0.28)";
-      ctx.beginPath();
-      ctx.arc(0, 0, enemy.radius + 17 + Math.sin(game.stageElapsed * 4) * 5, 0, TAU);
-      ctx.fill();
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.moveTo(48, 0);
-      ctx.lineTo(28, 44);
-      ctx.lineTo(-22, 52);
-      ctx.lineTo(-53, 16);
-      ctx.lineTo(-46, -34);
-      ctx.lineTo(6, -56);
-      ctx.lineTo(45, -33);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#da3452";
-      ctx.beginPath();
-      ctx.moveTo(31, -15);
-      ctx.lineTo(10, -4);
-      ctx.lineTo(31, 7);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = "#1b0d21";
-      ctx.lineWidth = 12;
-      ctx.beginPath();
-      ctx.moveTo(-20, 28);
-      ctx.lineTo(-51, 62);
-      ctx.moveTo(6, 33);
-      ctx.lineTo(18, 74);
-      ctx.stroke();
-    } else if (enemy.type === "crawler") {
-      ctx.fillStyle = color;
-      ctx.fillRect(-22, -13, 43, 25);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 7;
-      ctx.beginPath();
-      ctx.moveTo(-12, 8); ctx.lineTo(-30, 23);
-      ctx.moveTo(10, 8); ctx.lineTo(30, 23);
-      ctx.stroke();
-      ctx.fillStyle = "#dfe6db";
-      ctx.fillRect(10, -8, 7, 5);
-    } else {
-      const scale = enemy.type === "tank" ? 1.22 : enemy.type === "brute" ? 1.12 : 1;
-      ctx.scale(scale, scale);
-      ctx.fillStyle = color;
-      ctx.fillRect(-14, -16, 29, 37);
-      ctx.fillStyle = "#acb4a1";
-      ctx.beginPath();
-      ctx.arc(0, -21, 12, 0, TAU);
-      ctx.fill();
-      ctx.fillStyle = "#20242a";
-      ctx.beginPath();
-      ctx.arc(-3, -24, 11, Math.PI, TAU);
-      ctx.fill();
-      ctx.fillStyle = enemy.ranged ? "#ffd25d" : "#e9f0e6";
-      ctx.fillRect(6, -25, 5, 4);
-      ctx.fillStyle = "#20262b";
-      ctx.fillRect(-12, 21, 8, 11);
-      ctx.fillRect(5, 21, 8, 11);
-      if (enemy.type === "brute" || enemy.type === "tank") {
-        ctx.fillStyle = color;
-        ctx.fillRect(-22, -12, 9, 31);
-        ctx.fillRect(14, -12, 9, 31);
-      }
-    }
-
-    if (enemy.stunned > 0) {
-      ctx.rotate(-enemy.angle);
-      ctx.fillStyle = "#ffe96b";
-      for (let i = 0; i < 3; i += 1) {
-        const angle = game.stageElapsed * 5 + (i / 3) * TAU;
-        ctx.fillRect(Math.cos(angle) * (enemy.radius + 8) - 3, -enemy.radius - 16 + Math.sin(angle) * 5, 6, 6);
-      }
-    }
-    ctx.restore();
-
-    if (!enemy.boss && enemy.hp < enemy.maxHp) drawHealthBar(enemy.x, enemy.y - enemy.radius - 17, enemy.hp / enemy.maxHp, enemy.radius * 2.2);
-  }
-
-  function drawShadow(radius) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-    ctx.beginPath();
-    ctx.ellipse(2, radius * 0.72, radius * 0.92, radius * 0.37, 0, 0, TAU);
-    ctx.fill();
-  }
-
-  function drawHealthBar(x, y, ratio, width) {
-    ctx.fillStyle = "rgba(0,0,0,0.65)";
-    ctx.fillRect(x - width / 2 - 2, y - 2, width + 4, 8);
-    ctx.fillStyle = "#d94545";
-    ctx.fillRect(x - width / 2, y, width * clamp(ratio, 0, 1), 4);
-  }
-
-  function drawProjectile(projectile, enemy = false) {
-    ctx.save();
-    ctx.translate(projectile.x, projectile.y);
-    ctx.fillStyle = projectile.color;
-    ctx.shadowColor = projectile.color;
-    ctx.shadowBlur = enemy ? 10 : 7;
-    ctx.beginPath();
-    ctx.arc(0, 0, projectile.radius, 0, TAU);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function drawEffects(foreground) {
-    for (const effect of game.effects) {
-      const progress = 1 - effect.life / effect.maxLife;
-      if ((effect.type === "ring") !== foreground) continue;
-      ctx.save();
-      ctx.globalAlpha = clamp(effect.life / effect.maxLife, 0, 1);
-      ctx.strokeStyle = effect.color;
-      ctx.fillStyle = effect.color;
-      if (effect.type === "ring") {
-        const radius = effect.radius + (effect.maxRadius - effect.radius) * progress;
-        ctx.lineWidth = Math.max(2, 8 * (1 - progress));
-        ctx.beginPath();
-        ctx.arc(effect.x, effect.y, radius, 0, TAU);
-        ctx.stroke();
-      } else if (effect.type === "slash") {
-        ctx.lineWidth = 16 * (1 - progress);
-        ctx.beginPath();
-        ctx.arc(effect.x, effect.y, effect.range * (0.75 + progress * 0.25), effect.angle - effect.arc / 2, effect.angle + effect.arc / 2);
-        ctx.stroke();
-      } else if (effect.type === "cone") {
-        ctx.globalAlpha *= 0.15;
-        ctx.beginPath();
-        ctx.moveTo(effect.x, effect.y);
-        ctx.arc(effect.x, effect.y, effect.range, effect.angle - effect.arc / 2, effect.angle + effect.arc / 2);
-        ctx.closePath();
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-
-    if (foreground) {
-      for (const particle of game.particles) {
-        ctx.save();
-        ctx.globalAlpha = clamp(particle.life / particle.maxLife, 0, 1);
-        ctx.fillStyle = particle.color;
-        ctx.fillRect(particle.x - particle.size / 2, particle.y - particle.size / 2, particle.size, particle.size);
-        ctx.restore();
-      }
-      for (const item of game.floatingText) {
-        ctx.save();
-        ctx.globalAlpha = clamp(item.life / item.maxLife, 0, 1);
-        ctx.fillStyle = item.color;
-        ctx.font = "900 17px system-ui";
-        ctx.textAlign = "center";
-        ctx.shadowColor = "#000";
-        ctx.shadowBlur = 4;
-        ctx.fillText(item.text, item.x, item.y);
-        ctx.restore();
-      }
-    }
-  }
-
-  function drawBossBar() {
-    const boss = game.enemies.find((enemy) => enemy.boss && enemy.alive);
-    if (!boss) return;
-    const width = 520;
-    const x = (VIEW.width - width) / 2;
-    const y = 655;
-    ctx.fillStyle = "rgba(4, 5, 7, 0.84)";
-    ctx.fillRect(x - 4, y - 22, width + 8, 35);
-    ctx.fillStyle = "#d7c9da";
-    ctx.font = "900 12px system-ui";
-    ctx.textAlign = "center";
-    ctx.fillText("ì‹¬ì¸µ ë³€ì´ì²´", VIEW.width / 2, y - 7);
-    ctx.fillStyle = "#261421";
-    ctx.fillRect(x, y, width, 9);
-    const gradient = ctx.createLinearGradient(x, y, x + width, y);
-    gradient.addColorStop(0, "#8d1d3f");
-    gradient.addColorStop(1, "#ed4059");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, y, width * clamp(boss.hp / boss.maxHp, 0, 1), 9);
-  }
-
-  function showDialog(config) {
-    game.screen = "dialog";
-    dom.dialogKicker.textContent = config.kicker ?? "MISSION UPDATE";
-    dom.dialogTitle.textContent = config.title;
-    dom.dialogCopy.textContent = config.copy;
-    dom.dialogStats.innerHTML = config.stats ?? "";
-    dom.dialogPrimary.textContent = config.primaryLabel ?? "ê³„ì†";
-    dom.dialogSecondary.textContent = config.secondaryLabel ?? "ëŒ€ê¸°ì‹¤";
-    dom.dialog.hidden = false;
-    dom.dialogPrimary.onclick = () => {
-      dom.dialog.hidden = true;
-      config.onPrimary?.();
-    };
-    dom.dialogSecondary.onclick = () => {
-      dom.dialog.hidden = true;
-      config.onSecondary?.();
-    };
-    dom.dialogPrimary.focus();
-  }
-
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remain = Math.floor(seconds % 60);
-    return `${String(minutes).padStart(2, "0")}:${String(remain).padStart(2, "0")}`;
-  }
-
-  function showStageClear() {
-    const isFinal = game.stageIndex === STAGES.length - 1;
-    const stats = `<span>ì²˜ì¹˜<b>${game.kills}</b></span><span>í”¼í•´ëŸ‰<b>${Math.round(game.runStats.damage)}</b></span><span>ì‹œê°„<b>${formatTime(game.stageElapsed)}</b></span>`;
-    showDialog({
-      kicker: isFinal ? "MISSION COMPLETE" : `STAGE ${game.stageIndex} CLEAR`,
-      title: isFinal ? "ì‘ì „ ì™„ë£Œ" : "êµ¬ì—­ í™•ë³´",
-      copy: isFinal ? "ì‹¬ì¸µ ë³€ì´ì²´ë¥¼ ì œì••í–ˆìŠµë‹ˆë‹¤. ëª¨ë“  ìŠ¤í…Œì´ì§€ë¥¼ ì™„ë£Œí–ˆìŠµë‹ˆë‹¤." : "ì ì‹œ ìˆ¨ì„ ê³ ë¥¸ ë’¤ ë‹¤ìŒ êµ¬ì—­ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.",
-      stats,
-      primaryLabel: isFinal ? "ë‹¤ì‹œ í”Œë ˆì´" : "ë‹¤ìŒ ìŠ¤í…Œì´ì§€",
-      secondaryLabel: "ëŒ€ê¸°ì‹¤",
-      onPrimary: () => {
-        if (isFinal) startRun(0);
-        else {
-          loadStage(game.stageIndex + 1, true);
-          setScreen("game");
-        }
-      },
-      onSecondary: returnToLobby,
-    });
-    game.network.sendEvent({ type: "stage-clear", stage: game.stageIndex, time: game.stageElapsed });
-  }
-
-  function showGameOver(reason = "ëŒ€ì—´ì„ ì¬ì •ë¹„í•˜ê³  ë‹¤ì‹œ ë„ì „í•˜ì„¸ìš”.") {
-    if (game.screen !== "game") return;
-    game.stageEnding = true;
-    game.screen = "dialog";
-    input.mouse.down = false;
-    input.keys.clear();
-    const stats = `<span>ë„ë‹¬ êµ¬ì—­<b>${game.stageIndex}</b></span><span>ì´ ì²˜ì¹˜<b>${game.runStats.kills}</b></span><span>ìƒì¡´ ì‹œê°„<b>${formatTime(game.elapsed)}</b></span>`;
-    window.setTimeout(() => {
-      showDialog({
-        kicker: "MISSION FAILED",
-        title: "ì‘ì „ ì‹¤íŒ¨",
-        copy: reason,
-        stats,
-        primaryLabel: "í˜„ì¬ ìŠ¤í…Œì´ì§€ ì¬ë„ì „",
-        secondaryLabel: "ëŒ€ê¸°ì‹¤",
-        onPrimary: () => {
-          loadStage(game.stageIndex, false);
-          setScreen("game");
-        },
-        onSecondary: returnToLobby,
-      });
-    }, 350);
-  }
-
-  function togglePause() {
-    if (game.screen === "game") {
-      game.screen = "paused";
-      input.mouse.down = false;
-      input.keys.clear();
-      showDialog({
-        kicker: "PAUSED",
-        title: "ì¼ì‹œ ì •ì§€",
-        copy: "ì¤€ë¹„ë˜ë©´ ì‘ì „ì„ ê³„ì†í•˜ì„¸ìš”.",
-        stats: `<span>ìŠ¤í…Œì´ì§€<b>${game.stageIndex}</b></span><span>ì²˜ì¹˜<b>${game.kills}</b></span><span>ì‹œê°„<b>${formatTime(game.stageElapsed)}</b></span>`,
-        primaryLabel: "ê³„ì†",
-        secondaryLabel: "ëŒ€ê¸°ì‹¤",
-        onPrimary: () => setScreen("game"),
-        onSecondary: returnToLobby,
-      });
-    }
-  }
-
-  function returnToLobby() {
-    input.keys.clear();
-    input.mouse.down = false;
-    dom.dialog.hidden = true;
-    setScreen("lobby");
-    game.network.sendEvent({ type: "return-to-lobby" });
-  }
-
-  function setNetworkFeedback(message, isError = false) {
-    if (!dom.networkFeedback) return;
-    dom.networkFeedback.textContent = message;
-    dom.networkFeedback.classList.toggle("is-error", isError);
-  }
-
   function roomCodeFromLocation() {
-    if (!window.EP1Network || !location.hash) return "";
-    let value = location.hash.slice(1);
-    try {
-      value = decodeURIComponent(value);
-    } catch (_error) {
-      return "";
-    }
-    value = value.replace(/^room=/i, "").trim();
-    try {
-      return window.EP1Network.normalizeRoomCode(value);
-    } catch (_error) {
-      return "";
-    }
+    return location.hash.replace(/^#/, "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+  }
+  function setScreen(name) {
+    session.screen = name;
+    [["entrance", dom.entrance], ["lobby", dom.lobby], ["game", dom.game]].forEach(([key, element]) => {
+      element.hidden = key !== name;
+      element.classList.toggle("is-active", key === name);
+    });
+  }
+  function isOnline() { return Boolean(NET?.getState?.().online); }
+  function isHost() { const state = NET?.getState?.(); return !state?.online || state.isHost; }
+  function selfId() { return NET?.getState?.().selfId || "local"; }
+  function pressed(code) { return controls.justPressed.has(code); }
+  function movementInput() {
+    let x = 0; let y = 0;
+    if (controls.keys.has("KeyA") || controls.keys.has("ArrowLeft")) x -= 1;
+    if (controls.keys.has("KeyD") || controls.keys.has("ArrowRight")) x += 1;
+    if (controls.keys.has("KeyW") || controls.keys.has("ArrowUp")) y -= 1;
+    if (controls.keys.has("KeyS") || controls.keys.has("ArrowDown")) y += 1;
+    if (x && y) { x *= Math.SQRT1_2; y *= Math.SQRT1_2; }
+    return { x, y };
+  }
+  function facingFromMove(move, fallback) {
+    if (Math.abs(move.x) > Math.abs(move.y)) return move.x < 0 ? "left" : "right";
+    if (Math.abs(move.y) > 0) return move.y < 0 ? "up" : "down";
+    return fallback;
+  }
+  function circleBlocked(x, y, radius, solids) {
+    return solids.some(([rx, ry, rw, rh]) => x + radius > rx && x - radius < rx + rw && y + radius > ry && y - radius < ry + rh);
+  }
+  function moveCircle(actor, vx, vy, dt, solids, width, height) {
+    const radius = actor.radius || 10;
+    const nextX = clamp(actor.x + vx * dt, radius, width - radius);
+    if (!circleBlocked(nextX, actor.y, radius, solids)) actor.x = nextX;
+    const nextY = clamp(actor.y + vy * dt, radius, height - radius);
+    if (!circleBlocked(actor.x, nextY, radius, solids)) actor.y = nextY;
   }
 
-  function inviteUrlFor(roomCode) {
-    const url = new URL(location.href);
-    url.hash = roomCode;
-    return url.href;
+  function rosterPlayers() {
+    const state = NET?.getState?.();
+    if (state?.online && state.players?.length) return state.players;
+    return [{ id: "local", name: dom.playerName.value.trim() || "PLAYER", classId: session.selectedJob, job: session.selectedJob, isHost: true }];
   }
-
-  function updateInviteHash(roomCode) {
-    try {
-      history.replaceState(null, "", inviteUrlFor(roomCode));
-    } catch (_error) {
-      // A restricted local preview may disallow history writes; connecting still works.
-    }
-  }
-
-  function renderLobbyRoster(state = {}) {
-    if (!dom.playerList) return;
-    const networkPlayers = Array.isArray(state.players) ? state.players : [];
-    const players = networkPlayers.length ? networkPlayers : [{
-      id: "local-player",
-      name: dom.playerName?.value.trim() || "PLAYER",
-      classId: game.selectedJob,
-      isHost: true,
-    }];
-    const selfId = state.selfId || players[0]?.id;
-    dom.playerList.replaceChildren();
-
+  function renderRoster(target, players = rosterPlayers()) {
+    target.replaceChildren();
+    const actorById = new Map(session.players.map((player) => [player.id, player]));
     for (let index = 0; index < 4; index += 1) {
-      const player = players[index];
-      const slot = document.createElement("li");
-      slot.className = `player-slot${player ? " is-filled" : ""}`;
-
-      const number = document.createElement("span");
-      number.className = "slot-number";
-      number.textContent = String(index + 1).padStart(2, "0");
-      slot.append(number);
-
-      if (!player) {
-        const empty = document.createElement("span");
-        empty.className = "empty-slot";
-        empty.textContent = "ëŒ€ê¸° ì¤‘";
-        slot.append(empty);
-      } else {
-        const classId = JOBS[player.classId] ? player.classId : "archer";
-        const avatar = document.createElement("span");
-        avatar.className = `mini-avatar ${classId}`;
-        avatar.textContent = JOBS[classId].icon;
-        if (player.id === selfId) avatar.id = "local-player-avatar";
-
-        const name = document.createElement("span");
-        name.className = "player-name";
-        name.append(document.createTextNode(player.id === selfId ? `${player.name} (ë‚˜)` : player.name));
-        if (player.isHost) {
-          const host = document.createElement("em");
-          host.textContent = "ë°©ì¥";
-          name.append(host);
-        }
-
-        const role = document.createElement("span");
-        role.className = "player-job";
-        role.textContent = JOBS[classId].name;
-        if (player.id === selfId) role.id = "local-player-job";
-        slot.append(avatar, name, role);
-      }
-      dom.playerList.append(slot);
+      const profile = players[index];
+      if (!profile) continue;
+      const jobId = profile.job || profile.classId || "archer";
+      const actor = actorById.get(profile.id);
+      const item = document.createElement("li");
+      const chip = document.createElement("span"); chip.className = "job-chip"; chip.style.setProperty("--job", JOBS[jobId].color); chip.textContent = JOBS[jobId].name[0];
+      const signal = document.createElement("span"); signal.className = "signal"; signal.textContent = "â–®â–®â–®";
+      const label = document.createElement("span"); label.textContent = profile.name;
+      if (profile.isHost) { const host = document.createElement("em"); host.className = "host"; host.textContent = "(ë°©ì¥)"; label.append(host); }
+      const condition = document.createElement("span"); condition.className = "condition"; condition.textContent = actor?.condition === "injured" ? "ë¶€ìƒ" : JOBS[jobId].name;
+      item.append(chip, signal, label, condition); target.append(item);
     }
-
-    if (dom.playerCount) dom.playerCount.textContent = String(players.length);
-    const code = state.roomCode || dom.roomCode?.value.trim().toUpperCase() || "------";
-    if (dom.roomLabel) dom.roomLabel.textContent = `ROOM ${code}`;
   }
-
-  function renderNetworkState(state = {}) {
-    const status = state.status || "idle";
+  function updateNetworkUI() {
+    const state = NET?.getState?.() || {};
     const online = state.online === true;
-    const connecting = status === "connecting" || game.lobbyConnecting;
-    dom.connectionStatus?.classList.toggle("is-connecting", connecting || status === "degraded");
-    dom.connectionStatus?.classList.toggle("is-offline", !online && !connecting);
-
-    if (dom.connectionStatusText) {
-      if (connecting) dom.connectionStatusText.textContent = "P2P ë°© ì—°ê²° ì¤‘";
-      else if (online) dom.connectionStatusText.textContent = state.isHost ? "ì˜¨ë¼ì¸ Â· ë°©ì¥" : "ì˜¨ë¼ì¸ Â· ì°¸ê°€ì";
-      else dom.connectionStatusText.textContent = "ì˜¤í”„ë¼ì¸ 1ì¸ í”Œë ˆì´";
-    }
-
-    if (dom.start) {
-      dom.start.disabled = connecting || (online && !state.isHost);
-      const small = dom.start.querySelector("small");
-      if (small) small.textContent = online ? (state.isHost ? "ë°©ì¥ ì „ìš©" : "ë°©ì¥ ì‹œì‘ ëŒ€ê¸°") : "ì˜¤í”„ë¼ì¸ 1ì¸";
-    }
-    if (dom.startStage) dom.startStage.disabled = connecting || (online && !state.isHost);
-    if (dom.connectRoom) dom.connectRoom.disabled = connecting;
-    if (dom.roomCode) dom.roomCode.disabled = connecting;
-    if (dom.playerName) dom.playerName.disabled = connecting;
-    if (dom.copyRoom) dom.copyRoom.disabled = !online || !state.roomCode;
-    renderLobbyRoster(state);
+    dom.start.disabled = online && !state.isHost;
+    dom.start.textContent = online && !state.isHost ? "ëŒ€ê¸°" : "ì‹œì‘";
+    dom.networkFeedback.textContent = online
+      ? `${state.roomCode} Â· ${state.isHost ? "ë°©ì¥" : "ì°¸ê°€ì"} Â· ${state.players.length}/4`
+      : (state.status === "connecting" ? "ë°©ì— ì—°ê²°í•˜ëŠ” ì¤‘ì…ë‹ˆë‹¤." : "ì˜¤í”„ë¼ì¸ 1ì¸ í”Œë ˆì´");
+    renderRoster(dom.lobbyRoster);
   }
-
-  async function connectLobby(requestedCode) {
-    if (!window.EP1Network) {
-      renderNetworkState({ status: "offline", online: false, players: [] });
-      setNetworkFeedback("ì˜¨ë¼ì¸ ëª¨ë“ˆì„ ë¶ˆëŸ¬ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤. ì˜¤í”„ë¼ì¸ 1ì¸ ëª¨ë“œë¡œ ì§„í–‰í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.", true);
-      return;
+  function selectJob(jobId) {
+    if (!JOBS[jobId] || session.screen !== "lobby") return;
+    const state = NET?.getState?.();
+    if (state?.countdownActive || state?.started) return;
+    session.selectedJob = jobId;
+    dom.roleButtons.forEach((button) => button.classList.toggle("is-selected", button.dataset.job === jobId));
+    dom.lobbyMessage.textContent = `${JOBS[jobId].name} ì„ íƒ Â· ${JOBS[jobId].description}`;
+    try { NET?.selectClass?.(jobId); } catch (_error) { /* offline selection remains available */ }
+    updateNetworkUI();
+  }
+  function updateLobby(dt) {
+    const move = movementInput();
+    session.lobbyPlayer.facing = facingFromMove(move, session.lobbyPlayer.facing);
+    moveCircle(session.lobbyPlayer, move.x * PLAYER_SPEED, move.y * PLAYER_SPEED, dt, LOBBY_SOLIDS, VIEW.width, VIEW.height);
+    if (pressed("KeyJ")) {
+      const vector = DIRECTIONS[session.lobbyPlayer.facing];
+      session.lobbyBolts.push({ x: session.lobbyPlayer.x, y: session.lobbyPlayer.y - 13, vx: vector.x * 360, vy: vector.y * 360, life: .48 });
     }
-    if (game.lobbyConnecting) {
-      return;
+    for (const bolt of session.lobbyBolts) {
+      bolt.x += bolt.vx * dt; bolt.y += bolt.vy * dt; bolt.life -= dt;
+      const stand = JOB_STANDS.find((entry) => Math.abs(entry.x - bolt.x) < 20 && Math.abs(entry.y - bolt.y) < 20);
+      if (stand) { selectJob(stand.job); bolt.life = 0; }
     }
-    let roomCode;
-    try {
-      roomCode = window.EP1Network.normalizeRoomCode(requestedCode || window.EP1Network.generateRoomCode());
-    } catch (_error) {
-      setNetworkFeedback("ë°© ì½”ë“œëŠ” ì˜ë¬¸Â·ìˆ«ì 4~10ìë¡œ ì…ë ¥í•˜ì„¸ìš”.", true);
-      return;
-    }
-
-    const name = dom.playerName?.value.trim() || "PLAYER";
-    game.lobbyConnecting = true;
-    if (dom.roomCode) dom.roomCode.value = roomCode;
-    updateInviteHash(roomCode);
-    setNetworkFeedback("ë°©ì„ ì°¾ëŠ” ì¤‘ì…ë‹ˆë‹¤. ì²˜ìŒ ì ‘ì†í•œ ì‚¬ëŒì´ ë°©ì¥ì´ ë©ë‹ˆë‹¤.");
-    renderNetworkState({ status: "connecting", online: false, roomCode, players: [] });
-
-    try {
-      const state = await window.EP1Network.connectRoom(roomCode, { name, classId: game.selectedJob });
-      game.lobbyConnecting = false;
-      renderNetworkState(state);
-      if (state.online) {
-        setNetworkFeedback(state.isHost
-          ? `ë°© ${roomCode} ìƒì„± ì™„ë£Œ Â· ì´ˆëŒ€ ë§í¬ë¥¼ ê³µìœ í•˜ì„¸ìš”.`
-          : `ë°© ${roomCode} ì°¸ê°€ ì™„ë£Œ Â· ë°©ì¥ì˜ ì‹œì‘ì„ ê¸°ë‹¤ë¦¬ì„¸ìš”.`);
-      } else {
-        const message = state.errorCode === "peerjs-missing"
-          ? "ì˜¨ë¼ì¸ ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ë¶ˆëŸ¬ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤. ì˜¤í”„ë¼ì¸ 1ì¸ ëª¨ë“œë¡œ ì „í™˜í–ˆìŠµë‹ˆë‹¤."
-          : "P2P ì—°ê²°ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. ì˜¤í”„ë¼ì¸ 1ì¸ ëª¨ë“œë¡œ ì „í™˜í–ˆìŠµë‹ˆë‹¤.";
-        setNetworkFeedback(message, true);
-      }
-    } catch (error) {
-      game.lobbyConnecting = false;
-      renderNetworkState({ status: "offline", online: false, roomCode, players: [] });
-      setNetworkFeedback(error?.message || "ë°© ì—°ê²°ì— ì‹¤íŒ¨í•´ ì˜¤í”„ë¼ì¸ ëª¨ë“œë¡œ ì „í™˜í–ˆìŠµë‹ˆë‹¤.", true);
+    session.lobbyBolts = session.lobbyBolts.filter((bolt) => bolt.life > 0 && bolt.x > 0 && bolt.x < 640 && bolt.y > 0 && bolt.y < 360);
+    const now = performance.now();
+    if (now - session.lobbyPresenceAt > 100) {
+      session.lobbyPresenceAt = now;
+      try { NET?.setLobbyPresence?.({ x: session.lobbyPlayer.x, y: session.lobbyPlayer.y, facing: session.lobbyPlayer.facing, job: session.selectedJob }); } catch (_error) { /* connection can be absent */ }
     }
   }
-
-  async function copyInviteLink() {
-    const state = window.EP1Network?.getState?.();
-    if (!state?.online || !state.roomCode) {
-      setNetworkFeedback("ì˜¨ë¼ì¸ ë°©ì— ì—°ê²°ëœ ë’¤ ì´ˆëŒ€ ë§í¬ë¥¼ ë³µì‚¬í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.", true);
-      return;
+  function renderLobby(now) {
+    lobbyContext.clearRect(0, 0, VIEW.width, VIEW.height);
+    const image = ASSETS.get("lobby");
+    if (image) lobbyContext.drawImage(image, 0, 0, VIEW.width, VIEW.height);
+    const state = NET?.getState?.();
+    const profiles = state?.online ? state.players : [{ id: "local", x: session.lobbyPlayer.x, y: session.lobbyPlayer.y, facing: session.lobbyPlayer.facing, job: session.selectedJob }];
+    for (const profile of profiles) {
+      const local = profile.id === state?.selfId || (!state?.online && profile.id === "local");
+      const x = local ? session.lobbyPlayer.x : profile.x;
+      const y = local ? session.lobbyPlayer.y : profile.y;
+      const job = local ? session.selectedJob : (profile.job || profile.classId || "archer");
+      ASSETS.draw(lobbyContext, job, x, y, { now, height: PLAYER_HEIGHT[job], flipX: (local ? session.lobbyPlayer.facing : profile.facing) === "left" });
     }
-    const code = state.roomCode;
-    const inviteUrl = inviteUrlFor(code);
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      setNetworkFeedback("ì´ˆëŒ€ ë§í¬ë¥¼ ë³µì‚¬í–ˆìŠµë‹ˆë‹¤.");
-    } catch (_error) {
-      dom.roomCode?.focus();
-      dom.roomCode?.select();
-      setNetworkFeedback(`ì´ˆëŒ€ ì£¼ì†Œ: ${inviteUrl}`);
+    for (const stand of JOB_STANDS) {
+      lobbyContext.strokeStyle = stand.job === session.selectedJob ? "#fff451" : "rgba(255,255,255,.35)";
+      lobbyContext.lineWidth = stand.job === session.selectedJob ? 2 : 1;
+      lobbyContext.strokeRect(Math.round(stand.x - 17), Math.round(stand.y - 17), 34, 34);
     }
+    lobbyContext.fillStyle = "#f7f1cb";
+    for (const bolt of session.lobbyBolts) lobbyContext.fillRect(Math.round(bolt.x - 5), Math.round(bolt.y - 1), 10, 2);
+    renderRoster(dom.lobbyRoster, rosterPlayers());
   }
 
-  function setupP2PNetwork() {
-    if (!window.EP1Network) {
-      renderNetworkState({ status: "offline", online: false, players: [] });
-      return;
-    }
-    if (game.p2pListenersBound) return;
-    game.p2pListenersBound = true;
-    window.EP1Network.on("status", (state) => renderNetworkState(state));
-    window.EP1Network.on("roster", () => renderNetworkState(window.EP1Network.getState()));
-    window.EP1Network.on("start", ({ info }) => {
-      if (game.screen === "lobby") startRun(info.stage);
-    });
-    window.EP1Network.on("error", ({ message }) => setNetworkFeedback(message, true));
-    renderNetworkState(window.EP1Network.getState());
-  }
-
-  function canvasPoint(event) {
-    const rect = dom.canvas.getBoundingClientRect();
-    return {
-      x: ((event.clientX - rect.left) / rect.width) * VIEW.width,
-      y: ((event.clientY - rect.top) / rect.height) * VIEW.height,
+  function spawnEnemy(type, x, y) {
+    const definition = ENEMIES[type];
+    if (!definition) return null;
+    const enemy = {
+      id: `${type}-${session.tick}-${session.enemies.length}-${Math.floor(session.random() * 9999)}`,
+      type, x, y, radius: type === "boss" ? 24 : (type === "tank" ? 18 : 11),
+      hp: definition.hp, maxHp: definition.hp, speed: definition.speed,
+      stun: 0, dead: false, reviving: false, reviveAt: 0, summonClock: 0,
+      primed: 0, facing: "down",
     };
+    session.enemies.push(enemy);
+    return enemy;
   }
-
-  async function attachNetworkAdapter(adapter) {
-    if (!adapter || typeof adapter.connect !== "function" || typeof adapter.sendInput !== "function" || typeof adapter.sendEvent !== "function") {
-      throw new TypeError("Adapter must implement connect(), sendInput(), and sendEvent().");
-    }
-    game.network.disconnect?.();
-    game.network = adapter;
-    const session = await adapter.connect({ protocol: 1, maxPlayers: 4 });
-    return session;
+  function safeSpawn(area, index, count) {
+    const cols = Math.max(1, Math.ceil(Math.sqrt(count)));
+    const row = Math.floor(index / cols); const col = index % cols;
+    const x = area[0] + 48 + (col + 0.5) * Math.max(38, (area[2] - 96) / cols);
+    const y = area[1] + 60 + (row + 0.5) * 66;
+    return { x: clamp(x, 40, session.stage.width - 40), y: clamp(y, 44, session.stage.height - 40) };
   }
-
-  dom.enter.addEventListener("click", async () => {
-    await game.network.connect({ protocol: 1, maxPlayers: 1 });
-    setScreen("lobby");
-    const inviteCode = roomCodeFromLocation();
-    await connectLobby(inviteCode || window.EP1Network?.generateRoomCode?.());
-  });
-
-  dom.start.addEventListener("click", () => {
-    const state = window.EP1Network?.getState?.();
-    if (state?.online) {
-      if (!state.isHost) {
-        setNetworkFeedback("ë°©ì¥ë§Œ ê²Œì„ì„ ì‹œì‘í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.", true);
-        return;
+  function activateArea(index, area) {
+    if (session.activatedAreas.has(index)) return;
+    session.activatedAreas.add(index);
+    let cursor = 0;
+    const total = area.enemies.reduce((sum, entry) => sum + entry[1], 0);
+    for (const [type, count] of area.enemies) {
+      for (let n = 0; n < count; n += 1) {
+        const point = safeSpawn(area.at, cursor, total); cursor += 1;
+        spawnEnemy(type, point.x, point.y);
       }
-      const started = window.EP1Network.startGame({ stage: Number(dom.startStage.value) });
-      if (!started) setNetworkFeedback("ì´ë¯¸ ì‹œì‘ëœ ë°©ì…ë‹ˆë‹¤. ìƒˆ ë°© ì½”ë“œë¡œ ë‹¤ì‹œ ì—°ê²°í•˜ì„¸ìš”.", true);
-      return;
     }
-    startRun(dom.startStage.value);
-  });
-  dom.jobCards.forEach((card) => card.addEventListener("click", () => selectJob(card.dataset.job)));
-  dom.connectRoom?.addEventListener("click", () => connectLobby(dom.roomCode.value));
-  dom.copyRoom?.addEventListener("click", copyInviteLink);
-  dom.roomCode?.addEventListener("input", () => {
-    dom.roomCode.value = dom.roomCode.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  });
-  dom.playerName?.addEventListener("change", () => {
-    const name = dom.playerName.value.trim() || "PLAYER";
-    dom.playerName.value = name;
-    try {
-      window.EP1Network?.setPlayerName(name);
-      renderLobbyRoster(window.EP1Network?.getState?.() || {});
-    } catch (_error) {
-      setNetworkFeedback("ë‹‰ë„¤ì„ì€ í•œê¸€Â·ì˜ë¬¸Â·ìˆ«ì 1~20ìë¡œ ì…ë ¥í•˜ì„¸ìš”.", true);
-    }
-  });
-  dom.pause.addEventListener("click", togglePause);
-
-  window.addEventListener("keydown", (event) => {
-    const controlled = ["KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space", "Escape"];
-    if (["game", "paused", "dialog"].includes(game.screen) && controlled.includes(event.code)) event.preventDefault();
-    if (event.code === "Escape" && game.screen === "game") {
-      togglePause();
-      return;
-    }
-    if (game.screen !== "game") return;
-    input.keys.add(event.code);
-  });
-
-  window.addEventListener("keyup", (event) => input.keys.delete(event.code));
-  window.addEventListener("blur", () => {
-    input.keys.clear();
-    input.mouse.down = false;
-  });
-
-  dom.canvas.addEventListener("pointermove", (event) => {
-    const point = canvasPoint(event);
-    input.mouse.x = point.x;
-    input.mouse.y = point.y;
-    input.mouse.touched = true;
-  });
-  dom.canvas.addEventListener("pointerdown", (event) => {
-    if (event.pointerType !== "touch") {
-      const point = canvasPoint(event);
-      input.mouse.x = point.x;
-      input.mouse.y = point.y;
-      input.mouse.touched = true;
-      input.mouse.down = true;
-    }
-  });
-  window.addEventListener("pointerup", () => { input.mouse.down = false; });
-  dom.canvas.addEventListener("contextmenu", (event) => event.preventDefault());
-
-  for (const button of dom.touchControls.querySelectorAll("[data-key]")) {
-    const key = button.dataset.key;
-    const press = (event) => { event.preventDefault(); input.keys.add(key); };
-    const release = (event) => { event.preventDefault(); input.keys.delete(key); };
-    button.addEventListener("pointerdown", press);
-    button.addEventListener("pointerup", release);
-    button.addEventListener("pointercancel", release);
-    button.addEventListener("pointerleave", release);
+    showStageToast("ê²½ê³ ! ì¢€ë¹„ ì§„ê²©!", 1600);
   }
-  const attackButton = dom.touchControls.querySelector("[data-action='attack']");
-  attackButton.addEventListener("pointerdown", (event) => { event.preventDefault(); input.keys.add("Space"); });
-  ["pointerup", "pointercancel", "pointerleave"].forEach((name) => attackButton.addEventListener(name, (event) => { event.preventDefault(); input.keys.delete("Space"); }));
-
-  window.QuarantineGameNetwork = Object.freeze({
-    NetworkAdapter,
-    LocalNetworkAdapter,
-    attach: attachNetworkAdapter,
-    protocolVersion: 1,
-  });
-
-  if (window.ZOMBIE_ASSETS?.preload) {
-    const spriteNames = [...new Set([...Object.keys(JOBS), ...Object.keys(ENEMY_TYPES), "liquidBoss"])];
-    window.ZOMBIE_ASSETS.preload(spriteNames).catch(() => {
-      // Canvas placeholders remain active when an optional reference sprite cannot load.
-    });
+  function createPlayers() {
+    const profiles = rosterPlayers();
+    session.players = profiles.map((profile, index) => ({
+      id: profile.id || `player-${index}`, name: profile.name || `PLAYER ${index + 1}`,
+      job: profile.job || profile.classId || (index === 0 ? session.selectedJob : "archer"),
+      x: session.stage.start[0] - index * 22, y: session.stage.start[1] + (index % 2) * 20,
+      radius: 10, facing: "up", condition: "healthy", injuredAt: 0, selfHealAt: 0,
+      healProgress: 0, cooldown: 0, fuel: JOBS.fireman.maxFuel, attackHeld: false,
+    }));
+    if (!session.players.some((player) => player.id === selfId())) session.players[0].id = selfId();
   }
-
-  function loop(now) {
-    const dt = Math.min(0.033, Math.max(0, (now - game.lastTime) / 1000));
-    game.lastTime = now;
-    update(dt);
-    render();
-    requestAnimationFrame(loop);
-  }
-
-  setupP2PNetwork();
-  selectJob("archer");
-  requestAnimationFrame(loop);
-})();
+  function loadStage(index, seed = session.seed) {
+    session.stageIndex = clamp(Number(index) || 0, 0, 4);
+    session.stage = STAGES[session.stageIndex];
+    session.seed = seed >>> 0;
+    session.random = makeRandom((session.seed + session.stageIndex * 0x9e3779b9) >>> 0);
+    session.tick = 0; session.remaining = session.stage.time; session.enemies = []; session.attacks = [];
+    session.activatedAreas = new Set(); session.facility = null; session.key = null; session.hasKey = false;
+    session.addClock = 0; session.ended = false; session.nextStage = null; session.remoteInputs.clear();
+    createPlayers();
+    if (session.stage.facility) session.facility = { ...session.stage.facility, maxHp: session.stage.facility.hp, dead: false };
+    if (session.stage.keySpots?.length) {
+      const spot = session.stage.keySpots[Math.floor(session.random() * session.stage.keySpots.length)];
+      session.key = { x: spot[0], y: spot[1], found: false };
+    }
+    if (session.stage.boss) spawnEnemy("boss", session.stage.boss.x, session.stage.boss.y);
+    for (const fixed of session.stage.fixedEnemies || []) spawnEnemy(fixed[0], fixed[1], fixed[2]);
+    for (const add of session.stage.adds || []) spawnEnemy(add[0], add[1], add[2]);
+    session.camera.x = clamp(session.stage.startãnö¶‰Ëkºwµçl(€€€¥˜€¡Í¹…ÁÍ¡½Ğ¹Ñ¥¬€ğÍ•ÍÍ¥½¸¹Ñ¥¬€´€ÄÀ¤É•ÑÕÉ¸ì(€€€Í•ÍÍ¥½¸¹Ñ¥¬€ôÍ¹…ÁÍ¡½Ğ¹Ñ¥¬ìÍ•ÍÍ¥½¸¹É•µ…¥¹¥¹œ€ôÍ¹…ÁÍ¡½Ğ¹Ñ¥µ”ìÍ•ÍÍ¥½¸¹Í½É”€ôÍ¹…ÁÍ¡½Ğ¹Í½É”ì(€€€½¹ÍĞÁÉ½™¥±•5…À€ô¹•Ü5…À¡É½ÍÑ•ÉA±…å•ÉÌ ¤¹µ…À ¡ÁÉ½™¥±”¤€ôømÁÉ½™¥±”¹¥°ÁÉ½™¥±•t¤¤ì(€€€Í•ÍÍ¥½¸¹Á±…å•ÉÌ€ôÍ¹…ÁÍ¡½Ğ¹Á±…å•ÉÌ¹µ…À ¡À¤€ôø€¡ì¥èÀ¹¥°¹…µ”èÁÉ½™¥±•5…À¹•Ğ¡À¹¥¤ü¹¹…µ”ñğ€‰A1eHˆ°©½ˆèÀ¹¨°àèÀ¹à°äèÀ¹ä°É…‘¥ÕÌè€ÄÀ°™…¥¹œèÀ¹˜°½¹‘¥Ñ¥½¸èÀ¹Œ°½½±‘½İ¸èÀ¹°™Õ•°èÀ¹™Õ•°°…ÑÑ…­!•±è™…±Í”°¡•…±AÉ½É•ÍÌè€Àô¤¤ì(€€€Í•ÍÍ¥½¸¹•¹•µ¥•Ì€ôÍ¹…ÁÍ¡½Ğ¹•¹•µ¥•Ì¹µ…À ¡”¤€ôø€¡ì¥è”¹¥°ÑåÁ”è”¹Ğ°àè”¹à°äè”¹ä°¡Àè”¹¡À°µ…á!Àè”¹´°‘•…è”¹°É•Ù¥Ù¥¹œè”¹È°™…¥¹œè”¹˜°É…‘¥ÕÌè”¹Ğ€ôôô€‰‰½ÍÌˆ€ü€ÈĞ€è€ÄÄ°ÍÑÕ¸è€À°ÍÁ••è95%Mm”¹Ñt¹ÍÁ••ô¤¤ì(€€€¥˜€¡Í•ÍÍ¥½¸¹™…¥±¥Ñä€˜˜Í¹…ÁÍ¡½Ğ¹™…¥±¥Ñä¤=‰©•Ğ¹…ÍÍ¥¸¡Í•ÍÍ¥½¸¹™…¥±¥Ñä°Í¹…ÁÍ¡½Ğ¹™…¥±¥Ñä¤ì(€€€¥˜€¡Í•ÍÍ¥½¸¹­•ä¤ìÍ•ÍÍ¥½¸¹­•ä¹à€ôÍ¹…ÁÍ¡½Ğ¹­•ä¹àìÍ•ÍÍ¥½¸¹­•ä¹ä€ôÍ¹…ÁÍ¡½Ğ¹­•ä¹äìÍ•ÍÍ¥½¸¹­•ä¹™½Õ¹€ôÍ¹…ÁÍ¡½Ğ¹­•ä¹™½Õ¹ìÍ•ÍÍ¥½¸¹¡…Í-•ä€ôÍ¹…ÁÍ¡½Ğ¹­•ä¹¡…Ììô(€€€Í•ÍÍ¥½¸¹…Ñ¥Ù…Ñ•‘É•…Ì€ô¹•ÜM•Ğ¡Í¹…ÁÍ¡½Ğ¹…É•…Ì¤ìÕÁ‘…Ñ•…µ•É„ ¤ìÕÁ‘…Ñ•!U ¤ì(€€€¥˜€¡Í¹…ÁÍ¡½Ğ¹•¹‘•€˜˜€…Í•ÍÍ¥½¸¹•¹‘•¤ìÍ•ÍÍ¥½¸¹•¹‘•€ôÑÉÕ”ìÍ¡½İ½¹‘¥Ñ¥½¸ ‹®Â§²z—²vĞƒ®.“²v0ƒ²*“¶3²vÓ²®–ğƒ²’®æ¶VcªÎ€ƒ²z#²*×®.#®.¸ˆ°€ÌÀÀÀ¤ìô(€ô((€™Õ¹Ñ¥½¸™½Éµ…ÑQ¥µ•È¡Í•½¹‘Ì¤ì(€€€½¹ÍĞÙ…±Õ”€ô5…Ñ ¹µ…à À°Í•½¹‘Ì¤ì½¹ÍĞµ¥¹ÕÑ•Ì€ô5…Ñ ¹™±½½È¡Ù…±Õ”€¼€ØÀ¤ì½¹ÍĞÉ•ÍĞ€ô5…Ñ ¹™±½½È¡Ù…±Õ”€”€ØÀ¤ì½¹ÍĞÑ•¹Ñ €ô5…Ñ ¹™±½½È ¡Ù…±Õ”€”€Ä¤€¨€ÄÀ¤ì(€€€É•ÑÕÉ¸€‘íµ¥¹ÕÑ•Íôè‘íMÑÉ¥¹œ¡É•ÍĞ¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¥ôè‘íÑ•¹Ñ¡õ€ì(€ô(€™Õ¹Ñ¥½¸ÕÁ‘…Ñ•!U ¤ì(€€€‘½´¹¡Õ‘MÑ…”¹Ñ•áÑ½¹Ñ•¹Ğ€ôMQ€‘íÍ•ÍÍ¥½¸¹ÍÑ…•%¹‘•áô€¼€Ñ€ì(€€€‘½´¹¡Õ‘Q¥µ•È¹Ñ•áÑ½¹Ñ•¹Ğ€ô™½Éµ…ÑQ¥µ•È¡Í•ÍÍ¥½¸¹É•µ…¥¹¥¹œ¤ì(€€€‘½´¹¡Õ‘1½…Ñ¥½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍ•ÍÍ¥½¸¹ÍÑ…”¹Ñ¥Ñ±”ì(€€€‘½´¹¡Õ‘M½É”¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍ•ÍÍ¥½¸¹Í½É”¹Ñ½1½…±•MÑÉ¥¹œ ‰­¼µ-Hˆ¤ì(€€€±•Ğµ¥ÍÍ¥½¸€ôÍ•ÍÍ¥½¸¹ÍÑ…”¹½‰©•Ñ¥Ù”ì(€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÑ…•%¹‘•à€ôôô€È€˜˜Í•ÍÍ¥½¸¹™…¥±¥Ñä¤µ¥ÍÍ¥½¸€ôÍ•ÍÍ¥½¸¹™…¥±¥Ñä¹‘•…€ü€‹²ÚsªÖ³®†pƒ²vÓ®>g¶Vc²ã²jP¸ˆ€èƒ²‚s²†Àƒ².s²ƒ¶23ªÒĞ€‘í5…Ñ ¹µ…à À°Í•ÍÍ¥½¸¹™…¥±¥Ñä¹¡À¥ô€¼€‘íÍ•ÍÍ¥½¸¹™…¥±¥Ñä¹µ…á!Áõ€ì(€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÑ…•%¹‘•à€ôôô€Ì¤µ¥ÍÍ¥½¸€ôÍ•ÍÍ¥½¸¹¡…Í-•ä€ü€‹ªÖC²z—².ƒ²zªÖ³®†pƒ²vÓ®>g¶Vc²ã²jP¸ˆ€èÍ•ÍÍ¥½¸¹ÍÑ…”¹½‰©•Ñ¥Ù”ì(€€€‘½´¹¡Õ‘5¥ÍÍ¥½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôµ¥ÍÍ¥½¸ì(€€€½¹ÍĞ‰½ÍÌ€ôÍ•ÍÍ¥½¸¹•¹•µ¥•Ì¹™¥¹ ¡•¹•µä¤€ôø•¹•µä¹ÑåÁ”€ôôô€‰‰½ÍÌˆ¤ì(€€€‘½´¹‰½ÍÍA…¹•°¹¡¥‘‘•¸€ô€…‰½ÍÌì(€€€¥˜€¡‰½ÍÌ¤‘½´¹‰½ÍÍ¥±°¹ÍÑå±”¹İ¥‘Ñ €ô€‘í±…µÀ¡‰½ÍÌ¹¡À€¼‰½ÍÌ¹µ…á!À€¨€ÄÀÀ°€À°€ÄÀÀ¥ô•€ì(€€€½¹ÍĞ±½…°€ôÍ•ÍÍ¥½¸¹Á±…å•ÉÌ¹™¥¹ ¡Á±…å•È¤€ôøÁ±…å•È¹¥€ôôôÍ•±™% ¤¤ñğÍ•ÍÍ¥½¸¹Á±…å•ÉÍlÁtì(€€€‘½´¹™¥É•µ…¹…Õ”¹¡¥‘‘•¸€ô±½…°ü¹©½ˆ€„ôô€‰™¥É•µ…¸ˆì(€€€¥˜€¡±½…°ü¹©½ˆ€ôôô€‰™¥É•µ…¸ˆ¤‘½´¹™Õ•±¥±°¹ÍÑå±”¹İ¥‘Ñ €ô€‘í±…µÀ¡±½…°¹™Õ•°€¼)=	L¹™¥É•µ…¸¹µ…áÕ•°€¨€ÄÀÀ°€À°€ÄÀÀ¥ô•€ì(€€€É•¹‘•ÉI½ÍÑ•È¡‘½´¹…µ•I½ÍÑ•È°É½ÍÑ•ÉA±…å•ÉÌ ¤¤ì(€ô(€™Õ¹Ñ¥½¸Í¡½İMÑ…•Q½…ÍĞ¡Ñ•áĞ°‘ÕÉ…Ñ¥½¸€ô€ÄÀÀÀ¤ì(€€€‘½´¹ÍÑ…•Q½…ÍĞ¹Ñ•áÑ½¹Ñ•¹Ğ€ôÑ•áĞì‘½´¹ÍÑ…•Q½…ÍĞ¹±…ÍÍ1¥ÍĞ¹…‘ ‰¥ÌµÙ¥Í¥‰±”ˆ¤ìÍ•ÍÍ¥½¸¹Ñ½…ÍÑU¹Ñ¥°€ôÁ•É™½Éµ…¹”¹¹½Ü ¤€¬‘ÕÉ…Ñ¥½¸ì(€ô(€™Õ¹Ñ¥½¸Í¡½İ½¹‘¥Ñ¥½¸¡Ñ•áĞ°‘ÕÉ…Ñ¥½¸€ô€ÄĞÀÀ¤ì(€€€‘½´¹½¹‘¥Ñ¥½¹Q½…ÍĞ¹Ñ•áÑ½¹Ñ•¹Ğ€ôÑ•áĞì‘½´¹½¹‘¥Ñ¥½¹Q½…ÍĞ¹±…ÍÍ1¥ÍĞ¹…‘ ‰¥ÌµÙ¥Í¥‰±”ˆ¤ìÍ•ÍÍ¥½¸¹½¹‘¥Ñ¥½¹U¹Ñ¥°€ôÁ•É™½Éµ…¹”¹¹½Ü ¤€¬‘ÕÉ…Ñ¥½¸ì(€ô(€™Õ¹Ñ¥½¸ÍÉ••¹A½¥¹Ğ¡…Ñ½È¤ìÉ•ÑÕÉ¸ìàè…Ñ½È¹à€´Í•ÍÍ¥½¸¹…µ•É„¹à°äè…Ñ½È¹ä€´Í•ÍÍ¥½¸¹…µ•É„¹äôìô(€™Õ¹Ñ¥½¸‘É…İ!•…±Ñ ¡…Ñ½È°Á½¥¹Ğ¤ì(€€€¥˜€¡…Ñ½È¹¡À€øô…Ñ½È¹µ…á!Àñğ…Ñ½È¹‘•…¤É•ÑÕÉ¸ì(€€€½¹ÍĞİ¥‘Ñ €ô…Ñ½È¹ÑåÁ”€ôôô€‰‰½ÍÌˆ€ü€ÜÀ€è€ÌĞì½¹ÍĞÉ…Ñ¥¼€ô±…µÀ¡…Ñ½È¹¡À€¼…Ñ½È¹µ…á!À°€À°€Ä¤ì(€€€½¹Ñ•áĞ¹™¥±±MÑå±”€ô€ˆŒÄÄÄˆì½¹Ñ•áĞ¹™¥±±I•Ğ¡5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹à€´İ¥‘Ñ €¼€È¤°5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹ä€´€¡95e}!%!Qm…Ñ½È¹ÑåÁ•tñğ€ĞĞ¤€´€Ü¤°İ¥‘Ñ °€Ô¤ì(€€€½¹Ñ•áĞ¹™¥±±MÑå±”€ôÉ…Ñ¥¼€ø€¸Ğ€ü€ˆ”ØÉˆÉˆˆ€è€ˆ™™˜ÈÀˆì½¹Ñ•áĞ¹™¥±±I•Ğ¡5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹à€´İ¥‘Ñ €¼€È€¬€Ä¤°5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹ä€´€¡95e}!%!Qm…Ñ½È¹ÑåÁ•tñğ€ĞĞ¤€´€Ø¤°5…Ñ ¹É½Õ¹ ¡İ¥‘Ñ €´€È¤€¨É…Ñ¥¼¤°€Ì¤ì(€ô(€™Õ¹Ñ¥½¸‘É…İÑÑ…­•±±Ì¡…ÑÑ…¬¤ì(€€€½¹Ñ•áĞ¹Í…Ù” ¤ì½¹Ñ•áĞ¹ÑÉ…¹Í±…Ñ” µÍ•ÍÍ¥½¸¹…µ•É„¹à°€µÍ•ÍÍ¥½¸¹…µ•É„¹ä¤ì(€€€½¹Ñ•áĞ¹™¥±±MÑå±”€ô…ÑÑ…¬¹©½ˆ€ôôô€‰™¥É•µ…¸ˆ€ü€‰É‰„ ÈÔÔ°ÈÌÀ°ÄÀÀ°¸ÈÔ¤ˆ€è€‰É‰„ ÈÔÔ°ÈÔÔ°ÈÔÔ°¸Äà¤ˆì(€€€½¹Ñ•áĞ¹ÍÑÉ½­•MÑå±”€ô)=	Mm…ÑÑ…¬¹©½‰t¹½±½Èì½¹Ñ•áĞ¹±¥¹•]¥‘Ñ €ô€Äì(€€€½¹Ñ•áĞ¹™¥±±I•Ğ¡…ÑÑ…¬¹à°…ÑÑ…¬¹ä°…ÑÑ…¬¹Ü°…ÑÑ…¬¹ ¤ì(€€€™½È€¡±•Ğà€ô…ÑÑ…¬¹àìà€ğô…ÑÑ…¬¹à€¬…ÑÑ…¬¹Üìà€¬ôQ%1¤ì½¹Ñ•áĞ¹‰•¥¹A…Ñ  ¤ì½¹Ñ•áĞ¹µ½Ù•Q¼¡à°…ÑÑ…¬¹ä¤ì½¹Ñ•áĞ¹±¥¹•Q¼¡à°…ÑÑ…¬¹ä€¬…ÑÑ…¬¹ ¤ì½¹Ñ•áĞ¹ÍÑÉ½­” ¤ìô(€€€™½È€¡±•Ğä€ô…ÑÑ…¬¹äìä€ğô…ÑÑ…¬¹ä€¬…ÑÑ…¬¹ ìä€¬ôQ%1¤ì½¹Ñ•áĞ¹‰•¥¹A…Ñ  ¤ì½¹Ñ•áĞ¹µ½Ù•Q¼¡…ÑÑ…¬¹à°ä¤ì½¹Ñ•áĞ¹±¥¹•Q¼¡…ÑÑ…¬¹à€¬…ÑÑ…¬¹Ü°ä¤ì½¹Ñ•áĞ¹ÍÑÉ½­” ¤ìô(€€€½¹Ñ•áĞ¹É•ÍÑ½É” ¤ì(€ô(€™Õ¹Ñ¥½¸É•¹‘•É…µ”¡¹½Ü¤ì(€€€½¹Ñ•áĞ¹±•…ÉI•Ğ À°€À°Y%\¹İ¥‘Ñ °Y%\¹¡•¥¡Ğ¤ì(€€€½¹ÍĞµ…À€ôMMQL¹•Ğ¡ÍÑ…”‘íÍ•ÍÍ¥½¸¹ÍÑ…•%¹‘•áõ€¤ì(€€€¥˜€¡µ…À¤½¹Ñ•áĞ¹‘É…İ%µ…”¡µ…À°€µ5…Ñ ¹É½Õ¹¡Í•ÍÍ¥½¸¹…µ•É„¹à¤°€µ5…Ñ ¹É½Õ¹¡Í•ÍÍ¥½¸¹…µ•É„¹ä¤¤ì(€€€€¼¼ƒªÖ³¶bTƒ®ç¶fPƒ¶R®‚#²z²^@ƒªÎƒ²‚W®Bc²ZĞƒ²z#®6`ƒ¶²vÓ®¢ã
+ß®ª®.£
+ß²‚C²"c®0ƒªÂ®š³ªÎ€°(€€€€¼¼ƒªÂg²v ƒ²r²æc²v`ƒ².“².sªÂ!UªÂ ƒ¶b²z°ƒ²¶s®–ğƒ¶Fs².s¶Vs®.¸(€€€½¹Ñ•áĞ¹™¥±±MÑå±”€ô€‰É‰„ Ğ°Ğ°Ğ°¸äĞ¤ˆì(€€€½¹Ñ•áĞ¹™¥±±I•Ğ À°€À°Y%\¹İ¥‘Ñ °€ĞÈ¤ì(€€€½¹Ñ•áĞ¹™¥±±MÑå±”€ô€‰É‰„ Ì°Ì°Ì°¸äÌ¤ˆì(€€€½¹Ñ•áĞ¹™¥±±I•Ğ À°€ĞÈ°€ÄàĞ°€ÄÈØ¤ì(€€€½¹Ñ•áĞ¹™¥±±I•Ğ ĞØÀ°€ĞÈ°€ÄàÀ°€ÄÄØ¤ì(€€€¥˜€¡Í•ÍÍ¥½¸¹­•ä€˜˜€…Í•ÍÍ¥½¸¹­•ä¹™½Õ¹¤ì(€€€€€½¹ÍĞÁ½¥¹Ğ€ôÍÉ••¹A½¥¹Ğ¡Í•ÍÍ¥½¸¹­•ä¤ì½¹Ñ•áĞ¹™¥±±MÑå±”€ô€ˆ™™àÌÈˆì½¹Ñ•áĞ¹™¥±±I•Ğ¡5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹à€´€Ô¤°5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹ä€´€ÄÀ¤°€ÄÀ°€ÄÜ¤ì½¹Ñ•áĞ¹™¥±±MÑå±”€ô€ˆ™™˜á‰ˆì½¹Ñ•áĞ¹™¥±±I•Ğ¡5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹à€¬€Ğ¤°5…Ñ ¹É½Õ¹¡Á½¥¹Ğ¹ä€´€Ü¤°€à°€Ğ¤ì(€€€ô(€€€¥˜€¡Í•ÍÍ¥½¸¹™…¥±¥Ñä€˜˜€…Í•ÍÍ¥½¸¹™…¥±¥Ñä¹‘•…¤ì(€€€€€½¹ÍĞÁ½¥¹Ğ€ôÍÉ••¹A½¥¹Ğ¡Í•ÍÍ¥½¸¹™…¥±¥Ñä¤ìMMQL¹‘É…Ü¡½¹Ñ•áĞ°€‰™…¥±¥Ñäˆ°Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä°ì¹½Ü°¡•¥¡Ğè€àÈô¤ì(€€€ô(€€€™½È€¡½¹ÍĞ…ÑÑ…¬½˜Í•ÍÍ¥½¸¹…ÑÑ…­Ì¤‘É…İÑÑ…­•±±Ì¡…ÑÑ…¬¤ì(€€€½¹ÍĞ…Ñ½ÉÌ€ômtì(€€€™½È€¡½¹ÍĞ•¹•µä½˜Í•ÍÍ¥½¸¹•¹•µ¥•Ì¤¥˜€ …•¹•µä¹‘•…¤…Ñ½ÉÌ¹ÁÕÍ ¡ì­¥¹è€‰•¹•µäˆ°…Ñ½Èè•¹•µäô¤ì(€€€™½È€¡½¹ÍĞÁ±…å•È½˜Í•ÍÍ¥½¸¹Á±…å•ÉÌ¤…Ñ½ÉÌ¹ÁÕÍ ¡ì­¥¹è€‰Á±…å•Èˆ°…Ñ½ÈèÁ±…å•Èô¤ì(€€€…Ñ½ÉÌ¹Í½ÉĞ ¡„°ˆ¤€ôø„¹…Ñ½È¹ä€´ˆ¹…Ñ½È¹ä¤ì(€€€™½È€¡½¹ÍĞ•¹ÑÉä½˜…Ñ½ÉÌ¤ì(€€€€€½¹ÍĞ…Ñ½È€ô•¹ÑÉä¹…Ñ½Èì½¹ÍĞÁ½¥¹Ğ€ôÍÉ••¹A½¥¹Ğ¡…Ñ½È¤ì(€€€€€¥˜€¡Á½¥¹Ğ¹à€ğ€´ÄÈÀñğÁ½¥¹Ğ¹à€ø€ÜØÀñğÁ½¥¹Ğ¹ä€ğ€´ÄĞÀñğÁ½¥¹Ğ¹ä€ø€ĞÌÀ¤½¹Ñ¥¹Õ”ì(€€€€€¥˜€¡•¹ÑÉä¹­¥¹€ôôô€‰•¹•µäˆ¤ì(€€€€€€€¥˜€¡…Ñ½È¹É•Ù¥Ù¥¹œ€˜˜5…Ñ ¹™±½½È¡¹½Ü€¼€ÄàÀ¤€”€È€ôôô€À¤½¹Ñ¥¹Õ”ì(€€€€€€€MMQL¹‘É…Ü¡½¹Ñ•áĞ°95%Mm…Ñ½È¹ÑåÁ•t¹ÍÁÉ¥Ñ”°Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä°ì¹½Ü°¡•¥¡Ğè95e}!%!Qm…Ñ½È¹ÑåÁ•t°™±¥Á`è…Ñ½È¹™…¥¹œ€ôôô€‰±•™Ğˆ°…±Á¡„è…Ñ½È¹ÍÑÕ¸€ø€À€ü€¸ØÈ€è€Äô¤ì(€€€€€€€‘É…İ!•…±Ñ ¡…Ñ½È°Á½¥¹Ğ¤ì(€€€€€ô•±Í”ì(€€€€€€€MMQL¹‘É…Ü¡½¹Ñ•áĞ°…Ñ½È¹©½ˆ°Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä°ì¹½Ü°¡•¥¡ĞèA1eI}!%!Qm…Ñ½È¹©½‰t°™±¥Á`è…Ñ½È¹™…¥¹œ€ôôô€‰±•™Ğˆ°…±Á¡„è…Ñ½È¹½¹‘¥Ñ¥½¸€ôôô€‰¥¹©ÕÉ•ˆ€ü€¸Ôà€è€Äô¤ì(€€€€€€€¥˜€¡…Ñ½È¹½¹‘¥Ñ¥½¸€ôôô€‰¥¹©ÕÉ•ˆ¤ì½¹Ñ•áĞ¹™¥±±MÑå±”€ô€ˆ™˜ÌĞĞĞˆì½¹Ñ•áĞ¹™½¹Ğ€ô€‰‰½±€ÄÉÁàÍ…¹ÌµÍ•É¥˜ˆì½¹Ñ•áĞ¹Ñ•áÑ±¥¸€ô€‰•¹Ñ•Èˆì½¹Ñ•áĞ¹™¥±±Q•áĞ ‹®Ú²ˆ°Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä€´€ĞÜ¤ìô(€€€€€€€¥˜€¡…Ñ½È¹¡•…±AÉ½É•ÍÌ€ø€À¤ì½¹Ñ•áĞ¹ÍÑÉ½­•MÑå±”€ô€ˆŒĞÉ™™Àˆì½¹Ñ•áĞ¹±¥¹•]¥‘Ñ €ô€Ìì½¹Ñ•áĞ¹‰•¥¹A…Ñ  ¤ì½¹Ñ•áĞ¹…ÉŒ¡Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä€´€ÈÈ°€Ää°€µ5…Ñ ¹A$€¼€È°€µ5…Ñ ¹A$€¼€È€¬5…Ñ ¹A$€¨€È€¨±…µÀ¡…Ñ½È¹¡•…±AÉ½É•ÍÌ€¼€Ì°€À°€Ä¤¤ì½¹Ñ•áĞ¹ÍÑÉ½­” ¤ìô(€€€€€ô(€€€ô(€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÑ…•%¹‘•à€øô€È¤ì(€€€€€½¹ÍĞ±½…°€ôÍ•ÍÍ¥½¸¹Á±…å•ÉÌ¹™¥¹ ¡Á±…å•È¤€ôøÁ±…å•È¹¥€ôôôÍ•±™% ¤¤ñğÍ•ÍÍ¥½¸¹Á±…å•ÉÍlÁtì(€€€€€¥˜€¡±½…°¤ì(€€€€€€€½¹ÍĞÁ½¥¹Ğ€ôÍÉ••¹A½¥¹Ğ¡±½…°¤ì½¹ÍĞÉ…‘¥•¹Ğ€ô½¹Ñ•áĞ¹É•…Ñ•I…‘¥…±É…‘¥•¹Ğ¡Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä°€àÀ°Á½¥¹Ğ¹à°Á½¥¹Ğ¹ä°€ÈÌÔ¤ì(€€€€€€€É…‘¥•¹Ğ¹…‘‘½±½ÉMÑ½À À°€‰É‰„ À°À°À°À¤ˆ¤ìÉ…‘¥•¹Ğ¹…‘‘½±½ÉMÑ½À Ä°€‰É‰„ À°À°À°¸Ğà¤ˆ¤ì(€€€€€€€½¹Ñ•áĞ¹™¥±±MÑå±”€ôÉ…‘¥•¹Ğì½¹Ñ•áĞ¹™¥±±I•Ğ À°€À°Y%\¹İ¥‘Ñ °Y%\¹¡•¥¡Ğ¤ì(€€€€€ô(€€€ô(€ô((€…Íå¹Œ™Õ¹Ñ¥½¸½¹¹•Ñ1½‰‰ä¡É•ÅÕ•ÍÑ•‘½‘”¤ì(€€€¥˜€ …9P¤ìÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ìÉ•ÑÕÉ¸ìô(€€€½¹ÍĞ½‘”€ô€  ¤€ôøìÑÉäìÉ•ÑÕÉ¸9P¹¹½Éµ…±¥é•I½½µ½‘”¡É•ÅÕ•ÍÑ•‘½‘”ñğ9P¹•¹•É…Ñ•I½½µ½‘” ¤¤ìô…Ñ €¡}•ÉÉ½È¤ìÉ•ÑÕÉ¸9P¹•¹•É…Ñ•I½½µ½‘” ¤ìôô¤ ¤ì(€€€‘½´¹É½½µ½‘”¹Ù…±Õ”€ô½‘”ì‘½´¹¹•Ñİ½É­••‘‰…¬¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹®Â§²^@ƒ²^ÃªÊÃ¶Vc®*Pƒ²’G²z®.#®.¸ˆì(€€€ÑÉäì(€€€€€½¹ÍĞÍÑ…Ñ”€ô…İ…¥Ğ9P¹½¹¹•ÑI½½´¡½‘”°ì¹…µ”è‘½´¹Á±…å•É9…µ”¹Ù…±Õ”¹ÑÉ¥´ ¤ñğ€‰A1eHˆ°±…ÍÍ%èÍ•ÍÍ¥½¸¹Í•±•Ñ•‘)½ˆ°àèÍ•ÍÍ¥½¸¹±½‰‰åA±…å•È¹à°äèÍ•ÍÍ¥½¸¹±½‰‰åA±…å•È¹ä°™…¥¹œèÍ•ÍÍ¥½¸¹±½‰‰åA±…å•È¹™…¥¹œô¤ì(€€€€€¥˜€¡ÍÑ…Ñ”¹½¹±¥¹”¤¡¥ÍÑ½Éä¹É•Á±…•MÑ…Ñ”¡¹Õ±°°€ˆˆ°€‘í±½…Ñ¥½¸¹Á…Ñ¡¹…µ•ô‘í±½…Ñ¥½¸¹Í•…É¡ôŒ‘í½‘•õ€¤ì(€€€ô…Ñ €¡}•ÉÉ½È¤ì€¼¨½™™±¥¹”Á±…äÉ•µ…¥¹Ì¥µµ•‘¥…Ñ•±ä…Ù…¥±…‰±”€¨¼ô(€€€ÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ì(€ô(€™Õ¹Ñ¥½¸‰¥¹‘9•Ñİ½É¬ ¤ì(€€€¥˜€ …9P¤É•ÑÕÉ¸ì(€€€9P¹½¸ ‰ÍÑ…ÑÕÌˆ°ÕÁ‘…Ñ•9•Ñİ½É­U$¤ì9P¹½¸ ‰É½ÍÑ•Èˆ°ÕÁ‘…Ñ•9•Ñİ½É­U$¤ì(€€€9P¹½¹½Õ¹Ñ‘½İ¸ ¡ìÉ•µ…¥¹¥¹œô¤€ôøì(€€€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÉ••¸€„ôô€‰±½‰‰äˆ¤É•ÑÕÉ¸ì(€€€€€‘½´¹½Õ¹Ñ‘½İ¸¹¡¥‘‘•¸€ô™…±Í”ì‘½´¹½Õ¹Ñ‘½İ¸¹ÅÕ•ÉåM•±•Ñ½È ‰ÍÑÉ½¹œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÉ•µ…¥¹¥¹œñğ€‰MQIPˆì(€€€€€‘½´¹±½‰‰å5•ÍÍ…”¹Ñ•áÑ½¹Ñ•¹Ğ€ôÉ•µ…¥¹¥¹œ€ü€‘íÉ•µ…¥¹¥¹÷²Ò ƒ¶n²^@ƒ².s²zG¶V§®.#®.¹€€è€‹ªÊ3²z²vƒ².s²zG¶V§®.#®.¸ˆì(€€€ô¤ì(€€€9P¹½¸ ‰ÍÑ…ÉĞˆ°€¡ì¥¹™¼ô¤€ôøì‘½´¹½Õ¹Ñ‘½İ¸¹¡¥‘‘•¸€ôÑÉÕ”ì¥˜€¡Í•ÍÍ¥½¸¹ÍÉ••¸€ôôô€‰±½‰‰äˆ¤ÍÑ…ÉÑIÕ¸¡¥¹™¼¤ìô¤ì(€€€9P¹½¹%¹ÁÕĞ ¡ìÁ±…å•É%°¥¹ÁÕĞô¤€ôøì¥˜€¡¥Í!½ÍĞ ¤¤Í•ÍÍ¥½¸¹É•µ½Ñ•%¹ÁÕÑÌ¹Í•Ğ¡Á±…å•É%°¥¹ÁÕĞ¤ìô¤ì(€€€9P¹½¹M¹…ÁÍ¡½Ğ ¡ìÍÑ…Ñ”ô¤€ôøì¥˜€ …¥Í!½ÍĞ ¤€˜˜Í•ÍÍ¥½¸¹ÍÉ••¸€ôôô€‰…µ”ˆ¤…ÁÁ±åM¹…ÁÍ¡½Ğ¡ÍÑ…Ñ”¤ìô¤ì(€€€9P¹½¸ ‰•ÉÉ½Èˆ°€¡ìµ•ÍÍ…”ô¤€ôøì‘½´¹¹•Ñİ½É­••‘‰…¬¹Ñ•áÑ½¹Ñ•¹Ğ€ôµ•ÍÍ…”ñğ€‹²^ÃªÊÀƒ²b“®–`ˆìÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ìô¤ì(€ô(€™Õ¹Ñ¥½¸ÍÑ…ÉÑ=™™±¥¹•½Õ¹Ñ‘½İ¸ ¤ì(€€€¥˜€¡Í•ÍÍ¥½¸¹½™™±¥¹•½Õ¹Ñ‘½İ¸¤É•ÑÕÉ¸ì(€€€±•ĞÉ•µ…¥¹¥¹œ€ô€Ìì‘½´¹½Õ¹Ñ‘½İ¸¹¡¥‘‘•¸€ô™…±Í”ì‘½´¹½Õ¹Ñ‘½İ¸¹ÅÕ•ÉåM•±•Ñ½È ‰ÍÑÉ½¹œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÉ•µ…¥¹¥¹œì(€€€‘½´¹±½‰‰å5•ÍÍ…”¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÉ•µ…¥¹¥¹÷²Ò ƒ¶n²^@ƒ².s²zG¶V§®.#®.¹€ì(€€€Í•ÍÍ¥½¸¹½™™±¥¹•½Õ¹Ñ‘½İ¸€ôÍ•Ñ%¹Ñ•ÉÙ…°  ¤€ôøì(€€€€€É•µ…¥¹¥¹œ€´ô€Äì(€€€€€¥˜€¡É•µ…¥¹¥¹œ€ø€À¤ì‘½´¹½Õ¹Ñ‘½İ¸¹ÅÕ•ÉåM•±•Ñ½È ‰ÍÑÉ½¹œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÉ•µ…¥¹¥¹œì‘½´¹±½‰‰å5•ÍÍ…”¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÉ•µ…¥¹¥¹÷²Ò ƒ¶n²^@ƒ².s²zG¶V§®.#®.¹€ìÉ•ÑÕÉ¸ìô(€€€€€±•…É%¹Ñ•ÉÙ…°¡Í•ÍÍ¥½¸¹½™™±¥¹•½Õ¹Ñ‘½İ¸¤ìÍ•ÍÍ¥½¸¹½™™±¥¹•½Õ¹Ñ‘½İ¸€ô¹Õ±°ì‘½´¹½Õ¹Ñ‘½İ¸¹¡¥‘‘•¸€ôÑÉÕ”ìÍÑ…ÉÑIÕ¸¡ìÍÑ…”è€À°Í••è5…Ñ ¹™±½½È¡5…Ñ ¹É…¹‘½´ ¤€¨€Áá™™™™™™™˜¤ô¤ì(€€€ô°€ÄÀÀÀ¤ì(€ô((€‘½´¹•¹Ñ•È¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€ ¤€ôøì(€€€‘½´¹•¹Ñ•È¹‘¥Í…‰±•€ôÑÉÕ”ì‘½´¹•¹Ñ•È¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹²nC®Îàƒ²^C²,ƒ®Ú#®~³²b“®*Pƒ²’GŠ˜ˆì(€€€¥˜€ …Í•ÍÍ¥½¸¹É•…‘ä¤ì…İ…¥ĞMMQL¹ÁÉ•±½… ¤ìÍ•ÍÍ¥½¸¹É•…‘ä€ôÑÉÕ”ìô(€€€¥˜€¡‘•‰ÕA…É…µ•Ñ•ÉÌ¹¡…Ì ‰‘•‰Õœˆ¤€˜˜‘•‰ÕA…É…µ•Ñ•ÉÌ¹¡…Ì ‰ÍÑ…”ˆ¤¤ì(€€€€€ÍÑ…ÉÑIÕ¸¡ìÍÑ…”è€À°Í••è€ÄÈÌĞÔØÜàäô¤ì(€€€€€±½…‘MÑ…”¡±…µÀ¡9Õµ‰•È¡‘•‰ÕA…É…µ•Ñ•ÉÌ¹•Ğ ‰ÍÑ…”ˆ¤¤ñğ€À°€À°€Ğ¤°€ÄÈÌĞÔØÜàä¤ì(€€€€€É•ÑÕÉ¸ì(€€€ô(€€€Í•ÑMÉ••¸ ‰±½‰‰äˆ¤ìÍ•±•Ñ)½ˆ ‰…É¡•Èˆ¤ìÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ì(€€€½¹¹•Ñ1½‰‰ä¡É½½µ½‘•É½µ1½…Ñ¥½¸ ¤¤ì(€ô¤ì(€‘½´¹ÍÑ…ÉĞ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€½¹ÍĞÍÑ…Ñ”€ô9Pü¹•ÑMÑ…Ñ”ü¸ ¤ì(€€€¥˜€¡ÍÑ…Ñ”ü¹½¹±¥¹”¤ì(€€€€€¥˜€ …ÍÑ…Ñ”¹¥Í!½ÍĞ¤ì‘½´¹±½‰‰å5•ÍÍ…”¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹®Â§²z—²vĞƒ².s²zG¶V€ƒ®V3ªæ3² ƒªâÃ®.“®‚ƒ²ó²ã²jP¸ˆìÉ•ÑÕÉ¸ìô(€€€€€9P¹ÍÑ…ÉÑ…µ”¡ìÍÑ…”è€À°Í••è5…Ñ ¹™±½½È¡5…Ñ ¹É…¹‘½´ ¤€¨€Áá™™™™™™™˜¤ô¤ì(€€€ô•±Í”ÍÑ…ÉÑ=™™±¥¹•½Õ¹Ñ‘½İ¸ ¤ì(€ô¤ì(€‘½´¹É½±•	ÕÑÑ½¹Ì¹™½É…  ¡‰ÕÑÑ½¸¤€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•±•Ñ)½ˆ¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹©½ˆ¤¤¤ì(€‘½´¹¹•Ñİ½É­Q½±”¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì‘½´¹¹•Ñİ½É­A…¹•°¹¡¥‘‘•¸€ô€…‘½´¹¹•Ñİ½É­A…¹•°¹¡¥‘‘•¸ìô¤ì(€‘½´¹¹•Ñİ½É­±½Í”¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì‘½´¹¹•Ñİ½É­A…¹•°¹¡¥‘‘•¸€ôÑÉÕ”ìô¤ì(€‘½´¹½¹¹•ÑI½½´¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø½¹¹•Ñ1½‰‰ä¡‘½´¹É½½µ½‘”¹Ù…±Õ”¤¤ì(€‘½´¹½ÁåI½½´¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°…Íå¹Œ€ ¤€ôøì(€€€½¹ÍĞÍÑ…Ñ”€ô9Pü¹•ÑMÑ…Ñ”ü¸ ¤ì¥˜€ …ÍÑ…Ñ”ü¹½¹±¥¹”¤É•ÑÕÉ¸ì(€€€ÑÉäì…İ…¥Ğ¹…Ù¥…Ñ½È¹±¥Á‰½…É¹İÉ¥Ñ•Q•áĞ¡€‘í±½…Ñ¥½¸¹½É¥¥¹ô‘í±½…Ñ¥½¸¹Á…Ñ¡¹…µ•ôŒ‘íÍÑ…Ñ”¹É½½µ½‘•õ€¤ì‘½´¹¹•Ñİ½É­••‘‰…¬¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹²Ò#®2 ƒ®¶³®–ğƒ®Î×²
+³¶Z#²*×®.#®.¸ˆìô…Ñ €¡}•ÉÉ½È¤ì‘½´¹¹•Ñİ½É­••‘‰…¬¹Ñ•áÑ½¹Ñ•¹Ğ€ôƒ®Â¤ƒ²öS®Npè€‘íÍÑ…Ñ”¹É½½µ½‘•õ€ìô(€ô¤ì(€‘½´¹Á±…å•É9…µ”¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøìÑÉäì9Pü¹Í•ÑA±…å•É9…µ”ü¸¡‘½´¹Á±…å•É9…µ”¹Ù…±Õ”¹ÑÉ¥´ ¤ñğ€‰A1eHˆ¤ìô…Ñ €¡}•ÉÉ½È¤ì‘½´¹Á±…å•É9…µ”¹Ù…±Õ”€ô€‰A1eHˆìôÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ìô¤ì(€‘½´¹É•ÍÕ±Ñ	ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€‘½´¹É•ÍÕ±Ğ¹¡¥‘‘•¸€ôÑÉÕ”ì(€€€¥˜€ …Í•ÍÍ¥½¸¹•¹‘•¤É•ÑÕÉ¸ì(€€€¥˜€¡Í•ÍÍ¥½¸¹¹•áÑMÑ…”€„ôô¹Õ±°¤±½…‘MÑ…”¡Í•ÍÍ¥½¸¹¹•áÑMÑ…”°Í•ÍÍ¥½¸¹Í••¤ì(€€€•±Í”¥˜€¡‘½´¹É•ÍÕ±Ñ-¥­•È¹Ñ•áÑ½¹Ñ•¹Ğ€ôôô€‰5%MM%=8%1ˆ¤±½…‘MÑ…”¡Í•ÍÍ¥½¸¹ÍÑ…•%¹‘•à°Í•ÍÍ¥½¸¹Í••¤ì(€€€•±Í”ìÍ•ÑMÉ••¸ ‰±½‰‰äˆ¤ìÍ•ÍÍ¥½¸¹•¹‘•€ô™…±Í”ìÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ìô(€ô¤ì((€İ¥¹‘½Ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰­•å‘½İ¸ˆ°€¡•Ù•¹Ğ¤€ôøì(€€€½¹ÍĞ½¹ÑÉ½±±•€ôl‰-•å\ˆ°€‰-•åˆ°€‰-•åLˆ°€‰-•åˆ°€‰ÉÉ½İUÀˆ°€‰ÉÉ½İ½İ¸ˆ°€‰ÉÉ½İ1•™Ğˆ°€‰ÉÉ½İI¥¡Ğˆ°€‰-•å(‰tì(€€€¥˜€¡l‰±½‰‰äˆ°€‰…µ”‰t¹¥¹±Õ‘•Ì¡Í•ÍÍ¥½¸¹ÍÉ••¸¤€˜˜½¹ÑÉ½±±•¹¥¹±Õ‘•Ì¡•Ù•¹Ğ¹½‘”¤¤•Ù•¹Ğ¹ÁÉ•Ù•¹Ñ•™…Õ±Ğ ¤ì(€€€¥˜€¡½¹ÑÉ½±±•¹¥¹±Õ‘•Ì¡•Ù•¹Ğ¹½‘”¤¤ì(€€€€€¥˜€ …½¹ÑÉ½±Ì¹­•åÌ¹¡…Ì¡•Ù•¹Ğ¹½‘”¤€˜˜€…•Ù•¹Ğ¹É•Á•…Ğ¤½¹ÑÉ½±Ì¹©ÕÍÑAÉ•ÍÍ•¹…‘¡•Ù•¹Ğ¹½‘”¤ì(€€€€€½¹ÑÉ½±Ì¹­•åÌ¹…‘¡•Ù•¹Ğ¹½‘”¤ì(€€€ô(€ô¤ì(€İ¥¹‘½Ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰­•åÕÀˆ°€¡•Ù•¹Ğ¤€ôø½¹ÑÉ½±Ì¹­•åÌ¹‘•±•Ñ”¡•Ù•¹Ğ¹½‘”¤¤ì(€İ¥¹‘½Ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰‰±ÕÈˆ°€ ¤€ôøì½¹ÑÉ½±Ì¹­•åÌ¹±•…È ¤ì½¹ÑÉ½±Ì¹©ÕÍÑAÉ•ÍÍ•¹±•…È ¤ìô¤ì(€€ ˆ¹Ñ½Õ µ½¹ÑÉ½±Ìm‘…Ñ„µ­•åtˆ¤¹™½É…  ¡‰ÕÑÑ½¸¤€ôøì(€€€½¹ÍĞ½‘”€ô‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹­•äì(€€€½¹ÍĞ‘½İ¸€ô€¡•Ù•¹Ğ¤€ôøì•Ù•¹Ğ¹ÁÉ•Ù•¹Ñ•™…Õ±Ğ ¤ì¥˜€ …½¹ÑÉ½±Ì¹­•åÌ¹¡…Ì¡½‘”¤¤½¹ÑÉ½±Ì¹©ÕÍÑAÉ•ÍÍ•¹…‘¡½‘”¤ì½¹ÑÉ½±Ì¹­•åÌ¹…‘¡½‘”¤ìôì(€€€½¹ÍĞÕÀ€ô€¡•Ù•¹Ğ¤€ôøì•Ù•¹Ğ¹ÁÉ•Ù•¹Ñ•™…Õ±Ğ ¤ì½¹ÑÉ½±Ì¹­•åÌ¹‘•±•Ñ”¡½‘”¤ìôì(€€€‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰Á½¥¹Ñ•É‘½İ¸ˆ°‘½İ¸¤ìl‰Á½¥¹Ñ•ÉÕÀˆ°€‰Á½¥¹Ñ•É…¹•°ˆ°€‰Á½¥¹Ñ•É±•…Ù”‰t¹™½É…  ¡¹…µ”¤€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È¡¹…µ”°ÕÀ¤¤ì(€ô¤ì(€€ ˆ¹Ñ½Õ µ½¹ÑÉ½±Ìm‘…Ñ„µ…Ñ¥½¸ô…ÑÑ…¬tˆ¤¹™½É…  ¡‰ÕÑÑ½¸¤€ôøì(€€€½¹ÍĞ‘½İ¸€ô€¡•Ù•¹Ğ¤€ôøì•Ù•¹Ğ¹ÁÉ•Ù•¹Ñ•™…Õ±Ğ ¤ì¥˜€ …½¹ÑÉ½±Ì¹­•åÌ¹¡…Ì ‰-•å(ˆ¤¤½¹ÑÉ½±Ì¹©ÕÍÑAÉ•ÍÍ•¹…‘ ‰-•å(ˆ¤ì½¹ÑÉ½±Ì¹­•åÌ¹…‘ ‰-•å(ˆ¤ìôì(€€€½¹ÍĞÕÀ€ô€¡•Ù•¹Ğ¤€ôøì•Ù•¹Ğ¹ÁÉ•Ù•¹Ñ•™…Õ±Ğ ¤ì½¹ÑÉ½±Ì¹­•åÌ¹‘•±•Ñ” ‰-•å(ˆ¤ìôì(€€€‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰Á½¥¹Ñ•É‘½İ¸ˆ°‘½İ¸¤ìl‰Á½¥¹Ñ•ÉÕÀˆ°€‰Á½¥¹Ñ•É…¹•°ˆ°€‰Á½¥¹Ñ•É±•…Ù”‰t¹™½É…  ¡¹…µ”¤€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È¡¹…µ”°ÕÀ¤¤ì(€ô¤ì((€™Õ¹Ñ¥½¸±½½À¡¹½Ü¤ì(€€€½¹ÍĞ™É…µ”€ô5…Ñ ¹µ¥¸ À¸Ä°5…Ñ ¹µ…à À°€¡¹½Ü€´Í•ÍÍ¥½¸¹±…ÍÑÉ…µ”¤€¼€ÄÀÀÀ¤¤ìÍ•ÍÍ¥½¸¹±…ÍÑÉ…µ”€ô¹½ÜìÍ•ÍÍ¥½¸¹…ÕµÕ±…Ñ½È€¬ô™É…µ”ì(€€€İ¡¥±”€¡Í•ÍÍ¥½¸¹…ÕµÕ±…Ñ½È€øôMQ@¤ì(€€€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÉ••¸€ôôô€‰±½‰‰äˆ¤ÕÁ‘…Ñ•1½‰‰ä¡MQ@¤ì(€€€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÉ••¸€ôôô€‰…µ”ˆ¤ÕÁ‘…Ñ•…µ”¡MQ@¤ì(€€€€€Í•ÍÍ¥½¸¹…ÕµÕ±…Ñ½È€´ôMQ@ì½¹ÑÉ½±Ì¹©ÕÍÑAÉ•ÍÍ•¹±•…È ¤ì(€€€ô(€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÉ••¸€ôôô€‰±½‰‰äˆ¤É•¹‘•É1½‰‰ä¡¹½Ü¤ì(€€€¥˜€¡Í•ÍÍ¥½¸¹ÍÉ••¸€ôôô€‰…µ”ˆ¤É•¹‘•É…µ”¡¹½Ü¤ì(€€€¥˜€¡Í•ÍÍ¥½¸¹Ñ½…ÍÑU¹Ñ¥°€˜˜¹½Ü€øÍ•ÍÍ¥½¸¹Ñ½…ÍÑU¹Ñ¥°¤ì‘½´¹ÍÑ…•Q½…ÍĞ¹±…ÍÍ1¥ÍĞ¹É•µ½Ù” ‰¥ÌµÙ¥Í¥‰±”ˆ¤ìÍ•ÍÍ¥½¸¹Ñ½…ÍÑU¹Ñ¥°€ô€Àìô(€€€¥˜€¡Í•ÍÍ¥½¸¹½¹‘¥Ñ¥½¹U¹Ñ¥°€˜˜¹½Ü€øÍ•ÍÍ¥½¸¹½¹‘¥Ñ¥½¹U¹Ñ¥°¤ì‘½´¹½¹‘¥Ñ¥½¹Q½…ÍĞ¹±…ÍÍ1¥ÍĞ¹É•µ½Ù” ‰¥ÌµÙ¥Í¥‰±”ˆ¤ìÍ•ÍÍ¥½¸¹½¹‘¥Ñ¥½¹U¹Ñ¥°€ô€Àìô(€€€É•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¡±½½À¤ì(€ô((€‰¥¹‘9•Ñİ½É¬ ¤ìÕÁ‘…Ñ•9•Ñİ½É­U$ ¤ìÍ•±•Ñ)½ˆ ‰…É¡•Èˆ¤ìÉ•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¡±½½À¤ì(€¥˜€¡‘•‰ÕA…É…µ•Ñ•ÉÌ¹¡…Ì ‰‘•‰Õœˆ¤¤ì(€€€İ¥¹‘½Ü¹@Å…µ”€ô=‰©•Ğ¹™É••é”¡ìÍ•ÍÍ¥½¸°±½…‘MÑ…”°ÍÑ…ÉÑIÕ¸°µ…­•M¹…ÁÍ¡½Ğ°¥¹©ÕÉ”°…Ñ¥Ù…Ñ•É•„è€¡¥¹‘•à¤€ôø…Ñ¥Ù…Ñ•É•„¡¥¹‘•à°Í•ÍÍ¥½¸¹ÍÑ…”¹…É•…Ím¥¹‘•át¤ô¤ì(€ô)ô¤ ¤ì(

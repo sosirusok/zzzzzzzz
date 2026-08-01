@@ -3,12 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a1018" />
-    <meta
-      name="description"
-      content="아처·메딕·체어맨·파이어맨으로 0~4 스테이지를 돌파하는 진격의 좀비 Episode 1 웹게임"
-    />
-    <title>좀비고등학교 — 진격의 좀비 EPISODE 1</title>
+    <meta name="theme-color" content="#080808" />
+    <meta name="description" content="진격의 좀비 Episode 1 클래식 브라우저 재현 프로젝트" />
+    <title>진격의 좀비 EPISODE 1</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="data.js" defer></script>
     <script src="assets.js" defer></script>
@@ -18,204 +15,130 @@
   </head>
   <body>
     <main id="app">
-      <section id="entrance-screen" class="screen entrance-screen is-active" aria-labelledby="game-title">
-        <div class="ambient-grid" aria-hidden="true"></div>
-        <div class="entrance-card">
-          <p class="eyebrow">CO-OP SURVIVAL / EPISODE 1</p>
-          <h1 id="game-title"><span>진격의 좀비</span> EPISODE 1</h1>
-          <p class="entrance-copy">
-            학교를 뒤덮은 좀비를 돌파하고 0스테이지부터 교장실까지 생존하세요.
-          </p>
-          <button id="enter-button" class="primary-button entrance-button" type="button">
-            <span>입장하기</span>
-            <small>ENTER</small>
-          </button>
-          <p class="prototype-badge">허가된 직업·좀비·맵 자료 사용 · 이름 있는 학생 캐릭터 제외</p>
+      <section id="entrance-screen" class="screen entrance-screen is-active" aria-labelledby="main-title">
+        <div class="entrance-vignette"></div>
+        <div class="entrance-panel">
+          <p class="series-label">좀비고등학교 스토리 모드</p>
+          <h1 id="main-title">진격의 좀비</h1>
+          <p class="episode-label">EPISODE 1</p>
+          <button id="enter-button" class="game-button enter-button" type="button">입장하기</button>
+          <p class="entrance-hint">키보드: 방향키/WASD 이동 · J 공격</p>
         </div>
       </section>
 
-      <section id="lobby-screen" class="screen lobby-screen" aria-labelledby="lobby-title" hidden>
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">WAITING ROOM</p>
-            <h2 id="lobby-title">작전 대기실</h2>
+      <section id="lobby-screen" class="screen play-screen" hidden aria-label="작전 대기실">
+        <div class="pixel-frame">
+          <canvas id="lobby-canvas" width="640" height="360" aria-label="교실 대기실"></canvas>
+
+          <ol id="lobby-roster" class="roster lobby-roster" aria-label="참가자 목록"></ol>
+
+          <div class="lobby-roles" aria-label="직업 선택">
+            <button type="button" data-job="archer"><b>아처</b><span>1×7</span></button>
+            <button type="button" data-job="medic"><b>메딕</b><span>1×5</span></button>
+            <button type="button" data-job="chairman"><b>체어맨</b><span>3×2</span></button>
+            <button type="button" data-job="fireman"><b>파이어맨</b><span>3×3</span></button>
           </div>
-          <div id="connection-status" class="connection-status" role="status">
-            <span class="status-dot"></span>
-            <span id="connection-status-text">대기실 연결 준비</span>
+
+          <aside class="episode-card" aria-label="선택된 에피소드">
+            <div class="episode-thumb">
+              <span>진격의 좀비</span>
+              <strong>EPISODE 1</strong>
+            </div>
+            <p>Normal Level</p>
+          </aside>
+
+          <div class="lobby-chat" aria-live="polite">
+            <p id="lobby-message">교실을 돌아다니며 직업을 선택하세요.</p>
+            <p class="control-line"><kbd>J</kbd> 직업 선택 / 공격</p>
           </div>
-        </header>
 
-        <div class="lobby-layout">
-          <section class="mission-panel panel">
-            <div class="mission-art" aria-hidden="true">
-              <div class="moon"></div>
-              <div class="school-silhouette">
-                <i></i><i></i><i></i><i></i><i></i><i></i>
-              </div>
-              <div class="warning-tape">RESTRICTED AREA · RESTRICTED AREA · RESTRICTED AREA</div>
-            </div>
-            <div class="mission-content">
-              <span class="chapter-label">EPISODE 01</span>
-              <h3>진격의 좀비 EPISODE 1</h3>
-              <p>0스테이지에서 출발해 운동장·카페테리아·교실동을 지나 교장실 보스를 저지하세요.</p>
-              <label class="stage-select-label" for="start-stage">시작 스테이지</label>
-              <select id="start-stage" aria-label="시작 스테이지 선택">
-                <option value="0">Stage 0 · 출발 구역</option>
-                <option value="1">Stage 1 · 운동장</option>
-                <option value="2">Stage 2 · 카페테리아</option>
-                <option value="3">Stage 3 · 교실동</option>
-                <option value="4">Stage 4 · 교장실</option>
-              </select>
-            </div>
-          </section>
+          <div class="lobby-actions">
+            <button id="network-toggle" class="round-button network-button" type="button" aria-label="방 연결 설정">방</button>
+            <button id="start-button" class="round-button start-button" type="button" aria-label="게임 시작">시작</button>
+          </div>
 
-          <section class="room-panel panel" aria-labelledby="room-heading">
-            <div class="panel-heading">
-              <div>
-                <p id="room-label" class="panel-kicker">ROOM ------</p>
-                <h3 id="room-heading">생존자 목록</h3>
-              </div>
-              <span class="player-count"><b id="player-count">1</b> / 4</span>
-            </div>
-            <div class="network-controls">
-              <label>
-                <span>닉네임</span>
-                <input id="player-name" type="text" maxlength="20" value="PLAYER" autocomplete="nickname" />
-              </label>
-              <label>
-                <span>방 코드</span>
-                <input id="room-code" type="text" maxlength="10" inputmode="text" autocomplete="off" aria-describedby="network-feedback" />
-              </label>
-              <div class="network-buttons">
-                <button id="connect-room-button" class="secondary-button" type="button">방 연결</button>
-                <button id="copy-room-button" class="secondary-button" type="button">초대 링크 복사</button>
-              </div>
-              <p id="network-feedback" class="network-feedback" aria-live="polite">입장하면 새 방이 자동으로 만들어집니다.</p>
-            </div>
-            <ol id="player-list" class="player-list">
-              <li class="player-slot is-filled">
-                <span class="slot-number">01</span>
-                <span id="local-player-avatar" class="mini-avatar archer">A</span>
-                <span class="player-name">나 <em>방장</em></span>
-                <span id="local-player-job" class="player-job">아처</span>
-              </li>
-              <li class="player-slot"><span class="slot-number">02</span><span class="empty-slot">대기 중</span></li>
-              <li class="player-slot"><span class="slot-number">03</span><span class="empty-slot">대기 중</span></li>
-              <li class="player-slot"><span class="slot-number">04</span><span class="empty-slot">대기 중</span></li>
-            </ol>
-            <p class="network-note">방 코드 기반 P2P 대기실과 방장 시작 신호가 동기화됩니다. 전투 위치·피해 판정은 현재 각 기기에서 로컬로 실행됩니다.</p>
-          </section>
+          <div id="countdown" class="countdown" hidden aria-live="assertive"><strong>3</strong></div>
 
-          <section class="job-panel panel" aria-labelledby="job-heading">
-            <div class="panel-heading">
-              <div>
-                <p class="panel-kicker">ROLE SELECT</p>
-                <h3 id="job-heading">직업 선택</h3>
-              </div>
-              <span id="selected-role-summary" class="selected-role-summary">원거리 공격</span>
+          <div id="network-panel" class="network-panel" hidden>
+            <header>
+              <strong>방 연결</strong>
+              <button id="network-close" type="button" aria-label="닫기">×</button>
+            </header>
+            <label>닉네임 <input id="player-name" maxlength="12" value="PLAYER" autocomplete="nickname" /></label>
+            <label>방 코드 <input id="room-code" maxlength="10" autocomplete="off" /></label>
+            <div class="network-row">
+              <button id="connect-room-button" type="button">연결</button>
+              <button id="copy-room-button" type="button">초대 복사</button>
             </div>
-            <div id="job-grid" class="job-grid">
-              <button class="job-card is-selected archer" type="button" data-job="archer" aria-pressed="true">
-                <span class="job-icon" aria-hidden="true">➶</span>
-                <span class="job-name">아처</span>
-                <span class="job-description">관통 화살 · 1×7 범위</span>
-                <span class="job-stat"><b>20</b> 피해 / <b>0.6초</b></span>
-              </button>
-              <button class="job-card medic" type="button" data-job="medic" aria-pressed="false">
-                <span class="job-icon" aria-hidden="true">✚</span>
-                <span class="job-name">메딕</span>
-                <span class="job-description">기절 주사 · 1×5 범위</span>
-                <span class="job-stat"><b>25</b> 피해 / <b>1초</b></span>
-              </button>
-              <button class="job-card chairman" type="button" data-job="chairman" aria-pressed="false">
-                <span class="job-icon" aria-hidden="true">▰</span>
-                <span class="job-name">체어맨</span>
-                <span class="job-description">의자 타격 · 3×2 범위</span>
-                <span class="job-stat"><b>25</b> 피해 / <b>0.5초</b></span>
-              </button>
-              <button class="job-card fireman" type="button" data-job="fireman" aria-pressed="false">
-                <span class="job-icon" aria-hidden="true">♨</span>
-                <span class="job-name">파이어맨</span>
-                <span class="job-description">분사 공격 · 광역 기절</span>
-                <span class="job-stat"><b>6</b> 피해 / <b>0.2초</b></span>
-              </button>
+            <p id="network-feedback">빈 코드로 연결하면 새 방의 방장이 됩니다.</p>
+          </div>
+
+          <div class="touch-controls lobby-touch" aria-label="모바일 조작">
+            <div class="dpad">
+              <button data-key="ArrowUp" aria-label="위">▲</button>
+              <button data-key="ArrowLeft" aria-label="왼쪽">◀</button>
+              <button data-key="ArrowDown" aria-label="아래">▼</button>
+              <button data-key="ArrowRight" aria-label="오른쪽">▶</button>
             </div>
-          </section>
+            <button class="touch-attack" data-action="attack" aria-label="선택">J</button>
+          </div>
         </div>
-
-        <footer class="lobby-footer">
-          <p><kbd>WASD</kbd> 이동 · <kbd>마우스</kbd>/<kbd>Space</kbd> 직업 공격</p>
-          <button id="start-button" class="primary-button start-button" type="button">
-            작전 시작
-            <small>방장 전용</small>
-          </button>
-        </footer>
       </section>
 
-      <section id="game-screen" class="screen game-screen" aria-label="게임 화면" hidden>
-        <div id="stage-banner" class="stage-banner" aria-live="polite">
-          <span id="stage-number">STAGE 0</span>
-          <strong id="stage-title">출발 구역</strong>
-          <small id="stage-subtitle">작전의 시작</small>
-        </div>
+      <section id="game-screen" class="screen play-screen" hidden aria-label="진격의 좀비 게임">
+        <div class="pixel-frame">
+          <canvas id="game-canvas" width="640" height="360" tabindex="0" aria-label="게임 맵"></canvas>
 
-        <div class="game-shell">
-          <canvas id="game-canvas" width="1280" height="720" tabindex="0" aria-label="게임 플레이 영역"></canvas>
+          <ol id="game-roster" class="roster game-roster" aria-label="팀 상태"></ol>
 
-          <div class="hud-layer" aria-hidden="true">
-            <div class="hud-top-left">
-              <div class="role-portrait"><span id="hud-role-icon">➶</span></div>
-              <div class="vitals">
-                <div class="vitals-line"><strong id="hud-role-name">아처</strong><span id="hud-hp-text">100 / 100</span></div>
-                <div class="health-track"><i id="health-fill"></i></div>
-              </div>
-            </div>
-            <div class="hud-top-center">
-              <span id="hud-stage">STAGE 0</span>
-              <strong id="hud-objective">적을 모두 처치하세요</strong>
-              <span id="hud-progress">0 / 0</span>
-            </div>
-            <div class="hud-top-right">
-              <span class="timer-label">TIME</span>
-              <strong id="hud-timer">00:00</strong>
-            </div>
-            <div class="skill-bar">
-              <div class="skill-cell">
-                <kbd>SPACE</kbd>
-                <span id="basic-skill-name">기본 공격</span>
-                <i id="basic-cooldown" class="cooldown-mask"></i>
-              </div>
-            </div>
-            <div id="combat-message" class="combat-message"></div>
+          <div class="stage-header">
+            <strong id="hud-stage">STAGE 0 / 4</strong>
+            <span id="hud-timer">2:25:0</span>
+            <b id="hud-location">학교 본관</b>
           </div>
 
-          <div id="touch-controls" class="touch-controls" aria-label="터치 조작">
-            <div class="touch-dpad">
-              <button type="button" data-key="ArrowUp" aria-label="위로 이동">▲</button>
-              <button type="button" data-key="ArrowLeft" aria-label="왼쪽 이동">◀</button>
-              <button type="button" data-key="ArrowDown" aria-label="아래로 이동">▼</button>
-              <button type="button" data-key="ArrowRight" aria-label="오른쪽 이동">▶</button>
+          <div class="score-panel">
+            <span>SCORE</span>
+            <strong id="hud-score">0</strong>
+          </div>
+
+          <div class="floor-panel"><span aria-hidden="true">◉</span><b>1명</b></div>
+
+          <div id="mission-panel" class="mission-panel">
+            <em>Mission</em>
+            <strong id="hud-mission">오른쪽 출구로 이동하세요.</strong>
+          </div>
+
+          <div id="boss-panel" class="boss-panel" hidden>
+            <span>BOSS</span><b>교장 선생님</b>
+            <i><u id="boss-fill"></u></i>
+          </div>
+
+          <div id="fireman-gauge" class="fireman-gauge" hidden>
+            <span>소화기</span><i><u id="fuel-fill"></u></i>
+          </div>
+
+          <div id="stage-toast" class="stage-toast" aria-live="polite"></div>
+          <div id="condition-toast" class="condition-toast" aria-live="assertive"></div>
+
+          <div class="touch-controls game-touch" aria-label="모바일 조작">
+            <div class="dpad">
+              <button data-key="ArrowUp" aria-label="위">▲</button>
+              <button data-key="ArrowLeft" aria-label="왼쪽">◀</button>
+              <button data-key="ArrowDown" aria-label="아래">▼</button>
+              <button data-key="ArrowRight" aria-label="오른쪽">▶</button>
             </div>
-            <div class="touch-actions">
-              <button type="button" data-action="attack" aria-label="공격">공격</button>
-            </div>
+            <button class="touch-attack" data-action="attack" aria-label="공격">J</button>
           </div>
         </div>
-
-        <button id="pause-button" class="pause-button" type="button" aria-label="일시 정지">Ⅱ</button>
       </section>
 
-      <div id="game-dialog" class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" hidden>
-        <div class="dialog-card">
-          <p id="dialog-kicker" class="eyebrow">MISSION UPDATE</p>
-          <h2 id="dialog-title">스테이지 완료</h2>
-          <p id="dialog-copy">다음 구역으로 이동합니다.</p>
-          <div id="dialog-stats" class="dialog-stats"></div>
-          <div class="dialog-actions">
-            <button id="dialog-secondary" class="secondary-button" type="button">대기실</button>
-            <button id="dialog-primary" class="primary-button" type="button">계속</button>
-          </div>
+      <div id="result-dialog" class="result-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="result-title">
+        <div>
+          <p id="result-kicker">STAGE CLEAR</p>
+          <h2 id="result-title">스테이지 완료</h2>
+          <p id="result-copy"></p>
+          <button id="result-button" class="game-button" type="button">계속</button>
         </div>
       </div>
     </main>

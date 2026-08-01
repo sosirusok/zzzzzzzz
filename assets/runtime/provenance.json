@@ -1,0 +1,497 @@
+{
+  "schema_version": 1,
+  "policy": "Only pixels present in the supplied/reference files were retained. No AI-generated chairman-job files, inpainting, reconstruction, redrawing, or resampling were used.",
+  "motions": [
+    {
+      "file": "motion-crazy.png",
+      "entity": "광기 좀비",
+      "source": "work/research/motions/01.mp4",
+      "output_size": [
+        176,
+        86
+      ],
+      "frame_size": [
+        44,
+        86
+      ],
+      "frame_count": 4,
+      "layout": "horizontal, left-to-right",
+      "fps": 10.0,
+      "frame_rects": [
+        [
+          0,
+          0,
+          44,
+          86
+        ],
+        [
+          44,
+          0,
+          44,
+          86
+        ],
+        [
+          88,
+          0,
+          44,
+          86
+        ],
+        [
+          132,
+          0,
+          44,
+          86
+        ]
+      ],
+      "processing": "decoded source frames; edge-connected near-white background removal; no scaling; no interpolation; no redraw; no AI",
+      "notes": "MP4 is H.264 yuv420p with an opaque white background; minor compression fringe may remain."
+    },
+    {
+      "file": "motion-blind.png",
+      "entity": "눈 없는 좀비",
+      "source": "work/research/motions/04.mp4",
+      "output_size": [
+        256,
+        64
+      ],
+      "frame_size": [
+        64,
+        64
+      ],
+      "frame_count": 4,
+      "layout": "horizontal, left-to-right",
+      "fps": 10.0,
+      "frame_rects": [
+        [
+          0,
+          0,
+          64,
+          64
+        ],
+        [
+          64,
+          0,
+          64,
+          64
+        ],
+        [
+          128,
+          0,
+          64,
+          64
+        ],
+        [
+          192,
+          0,
+          64,
+          64
+        ]
+      ],
+      "processing": "decoded source frames; edge-connected near-white background removal; no scaling; no interpolation; no redraw; no AI",
+      "notes": "MP4 is H.264 yuv420p with an opaque white background; minor compression fringe may remain."
+    },
+    {
+      "file": "motion-girl.png",
+      "entity": "소녀 좀비",
+      "source": "work/research/motions/09.mp4",
+      "output_size": [
+        136,
+        68
+      ],
+      "frame_size": [
+        34,
+        68
+      ],
+      "frame_count": 4,
+      "layout": "horizontal, left-to-right",
+      "fps": 6.6666667,
+      "frame_rects": [
+        [
+          0,
+          0,
+          34,
+          68
+        ],
+        [
+          34,
+          0,
+          34,
+          68
+        ],
+        [
+          68,
+          0,
+          34,
+          68
+        ],
+        [
+          102,
+          0,
+          34,
+          68
+        ]
+      ],
+      "processing": "decoded source frames; edge-connected near-white background removal; no scaling; no interpolation; no redraw; no AI",
+      "notes": "MP4 is H.264 yuv420p with an opaque white background; minor compression fringe may remain."
+    },
+    {
+      "file": "motion-nurse.png",
+      "entity": "간호사 좀비",
+      "source": "work/research/motions/13.mp4",
+      "output_size": [
+        248,
+        116
+      ],
+      "frame_size": [
+        62,
+        116
+      ],
+      "frame_count": 4,
+      "layout": "horizontal, left-to-right",
+      "fps": 6.6666667,
+      "frame_rects": [
+        [
+          0,
+          0,
+          62,
+          116
+        ],
+        [
+          62,
+          0,
+          62,
+          116
+        ],
+        [
+          124,
+          0,
+          62,
+          116
+        ],
+        [
+          186,
+          0,
+          62,
+          116
+        ]
+      ],
+      "processing": "decoded source frames; edge-connected near-white background removal; no scaling; no interpolation; no redraw; no AI",
+      "notes": "MP4 is H.264 yuv420p with an opaque white background; minor compression fringe may remain."
+    }
+  ],
+  "jobs": [
+    {
+      "file": "job-archer.png",
+      "source": "assets/reference/archer.png",
+      "source_crop_xywh": [
+        40,
+        64,
+        37,
+        94
+      ],
+      "output_size": [
+        34,
+        83
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Actual in-game archer pixel character from the supplied attack screenshot."
+    },
+    {
+      "file": "job-medic.png",
+      "source": "assets/reference/medic.png",
+      "source_crop_xywh": [
+        7,
+        75,
+        70,
+        140
+      ],
+      "output_size": [
+        53,
+        128
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Actual in-game medic pixel character from the supplied attack screenshot."
+    },
+    {
+      "file": "job-fireman.png",
+      "source": "assets/reference/fireman.png",
+      "source_crop_xywh": [
+        48,
+        60,
+        104,
+        185
+      ],
+      "output_size": [
+        96,
+        173
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Actual in-game fireman pixel character; the extinguisher spray outside the crop is excluded."
+    },
+    {
+      "file": "job-chairman.png",
+      "source": "assets/reference/chairman.png",
+      "source_crop_xywh": [
+        220,
+        138,
+        23,
+        36
+      ],
+      "output_size": [
+        18,
+        33
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Actual tiny in-game chairman sprite from the range demonstration grid. chairman-job.png and chairman-job-chroma.png were explicitly not used."
+    }
+  ],
+  "enemies_and_objects": [
+    {
+      "file": "enemy-crazy.png",
+      "source": "assets/reference/stage1-enemies.png",
+      "source_crop_xywh": [
+        235,
+        370,
+        145,
+        240
+      ],
+      "output_size": [
+        110,
+        210
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 1 composite."
+    },
+    {
+      "file": "enemy-scary-crazy.png",
+      "source": "assets/reference/stage1-enemies.png",
+      "source_crop_xywh": [
+        610,
+        378,
+        145,
+        232
+      ],
+      "output_size": [
+        104,
+        188
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 1 hard-mode highlighted panel; only the zombie component is retained."
+    },
+    {
+      "file": "enemy-giant.png",
+      "source": "assets/reference/stage1-enemies.png",
+      "source_crop_xywh": [
+        963,
+        270,
+        184,
+        340
+      ],
+      "output_size": [
+        135,
+        315
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 1 composite."
+    },
+    {
+      "file": "enemy-blind.png",
+      "source": "assets/reference/stage1-enemies.png",
+      "source_crop_xywh": [
+        1320,
+        448,
+        215,
+        170
+      ],
+      "output_size": [
+        160,
+        140
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 1 composite."
+    },
+    {
+      "file": "enemy-athlete.png",
+      "source": "assets/reference/stage2-enemies.png",
+      "source_crop_xywh": [
+        105,
+        135,
+        205,
+        320
+      ],
+      "output_size": [
+        160,
+        300
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 2 composite."
+    },
+    {
+      "file": "enemy-chef.png",
+      "source": "assets/reference/stage2-enemies.png",
+      "source_crop_xywh": [
+        495,
+        165,
+        190,
+        300
+      ],
+      "output_size": [
+        142,
+        270
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 2 composite."
+    },
+    {
+      "file": "enemy-bag.png",
+      "source": "assets/reference/stage2-enemies.png",
+      "source_crop_xywh": [
+        845,
+        275,
+        165,
+        190
+      ],
+      "output_size": [
+        110,
+        160
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 2 composite."
+    },
+    {
+      "file": "enemy-glutton.png",
+      "source": "assets/reference/stage2-enemies.png",
+      "source_crop_xywh": [
+        1195,
+        160,
+        220,
+        305
+      ],
+      "output_size": [
+        158,
+        268
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 2 composite."
+    },
+    {
+      "file": "enemy-girl.png",
+      "source": "assets/reference/stage3-enemies-a.png",
+      "source_crop_xywh": [
+        56,
+        462,
+        170,
+        305
+      ],
+      "output_size": [
+        136,
+        272
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 3 composite."
+    },
+    {
+      "file": "enemy-rabbit.png",
+      "source": "assets/reference/stage3-enemies-a.png",
+      "source_crop_xywh": [
+        612,
+        238,
+        225,
+        530
+      ],
+      "output_size": [
+        208,
+        496
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 3 composite."
+    },
+    {
+      "file": "enemy-nurse.png",
+      "source": "assets/reference/stage3-enemies-b.png",
+      "source_crop_xywh": [
+        258,
+        105,
+        250,
+        470
+      ],
+      "output_size": [
+        243,
+        450
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 3 composite."
+    },
+    {
+      "file": "enemy-liquid.png",
+      "source": "assets/reference/stage3-enemies-b.png",
+      "source_crop_xywh": [
+        790,
+        305,
+        235,
+        270
+      ],
+      "output_size": [
+        188,
+        248
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 3 composite."
+    },
+    {
+      "file": "enemy-tank.png",
+      "source": "assets/reference/stage4-enemies.png",
+      "source_crop_xywh": [
+        0,
+        210,
+        455,
+        445
+      ],
+      "output_size": [
+        384,
+        416
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 4 composite."
+    },
+    {
+      "file": "enemy-liquid-stage4.png",
+      "source": "assets/reference/stage4-enemies.png",
+      "source_crop_xywh": [
+        645,
+        365,
+        270,
+        300
+      ],
+      "output_size": [
+        188,
+        252
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 4 composite; visually distinct shown frame/variant."
+    },
+    {
+      "file": "object-facility.png",
+      "source": "assets/reference/facility.png",
+      "source_crop_xywh": [
+        115,
+        35,
+        365,
+        325
+      ],
+      "output_size": [
+        311,
+        311
+      ],
+      "processing": "source-resolution crop; edge-connected background removal; no resampling; no redraw; no AI",
+      "notes": "Stage 2 manufacturing facility. Multiple connected interior components are retained."
+    }
+  ],
+  "skipped": [
+    {
+      "requested": "enemy-boss.png",
+      "source": "assets/reference/boss.png",
+      "reason": "The supplied composite has a named human character directly occluding the boss body. A clean boss-only sprite cannot be extracted without reconstructing hidden pixels, which is prohibited."
+    }
+  ]
+}
