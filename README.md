@@ -38,6 +38,8 @@ python -m http.server 8080
 ## 파일 구성
 
 - `index.html`: 입장 화면, 대기실, 클래식 HUD
+- `vendor/peerjs.min.js`: 로컬 번들된 PeerJS 1.5.5 (CDN 의존 제거, MIT 라이선스)
+- `.github/workflows/deploy-pages.yml`: GitHub Pages 자동 배포 워크플로
 - `styles.css`: 16:9 반응형 화면과 터치 컨트롤
 - `data.js`: 직업, 적, Stage 0~4 데이터
 - `assets.js`: 실제 런타임 에셋 매니페스트와 프레임 애니메이션
