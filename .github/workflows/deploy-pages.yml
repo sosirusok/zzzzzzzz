@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/charming-cori-nez8mx
   workflow_dispatch:
 
 permissions:
