@@ -166,6 +166,7 @@
     const gScore = new Map(), came = new Map();
     let count = 0;
     const key = (x, y) => y * W + x;
+    // 휴리스틱을 실제 비용(10/14)과 일치시켜 최단경로 보장 + 확장 감소
     const h2 = (x, y) => {
       const dx = Math.abs(x - tx), dy = Math.abs(y - ty);
       return 10 * Math.max(dx, dy) + 4 * Math.min(dx, dy);
@@ -200,7 +201,7 @@
     const DIRS = [[1,0,10],[-1,0,10],[0,1,10],[0,-1,10],[1,1,14],[1,-1,14],[-1,1,14],[-1,-1,14]];
     let expand = 0, best = null, bestH = Infinity;
     const closed = new Set();
-    const maxE = maxExpand || 3000;
+    const maxE = maxExpand || 8000;
 
     while (open.length) {
       const [, , x, y] = pop();
@@ -236,12 +237,14 @@
     }
     path.reverse();
 
-    // 라인 스무딩
+    // 라인 스무딩: 유닛 폭(±0.32타일)을 고려한 스윕 검사 — 코너 잘라먹기 방지
+    const OFF = [[0, 0], [0.32, 0.32], [-0.32, 0.32], [0.32, -0.32], [-0.32, -0.32]];
     const clear = (x0, y0, x1, y1) => {
-      const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) * 2;
+      const steps = (Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) * 4) | 0;
       for (let i = 1; i <= steps; i++) {
         const x = x0 + (x1 - x0) * i / steps, y = y0 + (y1 - y0) * i / steps;
-        if (blocked(Math.round(x), Math.round(y))) return false;
+        for (const [ox, oy] of OFF)
+          if (blocked(Math.round(x + ox), Math.round(y + oy))) return false;
       }
       return true;
     };

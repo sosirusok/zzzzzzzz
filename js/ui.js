@@ -594,8 +594,10 @@
     if (state.placing) { setCursor('default'); return; }
     const wx = (state.mouseX || 0) + cam.x, wy = (state.mouseY || 0) + cam.y;
     const u = unitAt(wx, wy);
-    if (u && game.players[u.o].team !== game.players[localPlayer].team && state.selection.length) setCursor('red');
-    else setCursor('default');
+    if (u && game.players[u.o].team !== game.players[localPlayer].team && state.selection.length) { setCursor('red'); return; }
+    // 일꾼 선택 중 자원 위: 채취 커서
+    if (!u && state.selection.length && resourceAt(wx, wy) && myUnits().some(s => SC.Engine.isWorker(s))) { setCursor('yellow'); return; }
+    setCursor('default');
   }
 
   // ---- 채팅 ----------------------------------------------------------------
