@@ -210,98 +210,81 @@
     $('btn-host').onclick = () => { SC.Audio.play('menu'); show('screen-host'); initHost(); };
     $('btn-join').onclick = () => { SC.Audio.play('menu'); show('screen-join'); };
 
-    // 호스트
+    // 호스트: 방 코드 자동 생성, 게스트는 빈 슬롯에 자동 배치
     let host = null, hostRows = null;
     function initHost() {
       hostRows = slotRows($('host-slots'), true);
       hostRows[0].state.name = $('host-name').value || '호스트';
       hostRows[0].refresh();
+      $('room-code').textContent = '····';
+      $('host-status').textContent = '방 생성 중...';
       host = SC.Net.createHost({
-        onGuestJoin(slot, name, race) {
-          hostRows[slot].state.name = name;
-          if (race && race !== 'R') hostRows[slot].state.race = race;
-          hostRows[slot].refresh();
-          $('host-status').textContent = `${name} 님이 슬롯 ${slot + 1}에 참가했습니다`;
+        onGuestJoin(gu) {
+          // 첫 빈 슬롯(1~7)에 자동 배치
+          for (let i = 1; i < 8; i++) {
+            const st = hostRows[i].state;
+            if (st.type !== 'ai' && !st.name) {
+              st.type = 'open'; st.name = gu.name;
+              if (gu.race && gu.race !== 'R') st.race = gu.race;
+              gu.slot = i;
+              hostRows[i].refresh();
+              $('host-status').textContent = `${gu.name} 님 참가 (슬롯 ${i + 1})`;
+              SC.Audio.play('chat');
+              return;
+            }
+          }
+          $('host-status').textContent = '빈 슬롯이 없습니다';
         },
-        onGuestLeave(slot) {
-          hostRows[slot].state.name = null; hostRows[slot].refresh();
+        onGuestLeave(gu) {
+          if (gu.slot != null && hostRows[gu.slot]) {
+            hostRows[gu.slot].state.name = null;
+            hostRows[gu.slot].state.type = 'closed';
+            hostRows[gu.slot].refresh();
+            $('host-status').textContent = `${gu.name || '게스트'} 님이 나갔습니다`;
+          }
         },
       });
-      $('host-slots').addEventListener('click', () => {
-        // open 슬롯에 초대 코드 생성 버튼 갱신
-        renderInvites();
-      });
-      renderInvites();
+      host.open().then(code => {
+        $('room-code').textContent = code;
+        $('host-status').textContent = '상대에게 방 코드를 알려주세요';
+      }).catch(e => { $('host-status').textContent = e.message; });
     }
-    function renderInvites() {
-      const box = $('invite-box');
-      box.innerHTML = '';
-      hostRows.forEach((r, i) => {
-        if (r.state.type !== 'open' || r.state.name) return;
-        const btn = document.createElement('button');
-        btn.className = 'menu-btn small';
-        btn.textContent = `슬롯 ${i + 1} 초대 코드 생성`;
-        btn.onclick = async () => {
-          btn.textContent = '생성 중...';
-          const code = await host.makeOffer(i);
-          $('invite-out').value = code;
-          $('invite-out').dataset.slot = i;
-          btn.textContent = `슬롯 ${i + 1} 코드 생성됨 ↓`;
-        };
-        box.appendChild(btn);
-      });
-    }
-    $('btn-copy-invite').onclick = () => { $('invite-out').select(); document.execCommand('copy'); };
-    $('btn-accept-answer').onclick = async () => {
-      const slot = parseInt($('invite-out').dataset.slot || '1');
-      try {
-        await host.acceptAnswer(slot, $('answer-in').value);
-        $('host-status').textContent = '연결 중...';
-      } catch (e) { $('host-status').textContent = '응답 코드 오류: ' + e.message; }
-    };
-    $('btn-host-refresh').onclick = renderInvites;
     $('btn-start-host').onclick = () => {
       const seed = (Date.now() % 1000000000) | 0;
       hostRows[0].state.name = $('host-name').value || '호스트';
       const { players } = buildPlayers(hostRows, seed);
-      const humans = players.filter(p => p.type === 'human');
-      if (players.length < 2) { alert('상대가 필요합니다'); return; }
-      // 게스트 슬롯 → 플레이어 인덱스 매핑
+      if (players.length < 2) { alert('상대가 필요합니다 (게스트 접속 대기 또는 슬롯 클릭 → 컴퓨터)'); return; }
       const cfg = { seed, mapSeed: 20260801, players };
-      // 게스트에게 자신의 인덱스 알림
-      players.forEach((p, idx) => { p.playerIndex = idx; });
-      host.guestIndexMap = {};
-      players.forEach((p, idx) => { if (p.type === 'human' && p.slotIndex > 0) host.guestIndexMap[p.slotIndex] = idx; });
-      host.broadcast({ t: 'preStart' });
+      // 게스트 → 플레이어 인덱스 매핑
+      for (const gu of host.guests) {
+        gu.playerIndex = gu.slot != null ? players.findIndex(p => p.slotIndex === gu.slot) : null;
+        if (gu.playerIndex < 0) gu.playerIndex = null;
+      }
       startGame(cfg, players.findIndex(p => p.slotIndex === 0), host);
     };
-    $('btn-back-host').onclick = () => { if (host) host.stop(); show('screen-multi'); };
+    $('btn-back-host').onclick = () => { if (host) host.stop(); host = null; show('screen-multi'); };
 
-    // 게스트
+    // 게스트: 방 코드 입력만으로 접속
     let guest = null;
-    $('btn-gen-answer').onclick = async () => {
+    $('btn-join-go').onclick = async () => {
       const name = $('join-name').value || '게스트';
       const race = $('join-race').value;
+      const code = $('join-code').value.trim().toUpperCase();
+      if (guest) { guest.stop(); guest = null; }
       guest = SC.Net.createGuest({
-        onConnected() { $('join-status').textContent = '호스트에 연결되었습니다. 게임 시작을 기다리는 중...'; },
-        onStart(cfg) {
-          // 내 인덱스: 이름으로 탐색
-          let mi = cfg.players.findIndex(p => p.type === 'human' && p.name === name && p.slotIndex > 0);
-          if (mi < 0) mi = cfg.players.findIndex(p => p.type === 'human' && p.slotIndex > 0);
-          startGame(cfg, mi < 0 ? 0 : mi, guest);
-        },
-        onDisconnected() { $('join-status').textContent = '연결이 끊어졌습니다'; },
+        onConnected() { $('join-status').textContent = '접속 완료! 호스트가 게임을 시작하면 자동으로 입장합니다.'; },
+        onStart(cfg, you) { startGame(cfg, you != null && you >= 0 ? you : 0, guest); },
+        onDisconnected() { if (!game) $('join-status').textContent = '연결이 끊어졌습니다'; },
         onDesync() { SC.UI.addMsg('⚠ 동기화 오류가 감지되었습니다'); },
       });
       try {
-        $('join-status').textContent = '응답 코드 생성 중...';
-        const ans = await guest.acceptOffer($('offer-in').value, name, race);
-        $('answer-out').value = ans;
-        $('join-status').textContent = '응답 코드를 호스트에게 전달하십시오';
-      } catch (e) { $('join-status').textContent = '초대 코드 오류: ' + e.message; }
+        $('join-status').textContent = '접속 중...';
+        $('btn-join-go').disabled = true;
+        await guest.join(code, name, race);
+      } catch (e) { $('join-status').textContent = e.message; }
+      $('btn-join-go').disabled = false;
     };
-    $('btn-copy-answer').onclick = () => { $('answer-out').select(); document.execCommand('copy'); };
-    $('btn-back-join').onclick = () => { if (guest) guest.stop(); show('screen-multi'); };
+    $('btn-back-join').onclick = () => { if (guest) { guest.stop(); guest = null; } show('screen-multi'); };
 
     // ---- 인게임 메뉴 ----
     $('btn-resume').onclick = () => SC.UI.toggleMenu();

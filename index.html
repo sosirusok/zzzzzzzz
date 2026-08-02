@@ -47,8 +47,8 @@
 <div id="screen-multi" class="screen">
   <div class="menu-panel">
     <h2>멀티플레이어</h2>
-    <p class="mp-note">서버 없이 P2P(WebRTC)로 연결합니다. 호스트가 만든 <b>초대 코드</b>를 상대에게 보내고,
-    상대가 돌려준 <b>응답 코드</b>를 붙여넣으면 연결됩니다 (디스코드/메신저로 코드 교환).</p>
+    <p class="mp-note">호스트가 방을 만들면 <b>4자리 방 코드</b>가 생성됩니다.
+    상대는 코드만 입력하면 바로 연결됩니다. (P2P 직접 연결 · 게임 서버 없음)</p>
     <button id="btn-host" class="menu-btn">방 만들기 (호스트)</button>
     <button id="btn-join" class="menu-btn">참가하기 (게스트)</button>
     <button class="menu-btn btn-back">← 뒤로</button>
@@ -64,18 +64,12 @@
         <label class="fld">내 이름 <input id="host-name" value="호스트" maxlength="12"></label>
         <div class="slot-head"><span></span><span>슬롯</span><span>플레이어</span><span>종족</span><span>팀</span><span>난이도</span></div>
         <div id="host-slots"></div>
-        <div class="hint">슬롯을 클릭해 [닫힘 → 컴퓨터 → 대기 중(사람)]으로 전환</div>
+        <div class="hint">참가자는 빈 슬롯에 자동 배치됩니다 · 슬롯 클릭으로 컴퓨터 추가</div>
       </div>
       <div class="setup-right">
-        <div id="invite-box"></div>
-        <button id="btn-host-refresh" class="menu-btn small">초대 버튼 새로고침</button>
-        <label>초대 코드 (상대에게 전송)</label>
-        <textarea id="invite-out" readonly></textarea>
-        <button id="btn-copy-invite" class="menu-btn small">복사</button>
-        <label>응답 코드 붙여넣기</label>
-        <textarea id="answer-in" placeholder="게스트가 보낸 응답 코드"></textarea>
-        <button id="btn-accept-answer" class="menu-btn small">연결 수락</button>
-        <div id="host-status" class="status"></div>
+        <label>방 코드 — 상대에게 알려주세요</label>
+        <div id="room-code" class="room-code">····</div>
+        <div id="host-status" class="status">방 생성 중...</div>
       </div>
     </div>
     <div class="setup-actions">
@@ -96,12 +90,8 @@
         <option value="Z">저그</option><option value="P">프로토스</option>
       </select>
     </label>
-    <label>호스트의 초대 코드 붙여넣기</label>
-    <textarea id="offer-in"></textarea>
-    <button id="btn-gen-answer" class="menu-btn">응답 코드 생성</button>
-    <label>응답 코드 (호스트에게 전송)</label>
-    <textarea id="answer-out" readonly></textarea>
-    <button id="btn-copy-answer" class="menu-btn small">복사</button>
+    <label class="fld">방 코드 <input id="join-code" maxlength="8" placeholder="예: AB3D" style="text-transform:uppercase;width:110px"></label>
+    <button id="btn-join-go" class="menu-btn primary">참가하기</button>
     <div id="join-status" class="status"></div>
     <button id="btn-back-join" class="menu-btn">← 뒤로</button>
   </div>
@@ -191,6 +181,7 @@
   </div>
 </div>
 
+<script src="js/vendor/peerjs.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/map.js"></script>
 <script src="js/audio.js"></script>

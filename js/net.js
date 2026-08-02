@@ -1,8 +1,8 @@
 /* =========================================================================
- *  net.js — 락스텝 동기화 드라이버 (로컬 / WebRTC 멀티플레이)
+ *  net.js — 락스텝 동기화 드라이버 (로컬 / P2P 멀티플레이)
  *  - 결정적 시뮬레이션 위에 명령만 교환하는 클래식 P2P 락스텝
- *  - 시그널링: 수동 코드 교환 (서버 불필요) — 호스트가 초대 코드 생성,
- *    게스트가 응답 코드 반환
+ *  - 시그널링: PeerJS 공개 브로커 — 호스트가 만든 4자리 방 코드만 입력하면
+ *    연결됩니다 (게임 서버 불필요, 게임 데이터는 P2P 직접 전송)
  * ========================================================================= */
 'use strict';
 (function () {
@@ -11,17 +11,21 @@
   const TICK_MS = 1000 / 24;
 
   const Net = {};
+  Net.available = () => typeof Peer !== 'undefined';
 
   // ---- 로컬 드라이버 (싱글/AI전) ------------------------------------------------
   Net.createLocal = function (game, aiList) {
     const pending = [];
-    let acc = 0, last = performance.now();
+    let acc = 0, last = performance.now(), paused = false;
     const ais = aiList.map(a => SC.AI.create(a.pi, a.difficulty));
     return {
       mode: 'local',
       send(cmd) { pending.push(cmd); },
+      setPaused(v) { paused = v; },
       step(now) {
-        acc += Math.min(200, now - last); last = now;
+        const dt = Math.min(200, now - last); last = now;
+        if (paused) return true;
+        acc += dt;
         let n = 0;
         while (acc >= TICK_MS && n < 8) {
           acc -= TICK_MS; n++;
@@ -37,93 +41,94 @@
     };
   };
 
-  // ---- WebRTC 유틸 ----------------------------------------------------------
-  const RTC_CFG = { iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] };
-
-  function compress(s) { return btoa(unescape(encodeURIComponent(s))); }
-  function decompress(s) { return decodeURIComponent(escape(atob(s.trim()))); }
-
-  function gatherDesc(pc) {
-    return new Promise(res => {
-      const timeout = setTimeout(() => res(pc.localDescription), 4000);
-      pc.onicecandidate = e => {
-        if (!e.candidate) { clearTimeout(timeout); res(pc.localDescription); }
-      };
-    });
+  // ---- 방 코드 --------------------------------------------------------------
+  const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  function makeCode() {
+    let s = '';
+    for (let i = 0; i < 4; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+    return s;
   }
+  const peerId = code => 'proj-hunters-' + code.trim().toLowerCase();
+  // 기본은 PeerJS 공개 브로커. window.PH_PEER 로 사설 브로커 지정 가능 (테스트/LAN용)
+  const peerOpts = () => Object.assign({ debug: 0 }, window.PH_PEER || {});
 
   // ---- 호스트 ---------------------------------------------------------------
-  // slots: 게스트 접속 대기 목록. 각 게스트마다 offer 생성 → 코드 전달 → answer 수신
   Net.createHost = function (callbacks) {
-    const guests = [];   // {pc, ch, name, race, slot, open}
     const host = {
-      guests,
-      async makeOffer(slotIdx) {
-        const pc = new RTCPeerConnection(RTC_CFG);
-        const ch = pc.createDataChannel('game', { ordered: true });
-        const gu = { pc, ch, slot: slotIdx, open: false, name: null, race: null };
-        guests[slotIdx] = gu;
-        ch.onopen = () => { gu.open = true; };
-        ch.onmessage = e => {
-          const m = JSON.parse(e.data);
-          if (m.t === 'hello') { gu.name = m.name; gu.race = m.race; callbacks.onGuestJoin(slotIdx, m.name, m.race); }
-          else if (m.t === 'cmds') host.recvCmds(m);
-          else if (m.t === 'chatLobby') callbacks.onLobbyChat && callbacks.onLobbyChat(m.name, m.msg);
-        };
-        ch.onclose = () => { gu.open = false; callbacks.onGuestLeave && callbacks.onGuestLeave(slotIdx); };
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        const desc = await gatherDesc(pc);
-        return compress(JSON.stringify(desc));
+      code: null, peer: null, guests: [],   // 접속 순서대로 {conn, open, name, race, slot, playerIndex}
+      game: null, started: false, turn: 0, turnBuf: {}, myPending: [],
+      acc: 0, lastT: 0, tickInTurn: 0, waiting: null, ais: [],
+      mode: 'host',
+
+      open() {
+        return new Promise((resolve, reject) => {
+          if (!Net.available()) { reject(new Error('네트워크 라이브러리를 불러오지 못했습니다 (인터넷 연결 확인)')); return; }
+          let tries = 0;
+          const attempt = () => {
+            host.code = makeCode();
+            const peer = host.peer = new Peer(peerId(host.code), peerOpts());
+            peer.on('open', () => resolve(host.code));
+            peer.on('error', e => {
+              if (e.type === 'unavailable-id' && tries++ < 3) { peer.destroy(); attempt(); }
+              else if (!host.code || !host.started) reject(new Error('연결 실패: ' + (e.type || e.message)));
+            });
+            peer.on('connection', conn => {
+              const gu = { conn, open: false, name: null, race: 'R', slot: null, playerIndex: null };
+              conn.on('open', () => { gu.open = true; });
+              conn.on('data', m => {
+                if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } }
+                if (!m || !m.t) return;
+                if (m.t === 'hello') {
+                  gu.name = String(m.name || '게스트').slice(0, 12);
+                  gu.race = ['T', 'Z', 'P', 'R'].includes(m.race) ? m.race : 'R';
+                  host.guests.push(gu);
+                  callbacks.onGuestJoin && callbacks.onGuestJoin(gu);
+                } else if (m.t === 'cmds') host.recvCmds(m);
+              });
+              conn.on('close', () => {
+                gu.open = false;
+                callbacks.onGuestLeave && callbacks.onGuestLeave(gu);
+              });
+            });
+          };
+          attempt();
+        });
       },
-      async acceptAnswer(slotIdx, code) {
-        const gu = guests[slotIdx];
-        if (!gu) throw new Error('슬롯 없음');
-        await gu.pc.setRemoteDescription(JSON.parse(decompress(code)));
-      },
-      broadcast(obj) {
-        const s = JSON.stringify(obj);
-        for (const gu of guests) if (gu && gu.open) { try { gu.ch.send(s); } catch (e) {} }
-      },
-      // ---- 게임 드라이버 ----
-      game: null, turn: 0, turnBuf: {}, myPending: [], started: false,
-      localPlayer: 0, acc: 0, lastT: 0, tickInTurn: 0, waiting: null,
+
+      sendTo(gu, obj) { if (gu && gu.open) { try { gu.conn.send(obj); } catch (e) {} } },
+      broadcast(obj) { for (const gu of host.guests) host.sendTo(gu, obj); },
+
       startGame(cfg, game) {
         host.game = game; host.started = true; host.lastT = performance.now();
         host.turnBuf = {}; host.turn = 0; host.tickInTurn = 0;
-        // 첫 지연 턴은 빈 명령
-        for (let i = 0; i < INPUT_DELAY; i++) host.turnBuf[i] = { all: [] };
-        host.broadcast({ t: 'start', cfg });
-        host.ais = (cfg.players.map((p, i) => p.type === 'ai' ? SC.AI.create(i, p.difficulty || 'normal') : null)).filter(Boolean);
+        for (let i = 0; i < INPUT_DELAY; i++) host.turnBuf[i] = { all: [], got: {} };
+        for (const gu of host.guests)
+          if (gu.playerIndex != null) host.sendTo(gu, { t: 'start', cfg, you: gu.playerIndex });
+        host.ais = cfg.players.map((p, i) => p.type === 'ai' ? SC.AI.create(i, p.difficulty || 'normal') : null).filter(Boolean);
       },
       send(cmd) { host.myPending.push(cmd); },
       recvCmds(m) {
         const tb = host.turnBuf[m.turn] = host.turnBuf[m.turn] || { all: [], got: {} };
-        tb.got = tb.got || {};
-        if (!tb.got[m.p]) { tb.got[m.p] = true; tb.all.push(...m.cmds); }
+        if (!tb.got[m.p]) { tb.got[m.p] = true; tb.all.push(...(m.cmds || [])); }
       },
-      guestsExpected() {
-        return guests.filter(g2 => g2 && g2.open).map(g2 => g2.slot);
+      activePlayers() {
+        return host.guests.filter(g2 => g2.open && g2.playerIndex != null).map(g2 => g2.playerIndex);
       },
       step(now) {
         if (!host.started) return true;
         host.acc += Math.min(250, now - host.lastT); host.lastT = now;
         while (host.acc >= TICK_MS) {
           if (host.tickInTurn === 0) {
-            // 이번 턴 데이터 준비 확인
             const need = host.turn;
             const tb = host.turnBuf[need];
-            const expect = host.guestsExpected();
-            const ready = tb && expect.every(s => need < INPUT_DELAY || (tb.got && tb.got[s]));
-            if (!ready) { host.waiting = expect.filter(s => !(tb && tb.got && tb.got[s])); host.acc = Math.min(host.acc, TICK_MS * 2); return true; }
+            const expect = host.activePlayers();
+            const ready = tb && expect.every(pi => need < INPUT_DELAY || (tb.got && tb.got[pi]));
+            if (!ready) { host.waiting = expect.filter(pi => !(tb && tb.got && tb.got[pi])); host.acc = Math.min(host.acc, TICK_MS * 2); return true; }
             host.waiting = null;
-            // 자기+AI 명령을 미래 턴에 배치
             const future = host.turn + INPUT_DELAY;
             const fb = host.turnBuf[future] = host.turnBuf[future] || { all: [], got: {} };
             fb.all.push(...host.myPending.splice(0));
             for (const ai of host.ais) SC.AI.tick(host.game, ai, c => fb.all.push(c));
-            fb.got[0] = true;
-            // 확정 브로드캐스트
             const h = (host.turn % 16 === 0) ? SC.Engine.hash(host.game) : undefined;
             host.broadcast({ t: 'turn', turn: need, all: host.turnBuf[need].all, hash: h });
           }
@@ -138,8 +143,7 @@
         return true;
       },
       waitingFor() { return host.waiting; },
-      stop() { for (const gu of guests) if (gu) try { gu.pc.close(); } catch (e) {} },
-      mode: 'host',
+      stop() { try { host.peer && host.peer.destroy(); } catch (e) {} },
     };
     return host;
   };
@@ -147,35 +151,46 @@
   // ---- 게스트 ---------------------------------------------------------------
   Net.createGuest = function (callbacks) {
     const guest = {
-      pc: null, ch: null, open: false,
+      peer: null, conn: null, open: false,
       game: null, started: false, localPlayer: 1,
       turn: 0, tickInTurn: 0, turnBuf: {}, myPending: [], acc: 0, lastT: 0, waiting: null,
-      hashCheck: {},
-      async acceptOffer(code, name, race) {
-        const pc = guest.pc = new RTCPeerConnection(RTC_CFG);
-        pc.ondatachannel = e => {
-          guest.ch = e.channel;
-          guest.ch.onopen = () => {
-            guest.open = true;
-            guest.ch.send(JSON.stringify({ t: 'hello', name, race }));
-            callbacks.onConnected && callbacks.onConnected();
-          };
-          guest.ch.onmessage = ev => {
-            const m = JSON.parse(ev.data);
-            if (m.t === 'start') callbacks.onStart(m.cfg);
-            else if (m.t === 'turn') {
-              guest.turnBuf[m.turn] = m.all;
-              if (m.hash !== undefined) guest.hashCheck[m.turn] = m.hash;
-            }
-          };
-          guest.ch.onclose = () => { guest.open = false; callbacks.onDisconnected && callbacks.onDisconnected(); };
-        };
-        await pc.setRemoteDescription(JSON.parse(decompress(code)));
-        const ans = await pc.createAnswer();
-        await pc.setLocalDescription(ans);
-        const desc = await gatherDesc(pc);
-        return compress(JSON.stringify(desc));
+      hashCheck: {}, desyncWarned: false,
+      mode: 'guest',
+
+      join(code, name, race) {
+        return new Promise((resolve, reject) => {
+          if (!Net.available()) { reject(new Error('네트워크 라이브러리를 불러오지 못했습니다 (인터넷 연결 확인)')); return; }
+          if (!code || code.trim().length < 4) { reject(new Error('방 코드 4자리를 입력하십시오')); return; }
+          let settled = false;
+          const fail = msg => { if (!settled) { settled = true; reject(new Error(msg)); } };
+          const peer = guest.peer = new Peer(peerOpts());
+          peer.on('error', e => {
+            if (e.type === 'peer-unavailable') fail('해당 방 코드를 찾을 수 없습니다');
+            else fail('연결 실패: ' + (e.type || e.message));
+          });
+          peer.on('open', () => {
+            const conn = guest.conn = peer.connect(peerId(code), { reliable: true });
+            conn.on('open', () => {
+              guest.open = true;
+              conn.send({ t: 'hello', name, race });
+              if (!settled) { settled = true; resolve(); }
+              callbacks.onConnected && callbacks.onConnected();
+            });
+            conn.on('data', m => {
+              if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { return; } }
+              if (!m || !m.t) return;
+              if (m.t === 'start') callbacks.onStart(m.cfg, m.you);
+              else if (m.t === 'turn') {
+                guest.turnBuf[m.turn] = m.all;
+                if (m.hash !== undefined) guest.hashCheck[m.turn] = m.hash;
+              }
+            });
+            conn.on('close', () => { guest.open = false; callbacks.onDisconnected && callbacks.onDisconnected(); });
+          });
+          setTimeout(() => fail('연결 시간 초과 — 방 코드를 확인하십시오'), 15000);
+        });
       },
+
       startGame(game, localPlayer) {
         guest.game = game; guest.localPlayer = localPlayer; guest.started = true;
         guest.lastT = performance.now(); guest.turn = 0; guest.tickInTurn = 0;
@@ -189,15 +204,12 @@
             const all = guest.turnBuf[guest.turn];
             if (all === undefined) { guest.waiting = ['host']; guest.acc = Math.min(guest.acc, TICK_MS * 2); return true; }
             guest.waiting = null;
-            // 내 입력을 미래 턴으로 전송
             if (guest.open) {
-              guest.ch.send(JSON.stringify({ t: 'cmds', turn: guest.turn + INPUT_DELAY, p: guest.localPlayer, cmds: guest.myPending.splice(0) }));
+              guest.conn.send({ t: 'cmds', turn: guest.turn + INPUT_DELAY, p: guest.localPlayer, cmds: guest.myPending.splice(0) });
             }
-            // 해시 검증
             const hc = guest.hashCheck[guest.turn];
             if (hc !== undefined) {
-              const mine = SC.Engine.hash(guest.game);
-              if (mine !== hc && !guest.desyncWarned) {
+              if (SC.Engine.hash(guest.game) !== hc && !guest.desyncWarned) {
                 guest.desyncWarned = true;
                 callbacks.onDesync && callbacks.onDesync();
               }
@@ -215,8 +227,7 @@
         return true;
       },
       waitingFor() { return guest.waiting; },
-      stop() { try { guest.pc && guest.pc.close(); } catch (e) {} },
-      mode: 'guest',
+      stop() { try { guest.peer && guest.peer.destroy(); } catch (e) {} },
     };
     return guest;
   };
