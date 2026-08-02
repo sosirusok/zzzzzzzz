@@ -143,6 +143,7 @@
         return;
       }
       state.keys[e.key] = true;
+      if (e.key.startsWith('Arrow')) { e.preventDefault(); return; }
       if (e.key === 'Enter') { openChat(); e.preventDefault(); return; }
       if (e.key === 'F10' || e.key === 'Escape') {
         if (state.placing || state.targeting) { state.placing = null; state.targeting = null; setCursor('default'); updateHud(); }
@@ -612,18 +613,10 @@
   }
   UI.toggleMenu = toggleMenu;
 
-  // ---- 엣지/키보드 스크롤 ------------------------------------------------------
+  // ---- 키보드 스크롤 (마우스 엣지 스크롤 없음 — 미니맵 클릭/드래그로도 이동 가능) ----
   function scrollTick(dtMs) {
-    const sp = 0.9 * dtMs;
-    const m = 6;
+    const sp = 1.1 * dtMs;
     if (state.chatOpen || state.menuOpen) return;
-    const mx = state.mouseX, my = state.mouseY;
-    if (mx != null && document.hasFocus()) {
-      if (mx <= m) cam.x -= sp;
-      else if (mx >= viewW - m) cam.x += sp;
-      if (my <= m) cam.y -= sp;
-      else if (my >= viewH - m && my <= viewH) cam.y += sp;
-    }
     if (state.keys.ArrowLeft) cam.x -= sp;
     if (state.keys.ArrowRight) cam.x += sp;
     if (state.keys.ArrowUp) cam.y -= sp;
