@@ -673,8 +673,13 @@
     fogCanvas.width = game.map.w * 2; fogCanvas.height = game.map.h * 2;
     fogCtx = fogCanvas.getContext('2d');
     spriteCache.clear(); buildingCache.clear();
+    miniTerrain = null;
+    seenBuildings.clear();
   };
   Gfx.notifyCreep = function (game) { renderCreep(game); };
+
+  // 마지막으로 본 적 건물 스냅샷 (팀별 시야 기준, 렌더 전용)
+  const seenBuildings = new Map();   // id -> {tid, race, color, tileX, tileY, x, y}
 
   // ---- 메인 렌더 -----------------------------------------------------------
   Gfx.render = function (ctx, game, cam, viewW, viewH, localPlayer, ui) {
@@ -700,6 +705,23 @@
       } else drawGeyser(ctx, x, y, r, g);
     }
 
+    // 적 건물 스냅샷 갱신 (보이는 순간 기록, 사망/이동 확인 시 제거)
+    if ((g.tick & 7) === 0) {
+      for (const u of g.units) {
+        if (u.dead || u.kind !== 'building') continue;
+        if (g.players[u.o].team === team) continue;
+        if (SC.Engine.isVisibleTo(g, team, u))
+          seenBuildings.set(u.id, { tid: u.tid, race: SC.DATA.all[u.tid].race, color: g.players[u.o].color,
+            tileX: u.tileX, tileY: u.tileY, x: u.x, y: u.y });
+      }
+      for (const [id, sb] of seenBuildings) {
+        const i = ((sb.y / ONE / T) | 0) * g.map.w + ((sb.x / ONE / T) | 0);
+        if (vis && vis[i] === 2) {
+          const live = g.units.find(x => x.id === id && !x.dead);
+          if (!live) seenBuildings.delete(id);
+        }
+      }
+    }
     // 유닛 정렬: 지상 → 공중, y 정렬
     const ground = [], air = [], overlays = [];
     for (const u of g.units) {
@@ -712,16 +734,32 @@
       }
       (u.fly ? air : ground).push(u);
     }
+    // 기억 속 적 건물 잔상 (탐사됨 + 현재 안 보이는 지역)
+    for (const [id, sb] of seenBuildings) {
+      const i = ((sb.y / ONE / T) | 0) * g.map.w + ((sb.x / ONE / T) | 0);
+      if (!vis || vis[i] !== 1) continue;
+      const def2 = SC.DATA.all[sb.tid];
+      const bx = sb.tileX * T, by = sb.tileY * T;
+      if (bx + def2.tiles[0] * T < cam.x || bx > cam.x + viewW || by + def2.tiles[1] * T < cam.y || by > cam.y + viewH) continue;
+      ctx.globalAlpha = 0.75;
+      ctx.drawImage(getBuildingSprite(sb.tid, sb.race, sb.color, def2.tiles[0], def2.tiles[1], 0), bx, by);
+      ctx.globalAlpha = 1;
+    }
     ground.sort((a, b) => (a.y - b.y) || (a.id - b.id));
     air.sort((a, b) => (a.y - b.y) || (a.id - b.id));
 
+    const visAt = (x, y) => {
+      if (!vis) return true;
+      const i = ((y / ONE / T) | 0) * g.map.w + ((x / ONE / T) | 0);
+      return vis[i] === 2;
+    };
     for (const u of ground) drawEntity(ctx, g, u, localPlayer, ui, team);
-    // 총알
-    for (const b of g.bullets) drawBullet(ctx, g, b);
+    // 총알 (시야 내에서만)
+    for (const b of g.bullets) if (visAt(b.x, b.y)) drawBullet(ctx, g, b);
     for (const u of air) drawEntity(ctx, g, u, localPlayer, ui, team);
 
-    // 이펙트
-    for (const f of g.fx) drawFx(ctx, g, f);
+    // 이펙트 (시야 내에서만 — 핵 폭발/스캔은 예외)
+    for (const f of g.fx) if (['nukeBoom', 'scan', 'storm'].includes(f.k) || visAt(f.x, f.y)) drawFx(ctx, g, f);
 
     // 존 표시 (스웜/디웹)
     for (const s of g.swarms) drawZone(ctx, s, '#a5652a', g.tick);
@@ -802,7 +840,7 @@
           const rr = (g.tick % 24) / 24;
           ctx.beginPath(); ctx.ellipse(x, y, w * T * 0.5 * rr + 4, h * T * 0.45 * rr + 4, 0, 0, 7); ctx.stroke();
         }
-        drawBar(ctx, x, by - 8, Math.min(60, w * T - 8), f, '#3ddc55', true);
+        if (u.o === localPlayer) drawBar(ctx, x, by - 8, Math.min(60, w * T - 8), f, '#3ddc55', true);
       } else {
         ctx.drawImage(getBuildingSprite(u.tid, def.race, p.color, w, h, (g.tick >> 4) & 3), bx, by);
         if (def.needPower && !u.powered) {
@@ -810,11 +848,19 @@
           ctx.fillStyle = '#ffd60a'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'center';
           ctx.fillText('!', x, y + 5);
         }
-        // 생산 진행 바
-        if (u.queue && u.queue.length && (selected || u.o === localPlayer)) {
+        // 생산 진행 바 (내 것만)
+        if (u.queue && u.queue.length && u.o === localPlayer) {
           drawBar(ctx, x, by + h * T + 4, Math.min(60, w * T - 8), u.queue[0].t / u.queue[0].total, '#57c8ff', true);
         }
-        if (u.morph) drawBar(ctx, x, by + h * T + 4, Math.min(60, w * T - 8), u.morph.t / u.morph.total, '#c05aff', true);
+        if (u.morph && u.o === localPlayer) drawBar(ctx, x, by + h * T + 4, Math.min(60, w * T - 8), u.morph.t / u.morph.total, '#c05aff', true);
+      }
+      if (selected) {              // 선택 브래킷 (스프라이트 위)
+        const col = u.o === localPlayer ? '#3ddc55' : (g.players[u.o].team === team ? '#f4e42e' : '#f43f2e');
+        ctx.strokeStyle = col; ctx.lineWidth = 2;
+        const bw = w * T, bh = h * T, cl = 9;
+        for (const [cx2, cy2, dx2, dy2] of [[bx + 2, by + 2, 1, 1], [bx + bw - 2, by + 2, -1, 1], [bx + 2, by + bh - 2, 1, -1], [bx + bw - 2, by + bh - 2, -1, -1]]) {
+          ctx.beginPath(); ctx.moveTo(cx2 + dx2 * cl, cy2); ctx.lineTo(cx2, cy2); ctx.lineTo(cx2, cy2 + dy2 * cl); ctx.stroke();
+        }
       }
       if (selected || u.lastHit > g.tick - 48) drawHpBar(ctx, g, u, x, by - 6, Math.min(64, w * T - 4));
       return;
@@ -823,6 +869,7 @@
     // ---- 유닛 ----
     const spr = getSprite(u.tid, def.race, p.color);
     const cs = spr.cs;
+    const face = u.face & 15;
     const frame = (((g.tick + u.id * 3) >> 3) & 1);
     const cloakedVisible = (u.st.cloak || u.st.burrow) && g.players[u.o].team !== team;
     const ownCloak = (u.st.cloak || u.st.burrow) && g.players[u.o].team === team;
@@ -830,6 +877,17 @@
     if (selected) {
       const col = u.o === localPlayer ? '#3ddc55' : (g.players[u.o].team === team ? '#f4e42e' : '#f43f2e');
       drawSelRing(ctx, x, y + (u.fly ? 14 : u.r * 0.5), u.r + 4, col);
+    }
+    // 유닛 변태 중: 코쿤으로 표시
+    if (u.morph && u.tid !== 'egg') {
+      const gr2 = ctx.createRadialGradient(x - 3, y - 5, 2, x, y, u.r + 6);
+      gr2.addColorStop(0, '#b89ecc'); gr2.addColorStop(1, '#5a3a72');
+      ctx.fillStyle = gr2;
+      ctx.beginPath(); ctx.ellipse(x, y, u.r + 3, (u.r + 3) * 1.2, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = 'rgba(230,200,255,0.4)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(x - u.r * 0.5, y - 2); ctx.quadraticCurveTo(x, y + 4, x + u.r * 0.5, y - 1); ctx.stroke();
+      drawBar(ctx, x, y - u.r - 10, Math.max(24, u.r * 2), u.morph.t / u.morph.total, '#c05aff', true);
+      return;
     }
     // 그림자
     if (!u.st.burrow) {
@@ -846,15 +904,25 @@
       ctx.beginPath(); ctx.ellipse(x, y - 2, u.r * 0.6, u.r * 0.3, 0, 0, 7); ctx.fill();
       if (g.players[u.o].team === team || cloakDetected(g, team, u)) {
         ctx.globalAlpha = 0.4;
-        ctx.drawImage(spr.c, u.face * cs, frame * cs, cs, cs, x - cs / 2, y - cs / 2, cs, cs);
+        ctx.drawImage(spr.c, face * cs, frame * cs, cs, cs, x - cs / 2, y - cs / 2, cs, cs);
       }
       ctx.restore();
     } else {
-      if (u.st.cloak) ctx.globalAlpha = g.players[u.o].team === team ? 0.55 : 0.35;
+      if (u.st.cloak || u.st.fcT) ctx.globalAlpha = g.players[u.o].team === team ? 0.55 : 0.35;
       if (u.st.hallu && g.players[u.o].team === team) ctx.globalAlpha = 0.8;
-      ctx.drawImage(spr.c, u.face * cs, frame * cs, cs, cs, x - cs / 2, y - cs / 2, cs, cs);
+      ctx.drawImage(spr.c, face * cs, frame * cs, cs, cs, x - cs / 2, y - cs / 2, cs, cs);
       ctx.restore();
       // 상태 오버레이
+      if (u.st.sieged) {          // 시즈 모드: 고정 지지대 + 장포신
+        ctx.strokeStyle = '#2a3138'; ctx.lineWidth = 4;
+        for (const an of [0.6, 2.5, 3.8, 5.7]) {
+          ctx.beginPath(); ctx.moveTo(x + Math.cos(an) * u.r * 0.6, y + Math.sin(an) * u.r * 0.5);
+          ctx.lineTo(x + Math.cos(an) * (u.r + 7), y + Math.sin(an) * (u.r * 0.75 + 6)); ctx.stroke();
+        }
+        const fa = (u.face & 15) * Math.PI / 8;
+        ctx.strokeStyle = '#39424c'; ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.moveTo(x, y - 4); ctx.lineTo(x + Math.cos(fa) * (u.r + 16), y - 4 + Math.sin(fa) * (u.r + 16)); ctx.stroke();
+      }
       if (u.st.warp) { ctx.fillStyle = rgba('#57c8ff', 0.5); ctx.beginPath(); ctx.arc(x, y, u.r + 6, 0, 7); ctx.fill(); }
       if (u.st.stim) { ctx.fillStyle = 'rgba(255,80,80,0.25)'; ctx.beginPath(); ctx.arc(x, y, u.r + 2, 0, 7); ctx.fill(); }
       if (u.st.stasis) { ctx.fillStyle = rgba('#8ad4ff', 0.45); ctx.beginPath(); ctx.arc(x, y, u.r + 4, 0, 7); ctx.fill();
@@ -925,8 +993,6 @@
     arbiter: ['#8ad4ff', 2.5], corsair: ['#ff5aff', 2], zealot: ['#8ad4ff', 2], archon: ['#c8e8ff', 3],
   };
   function drawBullet(ctx, g, b) {
-    const tgt = SC.Engine.byId(g, b.t);
-    if (!tgt) return;
     const st = BULLET_STYLE[b.stid] || ['#ffd88a', 2];
     const x = b.x / ONE, y = b.y / ONE;
     if (b.spd > 0) {
@@ -934,10 +1000,20 @@
       ctx.shadowColor = st[0]; ctx.shadowBlur = 6;
       ctx.beginPath(); ctx.arc(x, y, st[1], 0, 7); ctx.fill();
       ctx.shadowBlur = 0;
+      return;
+    }
+    if (!b.resolved) return;
+    const ex = b.ex / ONE, ey = b.ey / ONE, sx = b.sx / ONE, sy = b.sy / ONE;
+    const dist = Math.hypot(ex - sx, ey - sy);
+    if (dist < 52) {
+      // 근접: 타격 호
+      ctx.strokeStyle = rgba2(st[0], 0.9); ctx.lineWidth = 2.5;
+      const an = Math.atan2(ey - sy, ex - sx);
+      ctx.beginPath(); ctx.arc(ex, ey, 10, an - 1.1, an + 1.1); ctx.stroke();
     } else {
-      // 즉발: 트레이서
-      ctx.strokeStyle = rgba2(st[0], 0.8); ctx.lineWidth = st[1] * 0.8;
-      ctx.beginPath(); ctx.moveTo(b.sx / ONE, b.sy / ONE); ctx.lineTo(tgt.x / ONE, tgt.y / ONE); ctx.stroke();
+      // 원거리 즉발: 트레이서
+      ctx.strokeStyle = rgba2(st[0], 0.85); ctx.lineWidth = st[1] * 0.9;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
     }
   }
   function rgba2(col, a) {
@@ -987,7 +1063,7 @@
       case 'storm': {
         const r = 48;
         ctx.fillStyle = `rgba(90,140,255,${0.15 + 0.1 * Math.sin(age * 1.7)})`;
-        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
         ctx.strokeStyle = `rgba(180,220,255,${0.5 + 0.4 * Math.sin(age * 2.3)})`;
         ctx.lineWidth = 2;
         for (let i = 0; i < 4; i++) {
@@ -1117,6 +1193,13 @@
       const s2 = u.kind === 'building' ? 3.2 : 2;
       ctx.fillRect(u.x / ONE * sc - s2 / 2, u.y / ONE * sc - s2 / 2, s2, s2);
     }
+    // 기억된 적 건물
+    for (const [id, sb] of seenBuildings) {
+      ctx.fillStyle = sb.color;
+      ctx.globalAlpha = 0.8;
+      ctx.fillRect(sb.x / ONE * sc - 1.6, sb.y / ONE * sc - 1.6, 3.2, 3.2);
+      ctx.globalAlpha = 1;
+    }
     // 포그
     if (vis) {
       const img = fogCtx.createImageData(g.map.w, g.map.h);
@@ -1134,6 +1217,9 @@
       }
     }
     for (const n of g.nukes) {
+      const ni = ((n.y / ONE / T) | 0) * g.map.w + ((n.x / ONE / T) | 0);
+      const mine = g.players[n.o] && g.players[n.o].team === team;
+      if (!mine && !(vis && vis[ni] === 2)) continue;
       ctx.fillStyle = (g.tick >> 2) & 1 ? '#ff3c3c' : '#801010';
       ctx.fillRect(n.x / ONE * sc - 2, n.y / ONE * sc - 2, 4, 4);
     }

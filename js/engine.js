@@ -102,7 +102,7 @@
     const u = { id: g.nextId++, tid, o: owner, x: Math.round(x), y: Math.round(y),
       fly: !!(def.flags && def.flags.includes('flyer')), r: unitRadius(def),
       hp: def.hp << FP, maxHp: def.hp << FP, sh: (def.sh || 0) << FP, maxSh: (def.sh || 0) << FP,
-      en: def.me ? D().ENERGY_START << FP : 0, face: rngInt(g, 256), cd: 0,
+      en: def.me ? D().ENERGY_START << FP : 0, face: rngInt(g, 16), cd: 0,
       orders: [], path: null, kind: 'unit', st: {}, complete: true, prog: 0,
       cargo: [], mines: def.id === 'vulture' ? 0 : undefined,
       scarabs: def.id === 'reaver' ? 0 : undefined, inters: def.id === 'carrier' ? [] : undefined };
@@ -141,6 +141,23 @@
     g.units.push(b);
     for (let y = ty; y < ty + h; y++) for (let x = tx; x < tx + w; x++)
       g.occ[y * g.map.w + x] = b.id;
+    // footprint 안의 지상 유닛을 가장자리 밖으로 밀어냄 (원작 방식)
+    const x0 = tx * T * ONE, y0 = ty * T * ONE, x1 = (tx + w) * T * ONE, y1 = (ty + h) * T * ONE;
+    for (const v of g.units) {
+      if (v.dead || v.fly || v.kind === 'building' || v.hidden) continue;
+      if (v.x < x0 || v.x > x1 || v.y < y0 || v.y > y1) continue;
+      let best = null, bd2 = Infinity;
+      for (let ry = ty - 1; ry <= ty + h; ry++) for (let rx = tx - 1; rx <= tx + w; rx++) {
+        if (rx >= tx && rx < tx + w && ry >= ty && ry < ty + h) continue;
+        if (rx < 0 || ry < 0 || rx >= g.map.w || ry >= g.map.h) continue;
+        const ii = ry * g.map.w + rx;
+        if (!g.map.walk[ii] || g.occ[ii]) continue;
+        const px2 = (rx * T + 16) * ONE, py2 = (ry * T + 16) * ONE;
+        const dd = dist2(v.x, v.y, px2, py2);
+        if (dd < bd2) { bd2 = dd; best = [px2, py2]; }
+      }
+      if (best) { v.x = best[0]; v.y = best[1]; v.path = null; }
+    }
     return b;
   }
 
@@ -183,6 +200,7 @@
     let s = def.sight || 7;
     const su = SIGHT_UP[u.tid];
     if (su && g.players[u.o].research[su[0]]) s += su[1];
+    if (u.st && u.st.flare) return 1;          // 조명탄: 시야 1
     return s;
   }
   function getArmor(g, u) {
@@ -190,7 +208,8 @@
     let a = def.armor || 0;
     if (def.upA) a += g.players[u.o].research[def.upA] || 0;
     if (u.tid === 'ultralisk' && g.players[u.o].research.chitinous_plating) a += 2;
-    return a;
+    a -= u.st.spores || 0;                 // 포식귀 산성 포자: 방어 -1/스택
+    return Math.max(0, a);
   }
   function getWeapon(g, u, target) {
     const def = defOf(u.tid);
@@ -201,8 +220,7 @@
   function weaponDmg(g, u, w) {
     let lvl = 0;
     const def = defOf(u.tid);
-    if (def.upG && (w === def.g || w === def.siege)) lvl = g.players[u.o].research[def.upG] || 0;
-    else if (def.upA && w === def.a) lvl = g.players[u.o].research[def.upA] || 0;
+    if (def.upG && (w === def.g || w === def.siege || w === def.a)) lvl = g.players[u.o].research[def.upG] || 0;
     let d = w.d + (w.up || 0) * lvl;
     if (u.tid === 'reaver' && g.players[u.o].research.scarab_damage) d += 25;
     return d;
@@ -212,6 +230,7 @@
     if (u.st.stim) cd = cd >> 1;
     if (u.tid === 'zergling' && g.players[u.o].research.adrenal_glands) cd = 6;
     if (u.st.ens) cd = (cd * 5) >> 2;                 // 올가미: 쿨다운 +25%
+    if (u.st.spores) cd = (cd * (8 + u.st.spores)) >> 3;   // 산성 포자: 스택당 +12.5%
     return cd;
   }
   function maxEnergy(g, u) {
@@ -222,7 +241,7 @@
   const isDetectorActive = (g, u) => {
     const def = defOf(u.tid);
     return def.flags && def.flags.includes('detector') && u.complete && !u.st.lock && !u.st.stasis &&
-      !(def.needPower && !u.powered);
+      !u.st.flare && !(def.needPower && !u.powered);
   };
 
   // ---- 시야 ----------------------------------------------------------------
@@ -244,7 +263,7 @@
         }
     };
     for (const u of g.units) {
-      if (u.dead) continue;
+      if (u.dead || u.hidden) continue;    // 수송/벙커/가스 채취 중 유닛은 시야 제공 없음
       const team = g.players[u.o].team;
       const s = getSight(g, u);
       stamp(g.teamVis[team], u.x, u.y, s, 2);
@@ -267,7 +286,7 @@
     const i = ((u.y / ONE / T) | 0) * W + ((u.x / ONE / T) | 0);
     const vis = g.teamVis[team];
     if (!vis || vis[i] !== 2) return false;
-    if ((u.st.cloak || u.st.burrow) && g.players[u.o].team !== team) return !!g.teamDet[team][i];
+    if ((u.st.cloak || u.st.burrow || u.st.fcT) && g.players[u.o].team !== team) return !!g.teamDet[team][i];
     return true;
   }
   const targetable = (g, attacker, u) => !u.dead && !u.st.stasis && u.tid !== 'larva' &&
@@ -297,7 +316,8 @@
       const px = u.tileX + 1, py = u.tileY + 1;
       const cx = tx + w / 2, cy = ty + h / 2;
       const dx = cx - px, dy = cy - py;
-      if (dx * dx + dy * dy <= 7.5 * 7.5) return true;
+      const pr = (defOf('pylon').powerRadius || 5) + 0.8;
+      if (dx * dx + dy * dy <= pr * pr) return true;
     }
     return false;
   }
@@ -399,6 +419,7 @@
         if ((b.queue || []).length >= 5) break;
         pay(p, def);
         b.queue.push({ u: c.u, t: 0, total: def.bt * D().TICKS });
+        recomputeSupply(g, p);
         break;
       }
       case 'mor': { // 라바/유닛 변태
@@ -434,6 +455,11 @@
         const cur = p.research[c.r] || 0;
         if (cur >= r.lv) break;
         if (r.req && !r.req.every(q => hasBuilding(g, p, q))) break;
+        if (r.tierReq && r.tierReq[cur]) {       // 2/3단계 업그레이드 테크 요구
+          const need = r.tierReq[cur];
+          const ok2 = need === 'lair' ? (hasBuilding(g, p, 'lair') || hasBuilding(g, p, 'hive')) : hasBuilding(g, p, need);
+          if (!ok2) break;
+        }
         const canAt = (defOf(b.tid).researches || []).includes(c.r) || (b.addonDef && (b.addonDef.researches || []).includes(c.r)) ||
           (c.r === 'burrow_tech' && ['hatchery', 'lair', 'hive'].includes(b.tid));
         if (!canAt) break;
@@ -482,7 +508,24 @@
         for (const id of c.ids) { const u = my(id); if (u && u.id !== tr.id && !u.fly && u.kind === 'unit') setOrders(u, { op: 'enter', t: tr.id }); }
         break;
       }
-      case 'uld': { const tr = my(c.t); if (tr) setOrders(tr, { op: 'unload', x: c.x != null ? c.x : tr.x, y: c.y != null ? c.y : tr.y }); break; }
+      case 'uld': {
+        const tr = my(c.t); if (!tr) break;
+        if (tr.kind === 'building') {         // 벙커: 즉시 배출
+          let i2 = 0;
+          for (const cid of tr.cargo) {
+            const cu = byId(g, cid);
+            if (!cu) continue;
+            cu.hidden = false; cu.inBunker = false;
+            const sp2 = findSpawnSpot(g, tr);
+            cu.x = sp2.x + ((i2 % 3) - 1) * 20 * ONE; cu.y = sp2.y; cu.path = null;
+            i2++;
+          }
+          tr.cargo = [];
+          break;
+        }
+        setOrders(tr, { op: 'unload', x: c.x != null ? c.x : tr.x, y: c.y != null ? c.y : tr.y });
+        break;
+      }
       case 'mrg': { // 아콘 합체
         const list = c.ids.map(my).filter(u => u && (u.tid === 'high_templar' || u.tid === 'dark_templar'));
         const ht = list.filter(u => u.tid === 'high_templar');
@@ -528,97 +571,137 @@
   function uiAlert(g, p, kind) { g.alerts.push({ p, kind, t: g.tick }); }
 
   // ---- 어빌리티 ------------------------------------------------------------
+  const SELF_ABS = new Set(['stim', 'siege', 'unsiege', 'burrow', 'unburrow', 'cloak_ghost', 'cloak_wraith',
+    'merge_archon', 'merge_dark_archon']);
+  const NO_RANGE_GATE = new Set(['scan', 'recall', 'nuke_paint', 'mines', 'heal', 'repair', 'emp', 'yamato']);
+
   function applyAbility(g, p, c) {
-    const S = D().SPELL;
+    const ab = D().abilities[c.a];
+    if (!ab) return;
+    if (SELF_ABS.has(c.a) || ab.target === 'self' || ab.target === 'toggle') {
+      for (const id of c.ids) {
+        const u = byId(g, id);
+        if (u && !u.dead && u.o === c.p && !u.st.hallu) doCast(g, p, c, u, ab);
+      }
+      return;
+    }
+    // 대상/지점 스펠: 가장 가깝고 에너지가 충분한 시전자 1기만 시전 (BW 방식)
+    const tgt0 = c.t ? byId(g, c.t) : null;
+    const tx = tgt0 ? tgt0.x : c.x, ty = tgt0 ? tgt0.y : c.y;
+    let best = null, bd = Infinity;
     for (const id of c.ids) {
       const u = byId(g, id);
-      if (!u || u.dead || u.o !== c.p) continue;
-      const ab = D().abilities[c.a];
-      if (!ab) continue;
-      if (ab.req && !p.research[ab.req] && !['nuke_paint', 'merge_dark_archon'].includes(c.a)) {
-        if (c.a !== 'unsiege' && c.a !== 'unburrow') continue;
-      }
-      const needE = (ab.en || 0) << FP;
-      const tgt = c.t ? byId(g, c.t) : null;
+      if (!u || u.dead || u.o !== c.p || u.st.hallu || u.st.stasis || u.st.lock || u.st.mael) continue;
+      if (ab.en > 1 && u.en < (ab.en << FP)) continue;
+      const d = tx != null ? dist2(u.x, u.y, tx, ty) : 0;
+      if (d < bd) { bd = d; best = u; }
+    }
+    if (!best) { uiAlert(g, c.p, 'energy'); return; }
+    if (!NO_RANGE_GATE.has(c.a) && ab.r && tx != null &&
+        distPx(best.x, best.y, tx, ty) > ab.r * T + 8 && canMove(best)) {
+      best.orders = [{ op: 'cast', a: c.a, t: c.t, x: c.x, y: c.y }];
+      best.path = null;
+      return;
+    }
+    doCast(g, p, c, best, ab);
+  }
 
-      switch (c.a) {
-        case 'stim': {
-          const def = defOf(u.tid);
-          if (u.tid !== 'marine' && u.tid !== 'firebat') break;
-          if (u.hp <= (S.STIM_HP << FP)) break;
-          u.hp -= S.STIM_HP << FP; u.st.stim = S.STIM_TICKS;
-          sfx(g, 'stim', u); break;
-        }
-        case 'siege': if (u.tid === 'siege_tank' && !u.st.sieged) { u.st.sieged = true; u.orders = []; u.path = null; u.cd = 30; sfx(g, 'siege', u); } break;
-        case 'unsiege': if (u.st.sieged) { u.st.sieged = false; u.cd = 30; } break;
-        case 'burrow': if ((defOf(u.tid).flags || []).includes('burrowable') && !u.st.burrow &&
-          (p.research.burrow_tech || u.tid === 'lurker')) { u.st.burrow = true; u.orders = []; u.path = null; sfx(g, 'burrow', u); } break;
-        case 'unburrow': if (u.st.burrow) { u.st.burrow = false; u.cd = 20; } break;
-        case 'cloak_ghost': case 'cloak_wraith':
-          if (u.st.cloak) { u.st.cloak = false; }
-          else if (u.en >= needE) { u.en -= needE; u.st.cloak = true; u.st.cloakDrain = ab.drain; }
-          break;
-        case 'mines': if (u.mines > 0) { u.orders = [{ op: 'mine', x: c.x, y: c.y }]; } break;
-        case 'scan': {
-          // 컴샛 보유 사령부
-          const addon = u.addon ? byId(g, u.addon) : null;
-          const src = (u.tid === 'comsat_station') ? u : (addon && addon.tid === 'comsat_station' ? addon : null);
-          if (src && src.complete && src.en >= needE) {
-            src.en -= needE;
-            g.scans.push({ o: c.p, x: c.x, y: c.y, t: g.tick + S.SCAN_TICKS });
-            fx(g, 'scan', c.x, c.y, S.SCAN_TICKS);
-          } break;
-        }
-        case 'heal': if (tgt) u.orders = [{ op: 'heal', t: tgt.id }]; break;
-        case 'repair': if (tgt) u.orders = [{ op: 'repair', t: tgt.id }]; break;
-        case 'lockdown': if (tgt && u.en >= needE && castable(g, u, tgt, ab)) {
-          u.en -= needE; if ((defOf(tgt.tid).flags || []).includes('mech') && tgt.kind === 'unit') { tgt.st.lock = S.LOCKDOWN_TICKS; tgt.orders = []; }
-          fx(g, 'lockdown', tgt.x, tgt.y, 40); } break;
-        case 'dmatrix': if (tgt && u.en >= needE) { u.en -= needE; tgt.st.dmx = S.DMATRIX_HP << FP; tgt.st.dmxT = S.DMATRIX_TICKS; fx(g, 'dmatrix', tgt.x, tgt.y, 40); } break;
-        case 'emp': if (u.en >= needE) { u.en -= needE; u.orders = [{ op: 'castPoint', a: 'emp', x: c.x, y: c.y }]; } break;
-        case 'irradiate': if (tgt && u.en >= needE) { u.en -= needE; tgt.st.irr = S.IRRADIATE_TICKS; tgt.st.irrDot = Math.round((S.IRRADIATE_DMG << FP) / S.IRRADIATE_TICKS); fx(g, 'irradiate', tgt.x, tgt.y, 60); sfx(g, 'irradiate', tgt); } break;
-        case 'yamato': if (tgt && u.en >= needE) { u.en -= needE; u.orders = [{ op: 'yamato', t: tgt.id }]; } break;
-        case 'nuke_paint': { // 사일로에 핵 필요
-          let silo = null;
-          for (const b of g.units) if (!b.dead && b.o === c.p && b.tid === 'nuclear_silo' && b.hasNuke) { silo = b; break; }
-          if (silo && u.tid === 'ghost') { silo.hasNuke = false; u.orders = [{ op: 'nukePaint', x: c.x, y: c.y, t0: null }]; }
-          break;
-        }
-        case 'parasite': if (tgt && u.en >= needE) { u.en -= needE; tgt.st.parasite = c.p; fx(g, 'parasite', tgt.x, tgt.y, 30); } break;
-        case 'ensnare': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.ENSNARE_R, v => { v.st.ens = S.ENSNARE_TICKS; }); fx(g, 'ensnare', c.x, c.y, 60); } break;
-        case 'broodlings': if (tgt && u.en >= needE && tgt.kind === 'unit' && !tgt.fly &&
-          !(defOf(tgt.tid).flags || []).includes('robotic') && !['archon', 'dark_archon', 'reaver', 'probe'].includes(tgt.tid)) {
-          u.en -= needE; kill(g, tgt, u.o);
-          for (let i = 0; i < S.BROODLING_COUNT; i++) spawnUnit(g, c.p, 'broodling', tgt.x + (i * 20 - 10) * ONE, tgt.y);
-          fx(g, 'brood', tgt.x, tgt.y, 40); } break;
-        case 'dark_swarm': if (u.en >= needE) { u.en -= needE; g.swarms.push({ x: c.x, y: c.y, t: g.tick + S.SWARM_TICKS, r: S.SWARM_R * T * ONE }); fx(g, 'swarm', c.x, c.y, S.SWARM_TICKS); } break;
-        case 'consume': if (tgt && tgt.o === c.p && (defOf(tgt.tid).flags || []).includes('bio') && tgt.kind === 'unit' && tgt.id !== u.id) {
-          kill(g, tgt, u.o); u.en = Math.min(maxEnergy(g, u), u.en + (S.CONSUME_ENERGY << FP)); } break;
-        case 'plague': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.PLAGUE_R, v => {
-          v.st.plague = S.PLAGUE_TICKS; v.st.plagueDot = Math.round((S.PLAGUE_DMG << FP) / S.PLAGUE_TICKS); }); fx(g, 'plague', c.x, c.y, 80); sfx(g, 'plague', u); } break;
-        case 'storm': if (u.en >= needE) { u.en -= needE;
-          g.fx.push({ k: 'storm', x: c.x, y: c.y, t0: g.tick, life: S.STORM_TICKS });
-          u.storms = u.storms || []; u.storms.push({ x: c.x, y: c.y, end: g.tick + S.STORM_TICKS });
-          if (!g.storms) g.storms = []; g.storms.push({ x: c.x, y: c.y, end: g.tick + S.STORM_TICKS, dot: Math.round((S.STORM_DMG << FP) / S.STORM_TICKS), r: S.STORM_R * T * ONE });
-          sfx(g, 'storm', { x: c.x, y: c.y, o: c.p }); } break;
-        case 'hallucination': if (tgt && u.en >= needE && tgt.kind === 'unit') { u.en -= needE;
-          for (let i = 0; i < S.HALLU_COUNT; i++) {
-            const h = spawnUnit(g, tgt.o, tgt.tid, tgt.x + (i * 24 - 12) * ONE, tgt.y + 12 * ONE);
-            h.st.hallu = true; h.st.halluT = S.HALLU_TICKS;
-          } fx(g, 'hallu', tgt.x, tgt.y, 30); } break;
-        case 'feedback': if (tgt && u.en >= needE && tgt.en > 0) { u.en -= needE;
-          const dmg = tgt.en >> FP; tgt.en = 0; damage(g, tgt, dmg, 'n', u, true); fx(g, 'feedback', tgt.x, tgt.y, 30); } break;
-        case 'maelstrom': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.MAELSTROM_R, v => {
-          if ((defOf(v.tid).flags || []).includes('bio')) v.st.mael = S.MAELSTROM_TICKS; }); fx(g, 'mael', c.x, c.y, 50); } break;
-        case 'mind_control': if (tgt && u.en >= needE && tgt.kind === 'unit' && g.players[tgt.o].team !== p.team) {
-          u.en -= needE; u.sh = 0; tgt.o = c.p; tgt.orders = []; fx(g, 'mc', tgt.x, tgt.y, 50);
-          recomputeSupply(g, p); recomputeSupply(g, g.players[tgt.o]); } break;
-        case 'recall': if (u.en >= needE) { u.en -= needE; u.orders = [{ op: 'recall', x: c.x, y: c.y, t0: g.tick + S.RECALL_DELAY }]; fx(g, 'recallSrc', c.x, c.y, 60); } break;
-        case 'stasis': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.STASIS_R, v => {
-          if (v.kind === 'unit') { v.st.stasis = S.STASIS_TICKS; v.orders = []; } }); fx(g, 'stasis', c.x, c.y, 60); } break;
-        case 'dweb': if (u.en >= needE) { u.en -= needE; g.dwebs.push({ x: c.x, y: c.y, t: g.tick + S.DWEB_TICKS, r: S.DWEB_R * T * ONE }); fx(g, 'dweb', c.x, c.y, S.DWEB_TICKS); } break;
-        case 'merge_archon': case 'merge_dark_archon': break; // mrg 명령으로 처리
+  function doCast(g, p, c, u, ab) {
+    const S = D().SPELL;
+    if (ab.req && !p.research[ab.req]) return;
+    const needE = (ab.en || 0) << FP;
+    const tgt = c.t ? byId(g, c.t) : null;
+
+    switch (c.a) {
+      case 'stim': {
+        if (u.tid !== 'marine' && u.tid !== 'firebat') break;
+        if (u.hp <= (S.STIM_HP << FP)) break;
+        u.hp -= S.STIM_HP << FP; u.st.stim = S.STIM_TICKS;
+        sfx(g, 'stim', u); break;
       }
+      case 'siege': if (u.tid === 'siege_tank' && !u.st.sieged) { u.st.sieged = true; u.orders = []; u.path = null; u.cd = 30; sfx(g, 'siege', u); } break;
+      case 'unsiege': if (u.st.sieged) { u.st.sieged = false; u.cd = 30; } break;
+      case 'burrow': if ((defOf(u.tid).flags || []).includes('burrowable') && !u.st.burrow &&
+        (p.research.burrow_tech || u.tid === 'lurker')) { u.st.burrow = true; u.orders = []; u.path = null; sfx(g, 'burrow', u); } break;
+      case 'unburrow': if (u.st.burrow) { u.st.burrow = false; u.cd = 20; } break;
+      case 'cloak_ghost': case 'cloak_wraith':
+        if (u.st.cloak) { u.st.cloak = false; }
+        else if (u.en >= needE) { u.en -= needE; u.st.cloak = true; u.st.cloakDrain = ab.drain; }
+        break;
+      case 'mines': if (u.mines > 0) { u.orders = [{ op: 'mine', x: c.x, y: c.y }]; } break;
+      case 'scan': {
+        const addon = u.addon ? byId(g, u.addon) : null;
+        const src = (u.tid === 'comsat_station') ? u : (addon && addon.tid === 'comsat_station' ? addon : null);
+        if (src && src.complete && src.en >= needE) {
+          src.en -= needE;
+          g.scans.push({ o: c.p, x: c.x, y: c.y, t: g.tick + S.SCAN_TICKS });
+          fx(g, 'scan', c.x, c.y, S.SCAN_TICKS);
+        } break;
+      }
+      case 'heal': if (tgt) u.orders = [{ op: 'heal', t: tgt.id }]; break;
+      case 'repair': if (tgt) u.orders = [{ op: 'repair', t: tgt.id }]; break;
+      case 'lockdown': if (tgt && u.en >= needE) {
+        u.en -= needE;
+        if ((defOf(tgt.tid).flags || []).includes('mech') && tgt.kind === 'unit') { tgt.st.lock = S.LOCKDOWN_TICKS; tgt.orders = []; }
+        fx(g, 'lockdown', tgt.x, tgt.y, 40); } break;
+      case 'dmatrix': if (tgt && u.en >= needE) { u.en -= needE; tgt.st.dmx = S.DMATRIX_HP << FP; tgt.st.dmxT = S.DMATRIX_TICKS; fx(g, 'dmatrix', tgt.x, tgt.y, 40); } break;
+      case 'emp': if (u.en >= needE) { u.orders = [{ op: 'castPoint', a: 'emp', x: c.x, y: c.y }]; } break;
+      case 'irradiate': if (tgt && u.en >= needE) { u.en -= needE; tgt.st.irr = S.IRRADIATE_TICKS; tgt.st.irrDot = Math.round((S.IRRADIATE_DMG << FP) / S.IRRADIATE_TICKS); fx(g, 'irradiate', tgt.x, tgt.y, 60); sfx(g, 'irradiate', tgt); } break;
+      case 'yamato': if (tgt && u.en >= needE) { u.en -= needE; u.orders = [{ op: 'yamato', t: tgt.id }]; } break;
+      case 'nuke_paint': {
+        let silo = null;
+        for (const b of g.units) if (!b.dead && b.o === c.p && b.tid === 'nuclear_silo' && b.hasNuke) { silo = b; break; }
+        if (silo && u.tid === 'ghost') { silo.hasNuke = false; u.orders = [{ op: 'nukePaint', x: c.x, y: c.y, t0: null }]; }
+        break;
+      }
+      case 'parasite': if (tgt && u.en >= needE) { u.en -= needE; tgt.st.parasite = c.p; fx(g, 'parasite', tgt.x, tgt.y, 30); } break;
+      case 'ensnare': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.ENSNARE_R, v => { if (v.kind === 'unit') v.st.ens = S.ENSNARE_TICKS; }); fx(g, 'ensnare', c.x, c.y, 60); } break;
+      case 'broodlings': if (tgt && u.en >= needE && tgt.kind === 'unit' && !tgt.fly &&
+        !(defOf(tgt.tid).flags || []).includes('robotic') && !['archon', 'dark_archon', 'reaver', 'probe'].includes(tgt.tid)) {
+        u.en -= needE; kill(g, tgt, u.o);
+        for (let i = 0; i < S.BROODLING_COUNT; i++) spawnUnit(g, c.p, 'broodling', tgt.x + (i * 20 - 10) * ONE, tgt.y);
+        fx(g, 'brood', tgt.x, tgt.y, 40); } break;
+      case 'dark_swarm': if (u.en >= needE) { u.en -= needE; g.swarms.push({ x: c.x, y: c.y, t: g.tick + S.SWARM_TICKS, r: S.SWARM_R * T * ONE }); fx(g, 'swarm', c.x, c.y, S.SWARM_TICKS); } break;
+      case 'consume': if (tgt && tgt.o === c.p && (defOf(tgt.tid).flags || []).includes('bio') && tgt.kind === 'unit' && tgt.id !== u.id) {
+        kill(g, tgt, u.o); u.en = Math.min(maxEnergy(g, u), u.en + (S.CONSUME_ENERGY << FP)); } break;
+      case 'plague': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.PLAGUE_R, v => {
+        v.st.plague = S.PLAGUE_TICKS; v.st.plagueDot = Math.round((S.PLAGUE_DMG << FP) / S.PLAGUE_TICKS); }); fx(g, 'plague', c.x, c.y, 80); sfx(g, 'plague', u); } break;
+      case 'storm': if (u.en >= needE) { u.en -= needE;
+        g.fx.push({ k: 'storm', x: c.x, y: c.y, t0: g.tick, life: S.STORM_TICKS });
+        if (!g.storms) g.storms = [];
+        g.storms.push({ x: c.x, y: c.y, end: g.tick + S.STORM_TICKS, dot: Math.round((S.STORM_DMG << FP) / S.STORM_TICKS), r: S.STORM_R * T * ONE });
+        sfx(g, 'storm', { x: c.x, y: c.y, o: c.p }); } break;
+      case 'hallucination': if (tgt && u.en >= needE && tgt.kind === 'unit') { u.en -= needE;
+        for (let i = 0; i < S.HALLU_COUNT; i++) {
+          const h = spawnUnit(g, u.o, tgt.tid, tgt.x + (i * 24 - 12) * ONE, tgt.y + 12 * ONE);
+          h.st.hallu = true; h.st.halluT = S.HALLU_TICKS;
+        } fx(g, 'hallu', tgt.x, tgt.y, 30); } break;
+      case 'feedback': if (tgt && u.en >= needE && tgt.en > 0) { u.en -= needE;
+        const dmg = tgt.en >> FP; tgt.en = 0; damage(g, tgt, dmg, 'n', u, true); fx(g, 'feedback', tgt.x, tgt.y, 30); } break;
+      case 'maelstrom': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.MAELSTROM_R, v => {
+        if ((defOf(v.tid).flags || []).includes('bio')) v.st.mael = S.MAELSTROM_TICKS; }); fx(g, 'mael', c.x, c.y, 50); } break;
+      case 'mind_control': if (tgt && u.en >= needE && tgt.kind === 'unit' && g.players[tgt.o].team !== p.team) {
+        u.en -= needE; u.sh = 0; const prevO = tgt.o; tgt.o = c.p; tgt.orders = []; fx(g, 'mc', tgt.x, tgt.y, 50);
+        recomputeSupply(g, p); recomputeSupply(g, g.players[prevO]); } break;
+      case 'recall': if (u.en >= needE) { u.en -= needE; u.orders = [{ op: 'recall', x: c.x, y: c.y, t0: g.tick + S.RECALL_DELAY }]; fx(g, 'recallSrc', c.x, c.y, 60); } break;
+      case 'stasis': if (u.en >= needE) { u.en -= needE; areaStatus(g, c.x, c.y, S.STASIS_R, v => {
+        if (v.kind === 'unit') { v.st.stasis = S.STASIS_TICKS; v.orders = []; } }); fx(g, 'stasis', c.x, c.y, 60); } break;
+      case 'dweb': if (u.en >= needE) { u.en -= needE; g.dwebs.push({ x: c.x, y: c.y, t: g.tick + S.DWEB_TICKS, r: S.DWEB_R * T * ONE }); fx(g, 'dweb', c.x, c.y, S.DWEB_TICKS); } break;
+      case 'restoration': if (tgt && u.en >= needE && tgt.kind === 'unit') { u.en -= needE;
+        const st = tgt.st;
+        st.lock = 0; st.irr = 0; st.irrDot = 0; st.plague = 0; st.plagueDot = 0; st.ens = 0; st.mael = 0;
+        delete st.parasite; st.flare = false;
+        fx(g, 'healfx', tgt.x, tgt.y, 20); } break;
+      case 'optical_flare': if (tgt && u.en >= needE && tgt.kind === 'unit') { u.en -= needE;
+        tgt.st.flare = true; fx(g, 'lockdown', tgt.x, tgt.y, 30); } break;
+      case 'infest': if (tgt && u.tid === 'queen' && tgt.tid === 'command_center' && tgt.complete &&
+        tgt.hp < tgt.maxHp / 2 && g.players[tgt.o].team !== p.team) {
+        const prevO = tgt.o;
+        tgt.o = c.p; tgt.tid = 'infested_command_center'; tgt.queue = []; tgt.addon = null;
+        fx(g, 'brood', tgt.x, tgt.y, 40);
+        recomputeSupply(g, p); recomputeSupply(g, g.players[prevO]);
+        g.creepDirty = true; } break;
+      case 'merge_archon': case 'merge_dark_archon': break; // mrg 명령으로 처리
     }
   }
   function castable(g, u, tgt, ab) { return distPx(u.x, u.y, tgt.x, tgt.y) <= (ab.r || 8) * T + 16; }
@@ -703,8 +786,17 @@
       const [w, h] = def.tiles;
       for (let y = u.tileY; y < u.tileY + h; y++) for (let x = u.tileX; x < u.tileX + w; x++)
         if (g.occ[y * g.map.w + x] === u.id) g.occ[y * g.map.w + x] = 0;
-      if (def.flags && def.flags.includes('gas')) { const r = resById(g, u.geyser); if (r) r.building = null; }
+      if (def.flags && def.flags.includes('gas')) {
+        const r = resById(g, u.geyser);
+        if (r) {                                 // 간헐천 타일 점유 복원
+          r.building = null;
+          for (let yy = r.ty; yy < r.ty + r.h; yy++) for (let xx = r.tx; xx < r.tx + r.w; xx++)
+            g.occ[yy * g.map.w + xx] = r.id;
+        }
+      }
       if (def.flags && def.flags.includes('creepSource')) g.creepDirty = true;
+      if (def.flags && def.flags.includes('larvaSpawner'))
+        for (const l of g.units) if (!l.dead && l.tid === 'larva' && l.hatch === u.id) kill(g, l, -1);
       fx(g, def.race === 'Z' ? 'bdeathZ' : 'bdeath', u.x, u.y, 30);
       sfx(g, 'bdeath', u);
       // 건설 중이던 SCV 해제
@@ -719,10 +811,7 @@
     const def = defOf(b.tid);
     const p = g.players[b.o];
     p.minerals += Math.floor(def.min * 0.75); p.gas += Math.floor(def.gas * 0.75);
-    if (p.race === 'Z' && !(def.flags || []).includes('gas')) {
-      // 드론 반환
-      const d = spawnUnit(g, b.o, 'drone', b.x, b.y + T * 2 * ONE);
-    }
+    if (p.race === 'Z') spawnUnit(g, b.o, 'drone', b.x, b.y + T * 2 * ONE);   // 드론 반환
     kill(g, b, -1);
     g.stats[b.o].lost--;
   }
@@ -759,8 +848,14 @@
     const vx = (wx - u.x) / d, vy = (wy - u.y) / d;
     const nx = u.x + Math.round(vx * sp / ONE), ny = u.y + Math.round(vy * sp / ONE);
     // 지형 차단 확인
-    const ti = ((ny / ONE / T) | 0) * g.map.w + ((nx / ONE / T) | 0);
-    if (g.map.walk[ti] && !g.occ[ti]) { u.x = nx; u.y = ny; u.face = faceOf(vx, vy); u.stuck = 0; }
+    const free = (px2, py2) => {
+      const i2 = ((py2 / ONE / T) | 0) * g.map.w + ((px2 / ONE / T) | 0);
+      return i2 >= 0 && i2 < g.map.walk.length && g.map.walk[i2] && !g.occ[i2];
+    };
+    if (!free(u.x, u.y)) { u.x = nx; u.y = ny; u.face = faceOf(vx, vy); u.stuck = 0; }   // 갇힘: 자유 탈출
+    else if (free(nx, ny)) { u.x = nx; u.y = ny; u.face = faceOf(vx, vy); u.stuck = 0; }
+    else if (free(nx, u.y)) { u.x = nx; u.face = faceOf(vx, vy); u.stuck = 0; }      // 벽 미끄러짐 (x축)
+    else if (free(u.x, ny)) { u.y = ny; u.face = faceOf(vx, vy); u.stuck = 0; }      // 벽 미끄러짐 (y축)
     else {
       u.stuck = (u.stuck || 0) + 1;
       if (u.stuck > 8) { u.path = null; u.stuck = 0; }
@@ -775,11 +870,15 @@
   }
 
   // ---- 유닛 서로 밀치기 -------------------------------------------------------
+  const isBusyWorker = u => isWorker(u) && u.orders.length &&
+    ['gather', 'return', 'build', 'construct'].includes(u.orders[0].op);
+
   function separate(g) {
     const cell = 64, buckets = new Map();
     const list = [];
     for (const u of g.units) {
       if (u.dead || u.kind === 'building' || u.hidden || u.st.burrow) continue;
+      if (isBusyWorker(u)) continue;              // 채취/건설 일꾼은 서로 통과
       list.push(u);
       const k = (((u.x / ONE / cell) | 0) << 12) | ((u.y / ONE / cell) | 0);
       if (!buckets.has(k)) buckets.set(k, []);
@@ -815,18 +914,21 @@
   function acquireTarget(g, u, rangePx) {
     const def = defOf(u.tid);
     if (!def.g && !def.a && !def.siege) return null;
-    let best = null, bd = Infinity;
+    // 우선순위: 0 무장 유닛 → 1 비무장 유닛/요격기 → 2 건물
+    const best = [null, null, null], bd = [Infinity, Infinity, Infinity];
     const myTeam = g.players[u.o].team;
     for (const v of g.units) {
       if (v.dead || v.o === u.o || g.players[v.o].team === myTeam || v.hidden) continue;
-      if (v.tid === 'larva' || v.tid === 'egg' || v.tid === 'interceptor') continue;
+      if (v.tid === 'larva' || v.tid === 'egg') continue;
       if (!targetable(g, u, v)) continue;
       const w = getWeapon(g, u, v);
       if (!w) continue;
+      const vd = defOf(v.tid);
+      const tier = v.kind === 'building' ? 2 : ((vd.g || vd.a) && v.tid !== 'interceptor' ? 0 : 1);
       const d = distPx(u.x, u.y, v.x, v.y) - v.r;
-      if (d < bd && d <= rangePx) { bd = d; best = v; }
+      if (d < bd[tier] && d <= rangePx) { bd[tier] = d; best[tier] = v; }
     }
-    return best;
+    return best[0] || best[1] || best[2];
   }
 
   // ---- 공격 실행 -----------------------------------------------------------
@@ -838,7 +940,7 @@
     const minR = (w.min || 0) * T;
     const d = distPx(u.x, u.y, tgt.x, tgt.y) - tgt.r - u.r;
     if (d > range) return 'far';
-    if (minR && d < minR - T) return 'close';
+    if (minR && d < minR) return 'close';
     if (u.cd > 0) return 'cd';
     // 발사
     u.cd = getCooldown(g, u, w);
@@ -889,8 +991,8 @@
 
   function splashAt(g, src, x, y, dmg, dt, radiusPx, friendly) {
     for (const v of g.units) {
-      if (v.dead || v.hidden) continue;
-      if (!friendly && g.players[v.o].team === g.players[src.o].team && v.id !== src.id) continue;
+      if (v.dead || v.hidden || v.id === src.id) continue;   // 자기 자신은 스플래시 제외
+      if (!friendly && g.players[v.o].team === g.players[src.o].team) continue;
       const d = distPx(v.x, v.y, x, y) - v.r;
       let f = 0;
       if (d <= radiusPx * 0.5) f = 1; else if (d <= radiusPx) f = 0.5; else if (d <= radiusPx * 1.5) f = 0.25;
@@ -903,6 +1005,7 @@
     const S = D().SPELL;
     for (const b of g.bullets) {
       if (b.done) continue;
+      if (b.resolved) { if (--b.ttl <= 0) b.done = true; continue; }   // 렌더용 잔상
       const tgt = byId(g, b.t);
       if (!tgt || tgt.dead) { b.done = true; continue; }
       if (b.spd > 0) {
@@ -912,7 +1015,8 @@
           continue;
         }
       }
-      b.done = true;
+      if (b.spd > 0) b.done = true;
+      else { b.resolved = true; b.ttl = 4; b.ex = tgt.x; b.ey = tgt.y; }   // 즉발: 트레이서 잔상
       if (b.miss) { fx(g, 'miss', tgt.x, tgt.y, 10); continue; }
       const src = byId(g, b.src) || { o: b.o, id: -1, tid: b.stid, x: b.x, y: b.y };
       if (src.st && src.st.hallu) continue; // 환상은 피해 없음
@@ -976,7 +1080,25 @@
     if (st.dmxT) { st.dmxT--; if (!st.dmxT) st.dmx = 0; }
     if (st.halluT != null) { if (--st.halluT <= 0) { kill(g, u, -1); return; } }
     if (st.sporesT) { if (--st.sporesT <= 0) st.spores = 0; }
-    if (st.irr) { st.irr--; if ((def.flags || []).includes('bio') && !st.hallu) { u.hp -= st.irrDot; if (u.hp <= 0) { kill(g, u, -1); return; } } }
+    if (st.fcT) st.fcT--;
+    // 아비터 은폐장: 주변 아군 유닛 은폐 (자신/아비터/건물 제외)
+    if (u.tid === 'arbiter' && u.kind === 'unit' && (g.tick & 7) === 0) {
+      for (const v of g.units) {
+        if (v.dead || v.o !== u.o || v.id === u.id || v.kind !== 'unit' || v.tid === 'arbiter') continue;
+        if (distPx(u.x, u.y, v.x, v.y) <= 4 * T) v.st.fcT = 16;
+      }
+    }
+    if (st.irr) {
+      st.irr--;
+      for (const v of g.units) {          // 방사능: 주변 1타일 내 모든 생체 유닛 피해
+        if (v.dead || v.st.stasis || v.hidden || v.kind !== 'unit') continue;
+        if (v.id !== u.id && distPx(u.x, u.y, v.x, v.y) > T + v.r) continue;
+        if (!(defOf(v.tid).flags || []).includes('bio') || v.st.hallu) continue;
+        v.hp -= st.irrDot;
+        if (v.hp <= 0 && v.id !== u.id) kill(g, v, -1);
+      }
+      if (u.hp <= 0) { kill(g, u, -1); return; }
+    }
     if (st.plague) { st.plague--; u.hp = Math.max(ONE, u.hp - st.plagueDot); }
     if (u.life != null) { if (--u.life <= 0) { kill(g, u, -1); return; } }
     if (def.life && u.life == null) u.life = def.life;
@@ -992,6 +1114,10 @@
     if (def.me && !(st.cloak && st.cloakDrain) && u.en < maxEnergy(g, u)) u.en = Math.min(maxEnergy(g, u), u.en + D().ENERGY_REGEN);
 
     if (u.kind === 'building') { stepBuilding(g, u); return; }
+    // 가스 채취가 다른 명령으로 끊긴 경우 복구
+    if (u.gT != null && (!u.orders.length || (u.orders[0].op !== 'gather' && u.orders[0].op !== 'return'))) {
+      u.gT = null; u.hidden = false;
+    }
     if (u.hidden && u.gT == null) return;   // 수송 탑승 중 (가스 채취 중인 일꾼은 계속 진행)
     if (u.tid === 'scarab_proj') { stepScarab(g, u); return; }
     if (u.tid === 'spider_mine') { stepMine(g, u); return; }
@@ -1064,6 +1190,10 @@
         return false;
       }
       case 'amove': {
+        if (u.tid === 'medic' && (g.tick + u.id) % 6 === 0) {
+          const ht = findHealTarget(g, u, 6 * T);
+          if (ht) { u.orders.unshift({ op: 'heal', t: ht.id, auto: true }); return false; }
+        }
         if ((g.tick + u.id) % 6 === 0 && !isWorker(u)) {
           const tgt = acquireTarget(g, u, getSight(g, u) * T);
           if (tgt) { u.orders.unshift({ op: 'attack', t: tgt.id, auto: true, resume: { x: o.x, y: o.y } }); u.path = null; return false; }
@@ -1117,7 +1247,7 @@
         if (!((tDef.flags || []).includes('mech') || tgt.kind === 'building')) return true;
         if (distPx(u.x, u.y, tgt.x, tgt.y) - tgt.r > T) { moveStep(g, u, tgt.x, tgt.y, tgt.r + T - 8); return false; }
         const rate = D().SPELL.REPAIR_RATE;
-        const cost = (tDef.min + tDef.gas) / ((tDef.hp << FP) || 1) * rate * 0.33;
+        const cost = tDef.min / ((tDef.hp << FP) || 1) * rate * 0.33;
         u.repAcc = (u.repAcc || 0) + cost;
         if (u.repAcc >= 1) {
           const c = Math.floor(u.repAcc);
@@ -1143,7 +1273,8 @@
         if (!tr || tr.dead) return true;
         const trDef = defOf(tr.tid);
         const cap = trDef.slots || 0;
-        if (!cap) return true;
+        if (!cap && tr.tid !== 'bunker') return true;
+        if (tr.tid === 'bunker' && !['marine', 'firebat', 'ghost', 'medic', 'scv'].includes(u.tid)) return true;
         if (tr.tid === 'overlord' && !p.research.ventral_sacs) return true;
         const used = tr.cargo.reduce((s, id) => { const cu = byId(g, id); return s + (cu ? defOf(cu.tid).cargo || 1 : 0); }, 0);
         if (used + (def.cargo || 1) > cap) return true;
@@ -1176,10 +1307,21 @@
         }
         return true;
       }
+      case 'cast': {
+        const ab2 = D().abilities[o.a];
+        const ct = o.t ? byId(g, o.t) : null;
+        if (o.t && (!ct || ct.dead)) return true;
+        const cx2 = ct ? ct.x : o.x, cy2 = ct ? ct.y : o.y;
+        if (distPx(u.x, u.y, cx2, cy2) > (ab2.r || 8) * T) { moveStep(g, u, cx2, cy2, (ab2.r || 8) * T - 12); return false; }
+        doCast(g, g.players[u.o], { a: o.a, t: o.t, x: o.x, y: o.y, p: u.o }, u, ab2);
+        return true;
+      }
       case 'castPoint': {
         // 사거리 내 이동 후 시전 (EMP 등)
         if (distPx(u.x, u.y, o.x, o.y) > 8 * T) { moveStep(g, u, o.x, o.y, 8 * T - 16); return false; }
         if (o.a === 'emp') {
+          if (u.en < 100 << FP) return true;
+          u.en -= 100 << FP;
           areaStatus(g, o.x, o.y, D().SPELL.EMP_R, v => { v.sh = 0; v.en = 0; });
           fx(g, 'emp', o.x, o.y, 30); sfx(g, 'emp', u);
         }
@@ -1238,8 +1380,9 @@
           a.st.warp = defOf(to).mergeTime * D().TICKS;
           fx(g, 'archonMerge', mx, my, 40);
           recomputeSupply(g, p);
+          return true;
         }
-        return true;
+        return false;   // 높은 id는 파트너가 합체를 완료할 때까지 대기
       }
       default: return true;
     }
@@ -1258,7 +1401,7 @@
     if (u.carry) { u.orders.unshift({ op: 'return' }); return false; }
     if (r.kind === 'g') {
       const gb = r.building ? byId(g, r.building) : null;
-      if (!gb || gb.dead || !gb.complete || gb.o !== u.o) return true;
+      if (!gb || gb.dead || !gb.complete || gb.o !== u.o) { u.gT = null; u.hidden = false; return true; }
     }
     const d = distPx(u.x, u.y, r.x, r.y) - r.w * T / 2;
     if (d > T * 0.9) { moveStep(g, u, r.x, r.y, r.w * T / 2 + 12); return false; }
@@ -1272,7 +1415,12 @@
     if (r.kind === 'm') {
       const take = Math.min(D().MINERAL_PER_TRIP, r.amt);
       r.amt -= take; u.carry = { k: 'm', n: take };
-      if (r.amt <= 0) fx(g, 'mineralGone', r.x, r.y, 10);
+      if (r.amt <= 0) {                         // 고갈: 타일 점유 해제 후 제거
+        fx(g, 'mineralGone', r.x, r.y, 10);
+        for (let yy = r.ty; yy < r.ty + r.h; yy++) for (let xx = r.tx; xx < r.tx + r.w; xx++)
+          if (g.occ[yy * g.map.w + xx] === r.id) g.occ[yy * g.map.w + xx] = 0;
+        r.gone = true;
+      }
     } else {
       const take = r.amt > 0 ? D().GAS_PER_TRIP : D().GAS_DEPLETED;
       r.amt = Math.max(0, r.amt - take); u.carry = { k: 'g', n: take };
@@ -1304,7 +1452,9 @@
     const p = g.players[u.o];
     const def = defOf(o.u);
     const cx = (o.tx * T + def.tiles[0] * T / 2) * ONE, cy = (o.ty * T + def.tiles[1] * T / 2) * ONE;
+    if (o.t0 == null) o.t0 = g.tick;
     if (distPx(u.x, u.y, cx, cy) > (Math.max(def.tiles[0], def.tiles[1]) / 2 + 1.2) * T) {
+      if (g.tick - o.t0 > 600) { uiAlert(g, u.o, 'place'); return true; }   // 도달 불가: 25초 후 포기
       moveStep(g, u, cx, cy, Math.max(def.tiles[0], def.tiles[1]) / 2 * T + T);
       return false;
     }
@@ -1351,7 +1501,7 @@
     // 건설 진행
     if (!b.complete) {
       let progress = false;
-      if (p.race === 'T') {
+      if (p.race === 'T' && !def.addonOf) {
         const builder = b.builder ? byId(g, b.builder) : null;
         if (builder && !builder.dead && builder.building === b.id &&
           distPx(builder.x, builder.y, b.x, b.y) < (Math.max(def.tiles[0], def.tiles[1]) / 2 + 1.6) * T) progress = true;
@@ -1405,8 +1555,8 @@
       for (const v of g.units) {
         if (v.dead || v.o !== b.o || v.kind !== 'unit' || v.sh >= v.maxSh || v.maxSh === 0) continue;
         if (distPx(b.x, b.y, v.x, v.y) < 4 * T) {
-          const amt = Math.min(200, v.maxSh - v.sh, b.en);
-          v.sh += amt; b.en -= amt;
+          const amt = Math.min(640, (v.maxSh - v.sh + 1) >> 1, b.en);   // 1에너지 = 2실드
+          v.sh = Math.min(v.maxSh, v.sh + amt * 2); b.en -= amt;
           if (b.en <= 0) break;
         }
       }
@@ -1470,7 +1620,9 @@
           sfx(g, 'research', b);
           if (q.r === 'spider_mines') for (const v of g.units) if (!v.dead && v.o === b.o && v.tid === 'vulture') v.mines = 3;
         } else if (q.u === 'nuke') {
-          b.hasNuke = true;
+          const silo = b.tid === 'nuclear_silo' ? b : (b.addon ? byId(g, b.addon) : null);
+          if (silo && silo.tid === 'nuclear_silo') silo.hasNuke = true;
+          else b.hasNuke = true;
         } else {
           const spawnAt = findSpawnSpot(g, b);
           const nu = spawnUnit(g, b.o, q.u, spawnAt.x, spawnAt.y);
@@ -1547,7 +1699,7 @@
       // 지상 비호버 적 탐색
       for (const v of g.units) {
         if (v.dead || v.fly || v.kind !== 'unit' || g.players[v.o].team === g.players[u.o].team || v.hidden) continue;
-        if (v.tid === 'vulture' || v.tid === 'probe' || v.tid === 'archon' || v.tid === 'dark_archon') continue;
+        if (['vulture', 'probe', 'drone', 'archon', 'dark_archon'].includes(v.tid)) continue;
         if (distPx(u.x, u.y, v.x, v.y) < D().SPELL.MINE_SIGHT * T) { u.mTgt = v.id; u.st.burrow = false; break; }
       }
       return;
@@ -1633,10 +1785,13 @@
       for (const s of g.storms) {
         if (g.tick > s.end) continue;
         for (const v of g.units) {
-          if (v.dead || v.st.stasis || v.hidden) continue;
+          if (v.dead || v.st.stasis || v.hidden || v.kind === 'building') continue;   // 스톰은 건물 미피해
+          if (v.lastStormT === g.tick) continue;                                       // 중첩 스톰 비스택
           if (distPx(v.x, v.y, s.x, s.y) * ONE <= s.r + v.r * ONE) {
-            v.hp -= s.dot;
-            if (v.sh > 0) { v.sh -= s.dot; if (v.sh < 0) { v.hp += v.sh; v.sh = 0; } v.hp += s.dot; }
+            v.lastStormT = g.tick;
+            let dmg = s.dot;                       // 방어 무시, 실드 우선
+            if (v.sh > 0) { const sd = Math.min(v.sh, dmg); v.sh -= sd; dmg -= sd; }
+            v.hp -= dmg;
             if (v.hp <= 0) kill(g, v, -1);
           }
         }
@@ -1712,6 +1867,7 @@
 
     // 시체 정리
     if ((g.tick & 15) === 0) g.units = g.units.filter(u => !u.dead);
+    if ((g.tick & 15) === 0 && g.res.some(r => r.gone)) g.res = g.res.filter(r => !r.gone);
     g.fx = g.fx.filter(f => g.tick - f.t0 <= f.life);
     if (g.alerts.length > 60) g.alerts.splice(0, g.alerts.length - 60);
 

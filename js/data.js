@@ -63,11 +63,11 @@ window.SC = window.SC || {};
     spd:4.0, sight:7, g:{d:6,n:1,t:'n',cd:15,r:4,up:1}, a:{d:6,n:1,t:'n',cd:15,r:4,up:1},
     flags:['bio'], cargo:1, builtAt:'barracks', hk:'m', upG:'t_inf_w', upA:'t_inf_a' };
   U.firebat = { race:'T', name:'화염방사병', en:'Firebat', min:50, gas:25, sup:2, bt:15, hp:50, armor:1, size:0,
-    spd:4.0, sight:7, g:{d:8,n:3,t:'c',cd:22,r:2,up:1,splash:'line'},
+    spd:4.0, sight:7, g:{d:8,n:2,t:'c',cd:22,r:2,up:1,splash:'line'},
     flags:['bio'], cargo:1, builtAt:'barracks', req:['academy'], hk:'f', upG:'t_inf_w', upA:'t_inf_a' };
   U.medic = { race:'T', name:'의무병', en:'Medic', min:50, gas:25, sup:2, bt:19, hp:60, armor:1, size:0,
     spd:4.0, sight:9, me:200, flags:['bio','caster'], cargo:1, builtAt:'barracks', req:['academy'], hk:'c',
-    abilities:['heal'], upA:'t_inf_a' };
+    abilities:['heal','restoration','optical_flare'], upA:'t_inf_a' };
   U.ghost = { race:'T', name:'유령', en:'Ghost', min:25, gas:75, sup:2, bt:31, hp:45, armor:0, size:0,
     spd:4.0, sight:9, me:200, g:{d:10,n:1,t:'c',cd:22,r:7,up:1}, a:{d:10,n:1,t:'c',cd:22,r:7,up:1},
     flags:['bio','caster'], cargo:1, builtAt:'barracks', req:['academy','covert_ops'], hk:'g',
@@ -78,6 +78,8 @@ window.SC = window.SC || {};
   U.spider_mine = { race:'T', name:'거미 지뢰', en:'Spider Mine', min:0, gas:0, sup:0, bt:0, hp:20, armor:0, size:0,
     spd:16, sight:3, g:{d:125,n:1,t:'e',cd:22,r:0.5,up:0,splash:'full'}, flags:['mech','mine','noSelectCard'],
     hidden:true };
+  U.scarab_proj = { race:'P', name:'갑충탄', en:'Scarab', min:0, gas:0, sup:0, bt:0, hp:20, armor:0, size:0,
+    spd:16, sight:2, flags:['mech','noSelectCard'], hidden:true };
   U.siege_tank = { race:'T', name:'공성 전차', en:'Siege Tank', min:150, gas:100, sup:4, bt:31, hp:150, armor:1, size:2,
     spd:4.0, sight:10, g:{d:30,n:1,t:'e',cd:37,r:7,up:3}, flags:['mech'], cargo:4,
     builtAt:'factory', req:['machine_shop'], hk:'t', abilities:['siege'], upG:'t_veh_w', upA:'t_veh_a',
@@ -112,9 +114,9 @@ window.SC = window.SC || {};
     spd:0, sight:4, flags:['bio','egg'], hidden:true };
   U.drone = { race:'Z', name:'일벌레', en:'Drone', min:50, gas:0, sup:2, bt:13, hp:40, armor:0, size:0,
     spd:4.92, sight:7, g:{d:5,n:1,t:'n',cd:22,r:0.3,up:0}, flags:['worker','bio','burrowable'], cargo:1,
-    builtAt:'hatchery', hk:'d' };
+    builtAt:'hatchery', hk:'d', upA:'z_cara' };
   U.overlord = { race:'Z', name:'대군주', en:'Overlord', min:100, gas:0, sup:0, bt:25, hp:200, armor:0, size:2,
-    spd:0.83, sight:9, provides:16, flags:['bio','flyer','detector'], builtAt:'hatchery', hk:'o' };
+    spd:0.83, sight:9, provides:16, flags:['bio','flyer','detector','transport'], slots:8, builtAt:'hatchery', hk:'o', upA:'z_flyer_a' };
   U.zergling = { race:'Z', name:'저글링', en:'Zergling', min:50, gas:0, sup:1, bt:18, hp:35, armor:0, size:0,
     spd:5.49, sight:5, g:{d:5,n:1,t:'n',cd:8,r:0.3,up:1}, flags:['bio','burrowable'], cargo:1, pair:2,
     builtAt:'hatchery', req:['spawning_pool'], hk:'z', upG:'z_melee', upA:'z_cara' };
@@ -134,10 +136,10 @@ window.SC = window.SC || {};
     builtAt:'hatchery', req:['spire'], hk:'s', upA:'z_flyer_a' };
   U.queen = { race:'Z', name:'여왕', en:'Queen', min:100, gas:100, sup:4, bt:31, hp:120, armor:0, size:1,
     spd:6.67, sight:10, me:200, flags:['bio','flyer','caster'], builtAt:'hatchery', req:['queens_nest'], hk:'q',
-    abilities:['parasite','ensnare','broodlings'], upA:'z_flyer_a' };
+    abilities:['parasite','ensnare','broodlings','infest'], upA:'z_flyer_a' };
   U.defiler = { race:'Z', name:'파멸충', en:'Defiler', min:50, gas:150, sup:4, bt:31, hp:80, armor:1, size:1,
     spd:4.0, sight:10, me:200, flags:['bio','burrowable','caster'], cargo:2, builtAt:'hatchery',
-    req:['defiler_mound'], hk:'d', abilities:['dark_swarm','consume','plague'], upA:'z_cara' };
+    req:['defiler_mound'], hk:'f', abilities:['dark_swarm','consume','plague'], upA:'z_cara' };
   U.ultralisk = { race:'Z', name:'울트라리스크', en:'Ultralisk', min:200, gas:200, sup:8, bt:38, hp:400, armor:1, size:2,
     spd:5.12, sight:7, g:{d:20,n:1,t:'n',cd:15,r:0.6,up:3}, flags:['bio'], cargo:4,
     builtAt:'hatchery', req:['ultralisk_cavern'], hk:'u', upG:'z_melee', upA:'z_cara' };
@@ -157,7 +159,7 @@ window.SC = window.SC || {};
   // ======================= 프로토스 =======================
   U.probe = { race:'P', name:'탐사정', en:'Probe', min:50, gas:0, sup:2, bt:13, hp:20, sh:20, armor:0, size:0,
     spd:4.92, sight:8, g:{d:5,n:1,t:'n',cd:22,r:0.3,up:0}, flags:['worker','mech','robotic'], cargo:1,
-    builtAt:'nexus', hk:'p' };
+    builtAt:'nexus', hk:'p', upA:'p_ground_a' };
   U.zealot = { race:'P', name:'광전사', en:'Zealot', min:100, gas:0, sup:4, bt:25, hp:100, sh:60, armor:1, size:0,
     spd:4.0, sight:7, g:{d:8,n:2,t:'n',cd:22,r:0.3,up:1}, flags:['bio'], cargo:2,
     builtAt:'gateway', hk:'z', upG:'p_ground_w', upA:'p_ground_a' };
@@ -190,15 +192,15 @@ window.SC = window.SC || {};
     builtAt:'robotics_facility', req:['observatory'], hk:'o', upA:'p_air_a' };
   U.scout = { race:'P', name:'정찰기', en:'Scout', min:275, gas:125, sup:6, bt:50, hp:150, sh:100, armor:0, size:2,
     spd:5.0, sight:8, g:{d:8,n:1,t:'n',cd:30,r:4,up:1}, a:{d:14,n:2,t:'e',cd:22,r:4,up:1},
-    flags:['mech','flyer'], builtAt:'stargate', hk:'c', upG:'p_air_w', upA:'p_air_a' };
+    flags:['mech','flyer'], builtAt:'stargate', hk:'s', upG:'p_air_w', upA:'p_air_a' };
   U.corsair = { race:'P', name:'해적선', en:'Corsair', min:150, gas:100, sup:4, bt:25, hp:100, sh:80, armor:1, size:1,
     spd:6.67, sight:9, me:200, a:{d:5,n:1,t:'e',cd:9,r:5,up:1,splash:'full'},
     flags:['mech','flyer','caster'], builtAt:'stargate', hk:'o', abilities:['dweb'], upG:'p_air_w', upA:'p_air_a' };
   U.carrier = { race:'P', name:'우주모함', en:'Carrier', min:350, gas:250, sup:12, bt:88, hp:300, sh:150, armor:4, size:2,
     spd:3.33, sight:11, flags:['mech','flyer','carrier'], builtAt:'stargate', req:['fleet_beacon'], hk:'c',
     interceptorMax:4 };
-  U.interceptor = { race:'P', name:'요격기', en:'Interceptor', min:25, gas:0, sup:0, bt:8, hp:40, sh:40, armor:0, size:0,
-    spd:13.3, sight:6, g:{d:6,n:1,t:'n',cd:45,r:1,up:1}, a:{d:6,n:1,t:'n',cd:45,r:1,up:1},
+  U.interceptor = { race:'P', name:'요격기', en:'Interceptor', min:25, gas:0, sup:0, bt:13, hp:40, sh:40, armor:0, size:0,
+    spd:13.3, sight:6, g:{d:6,n:1,t:'n',cd:37,r:1,up:1}, a:{d:6,n:1,t:'n',cd:37,r:1,up:1},
     flags:['mech','flyer','interceptor'], hidden:true, upG:'p_air_w' };
   U.arbiter = { race:'P', name:'중재자', en:'Arbiter', min:100, gas:350, sup:8, bt:100, hp:200, sh:150, armor:1, size:2,
     spd:5.0, sight:9, me:200, g:{d:10,n:1,t:'e',cd:45,r:5,up:1}, a:{d:10,n:1,t:'e',cd:45,r:5,up:1},
@@ -250,6 +252,8 @@ window.SC = window.SC || {};
     tiles:[2,2], addonOf:'science_facility', researches:['lockdown_tech','personnel_cloaking','ocular_implants','moebius_reactor'], hk:'c' };
   B.physics_lab = { race:'T', name:'물리 연구실', en:'Physics Lab', min:50, gas:50, bt:25, hp:600, armor:1,
     tiles:[2,2], addonOf:'science_facility', researches:['yamato_tech','colossus_reactor'], hk:'p' };
+  B.infested_command_center = { race:'Z', name:'감염된 사령부', en:'Infested Command Center', min:0, gas:0, bt:0,
+    hp:1500, armor:1, tiles:[4,3], trains:['infested_terran'], hidden:true, hk:'i' };
   B.armory = { race:'T', name:'무기고', en:'Armory', min:100, gas:50, bt:50, hp:750, armor:1,
     tiles:[3,2], req:['factory'], researches:['t_veh_w','t_veh_a','t_ship_w','t_ship_a','charon_boosters'], hk:'r' };
 
@@ -279,7 +283,7 @@ window.SC = window.SC || {};
     tiles:[3,2], flags:['needCreep'], researches:['z_melee','z_missile','z_cara'], hk:'v' };
   B.hydralisk_den = { race:'Z', name:'히드라리스크 굴', en:'Hydralisk Den', min:100, gas:50, bt:25, hp:850, armor:1,
     tiles:[3,2], req:['spawning_pool'], flags:['needCreep'],
-    researches:['muscular_augments','grooved_spines','lurker_aspect'], hk:'h' };
+    researches:['muscular_augments','grooved_spines','lurker_aspect'], hk:'d' };
   B.spire = { race:'Z', name:'둥지탑', en:'Spire', min:200, gas:150, bt:75, hp:600, armor:1,
     tiles:[2,2], req:['lair'], flags:['needCreep'], researches:['z_flyer_w','z_flyer_a'],
     morphTo:'greater_spire', hk:'s' };
@@ -292,14 +296,14 @@ window.SC = window.SC || {};
   B.defiler_mound = { race:'Z', name:'파멸충 언덕', en:'Defiler Mound', min:100, gas:100, bt:38, hp:850, armor:1,
     tiles:[4,2], req:['hive'], flags:['needCreep'], researches:['consume_tech','plague_tech','metasynaptic_node'], hk:'d' };
   B.nydus_canal = { race:'Z', name:'땅굴망', en:'Nydus Canal', min:150, gas:0, bt:25, hp:250, armor:1,
-    tiles:[2,2], req:['hive'], flags:['needCreep','nydus'], hk:'n' };
+    tiles:[2,2], req:['hive'], flags:['needCreep','nydus'], hk:'a' };
   B.burrow_tech_dummy = null; delete B.burrow_tech_dummy;
 
   // 프로토스
   B.nexus = { race:'P', name:'연결체', en:'Nexus', min:400, gas:0, bt:75, hp:750, sh:750, armor:1,
     tiles:[4,3], provides:18, trains:['probe'], flags:['hall'], hk:'n', prio:1 };
   B.pylon = { race:'P', name:'수정탑', en:'Pylon', min:100, gas:0, bt:19, hp:300, sh:300, armor:0,
-    tiles:[2,2], provides:16, flags:['pylon'], powerRadius:3.5, hk:'p', prio:2 };
+    tiles:[2,2], provides:16, flags:['pylon'], powerRadius:5, hk:'p', prio:2 };
   B.assimilator = { race:'P', name:'융화소', en:'Assimilator', min:100, gas:0, bt:25, hp:450, sh:450, armor:1,
     tiles:[4,2], flags:['gas'], hk:'a' };
   B.gateway = { race:'P', name:'관문', en:'Gateway', min:150, gas:0, bt:38, hp:500, sh:500, armor:1,
@@ -339,26 +343,26 @@ window.SC = window.SC || {};
   // ---- 업그레이드 / 연구 -----------------------------------------------------
   // lv: 최대 레벨, cost:[[m,g,t]...], effect
   const R = {};
-  const tier3 = (m1, g1, inc, t1, tinc) => [
-    [m1, g1, t1], [m1 + inc, g1 + inc, t1 + tinc], [m1 + inc * 2, g1 + inc * 2, t1 + tinc * 2]];
+  const tier3 = (m1, g1, inc, t1) => [
+    [m1, g1, t1], [m1 + inc, g1 + inc, t1 + 13], [m1 + inc * 2, g1 + inc * 2, t1 + 26]];
 
   // 무기/방어 업그레이드 (3단계)
-  R.t_inf_w = { name:'보병 무기', lv:3, cost:tier3(100,100,75,166,26), at:'engineering_bay' };
-  R.t_inf_a = { name:'보병 장갑', lv:3, cost:tier3(100,100,75,166,26), at:'engineering_bay' };
-  R.t_veh_w = { name:'차량 무기', lv:3, cost:tier3(100,100,75,166,26), at:'armory' };
-  R.t_veh_a = { name:'차량 장갑', lv:3, cost:tier3(100,100,75,166,26), at:'armory' };
-  R.t_ship_w = { name:'함선 무기', lv:3, cost:tier3(100,100,50,166,26), at:'armory' };
-  R.t_ship_a = { name:'함선 장갑', lv:3, cost:tier3(150,150,75,166,26), at:'armory' };
-  R.z_melee = { name:'근접 공격', lv:3, cost:tier3(100,100,50,166,26), at:'evolution_chamber' };
-  R.z_missile = { name:'원거리 공격', lv:3, cost:tier3(100,100,50,166,26), at:'evolution_chamber' };
-  R.z_cara = { name:'갑피', lv:3, cost:tier3(150,150,75,166,26), at:'evolution_chamber' };
-  R.z_flyer_w = { name:'공중 공격', lv:3, cost:tier3(100,100,75,166,26), at:'spire' };
-  R.z_flyer_a = { name:'공중 갑피', lv:3, cost:tier3(150,150,75,166,26), at:'spire' };
-  R.p_ground_w = { name:'지상 무기', lv:3, cost:tier3(100,100,50,166,26), at:'forge' };
-  R.p_ground_a = { name:'지상 장갑', lv:3, cost:tier3(100,100,75,166,26), at:'forge' };
-  R.p_shields = { name:'플라즈마 보호막', lv:3, cost:tier3(200,200,100,166,26), at:'forge' };
-  R.p_air_w = { name:'공중 무기', lv:3, cost:tier3(100,100,75,166,26), at:'cybernetics_core' };
-  R.p_air_a = { name:'공중 장갑', lv:3, cost:tier3(150,150,75,166,26), at:'cybernetics_core' };
+  R.t_inf_w = { name:'보병 무기', lv:3, cost:tier3(100, 100, 75, 166), at:'engineering_bay', tierReq:[null,'science_facility','science_facility'] };
+  R.t_inf_a = { name:'보병 장갑', lv:3, cost:tier3(100, 100, 75, 166), at:'engineering_bay', tierReq:[null,'science_facility','science_facility'] };
+  R.t_veh_w = { name:'차량 무기', lv:3, cost:tier3(100, 100, 75, 166), at:'armory', tierReq:[null,'science_facility','science_facility'] };
+  R.t_veh_a = { name:'차량 장갑', lv:3, cost:tier3(100, 100, 75, 166), at:'armory', tierReq:[null,'science_facility','science_facility'] };
+  R.t_ship_w = { name:'함선 무기', lv:3, cost:tier3(100, 100, 50, 166), at:'armory', tierReq:[null,'science_facility','science_facility'] };
+  R.t_ship_a = { name:'함선 장갑', lv:3, cost:tier3(150, 150, 75, 166), at:'armory', tierReq:[null,'science_facility','science_facility'] };
+  R.z_melee = { name:'근접 공격', lv:3, cost:tier3(100, 100, 50, 166), at:'evolution_chamber', tierReq:[null,'lair','hive'] };
+  R.z_missile = { name:'원거리 공격', lv:3, cost:tier3(100, 100, 50, 166), at:'evolution_chamber', tierReq:[null,'lair','hive'] };
+  R.z_cara = { name:'갑피', lv:3, cost:tier3(150, 150, 75, 166), at:'evolution_chamber', tierReq:[null,'lair','hive'] };
+  R.z_flyer_w = { name:'공중 공격', lv:3, cost:tier3(100, 100, 75, 166), at:'spire', tierReq:[null,'lair','hive'] };
+  R.z_flyer_a = { name:'공중 갑피', lv:3, cost:tier3(150, 150, 75, 166), at:'spire', tierReq:[null,'lair','hive'] };
+  R.p_ground_w = { name:'지상 무기', lv:3, cost:tier3(100, 100, 50, 166), at:'forge', tierReq:[null,'templar_archives','templar_archives'] };
+  R.p_ground_a = { name:'지상 장갑', lv:3, cost:tier3(100, 100, 75, 166), at:'forge', tierReq:[null,'templar_archives','templar_archives'] };
+  R.p_shields = { name:'플라즈마 보호막', lv:3, cost:tier3(200, 200, 100, 166), at:'forge', tierReq:[null,'cybernetics_core','cybernetics_core'] };
+  R.p_air_w = { name:'공중 무기', lv:3, cost:tier3(100, 100, 75, 166), at:'cybernetics_core', tierReq:[null,'fleet_beacon','fleet_beacon'] };
+  R.p_air_a = { name:'공중 장갑', lv:3, cost:tier3(150, 150, 75, 166), at:'cybernetics_core', tierReq:[null,'fleet_beacon','fleet_beacon'] };
 
   // 테란 기술
   R.stim_pack = { name:'전투 자극제', lv:1, cost:[[100,100,50]], at:'academy' };
@@ -402,21 +406,21 @@ window.SC = window.SC || {};
   R.metasynaptic_node = { name:'초신경절 (+50 에너지)', lv:1, cost:[[150,150,104]], at:'defiler_mound' };
 
   // 프로토스 기술
-  R.singularity_charge = { name:'특이점 충전 (+2 사거리)', lv:1, cost:[[150,150,69]], at:'cybernetics_core' };
+  R.singularity_charge = { name:'특이점 충전 (+2 사거리)', lv:1, cost:[[150,150,105]], at:'cybernetics_core' };
   R.leg_enhancements = { name:'다리 강화 (광전사 속도)', lv:1, cost:[[150,150,83]], at:'citadel_of_adun' };
-  R.psionic_storm_tech = { name:'사이오닉 폭풍', lv:1, cost:[[200,200,50]], at:'templar_archives' };
+  R.psionic_storm_tech = { name:'사이오닉 폭풍', lv:1, cost:[[200,200,76]], at:'templar_archives' };
   R.hallucination_tech = { name:'환상', lv:1, cost:[[150,150,50]], at:'templar_archives' };
   R.khaydarin_amulet = { name:'케이다린 부적 (+50 에너지)', lv:1, cost:[[150,150,104]], at:'templar_archives' };
-  R.maelstrom_tech = { name:'대혼란', lv:1, cost:[[100,100,50]], at:'templar_archives' };
+  R.maelstrom_tech = { name:'대혼란', lv:1, cost:[[100,100,63]], at:'templar_archives' };
   R.mind_control_tech = { name:'정신 지배', lv:1, cost:[[200,200,75]], at:'templar_archives' };
   R.argus_talisman = { name:'아르거스 부적 (+50 에너지)', lv:1, cost:[[150,150,104]], at:'templar_archives' };
   R.scarab_damage = { name:'갑충탄 피해 (+25)', lv:1, cost:[[200,200,104]], at:'robotics_support_bay' };
   R.reaver_capacity = { name:'파괴자 적재량 (+5)', lv:1, cost:[[200,200,104]], at:'robotics_support_bay' };
   R.gravitic_drive = { name:'중력 구동 (왕복선 속도)', lv:1, cost:[[200,200,104]], at:'robotics_support_bay' };
-  R.gravitic_boosters = { name:'중력 부스터 (관측선 속도)', lv:1, cost:[[150,150,104]], at:'observatory' };
+  R.gravitic_boosters = { name:'중력 부스터 (관측선 속도)', lv:1, cost:[[150,150,84]], at:'observatory' };
   R.sensor_array = { name:'감지 배열 (+2 시야)', lv:1, cost:[[150,150,84]], at:'observatory' };
   R.carrier_capacity = { name:'요격기 적재량 (+4)', lv:1, cost:[[100,100,63]], at:'fleet_beacon' };
-  R.disruption_web_tech = { name:'분열망', lv:1, cost:[[200,200,63]], at:'fleet_beacon' };
+  R.disruption_web_tech = { name:'분열망', lv:1, cost:[[200,200,50]], at:'fleet_beacon' };
   R.argus_jewel = { name:'아르거스 보석 (+50 에너지)', lv:1, cost:[[100,100,104]], at:'fleet_beacon' };
   R.apial_sensors = { name:'정점 감지기 (+2 시야)', lv:1, cost:[[100,100,104]], at:'fleet_beacon' };
   R.gravitic_thrusters = { name:'중력 추진기 (정찰기 속도)', lv:1, cost:[[200,200,104]], at:'fleet_beacon' };
@@ -430,6 +434,9 @@ window.SC = window.SC || {};
   // target: unit/point/self/auto, en: 에너지, r: 사거리(타일)
   D.abilities = {
     heal:        { name:'치료', target:'auto', en:1, r:2, req:null, icon:'heal' },
+    restoration: { name:'회복', target:'unit', en:50, r:6, req:'restoration', icon:'resto', hk:'o' },
+    optical_flare:{ name:'조명탄', target:'unit', en:75, r:9, req:'optical_flare', icon:'flare', hk:'f' },
+    infest:      { name:'사령부 감염', target:'unit', en:0, r:1, req:null, icon:'infest', hk:'i' },
     stim:        { name:'전투 자극제', target:'self', en:0, req:'stim_pack', icon:'stim', hk:'t' },
     siege:       { name:'공성 모드', target:'self', en:0, req:'siege_tech', icon:'siege', hk:'o' },
     unsiege:     { name:'전차 모드', target:'self', en:0, req:null, icon:'unsiege', hk:'o' },

@@ -88,7 +88,7 @@
       const mx = e.offsetX + cam.x, my = e.offsetY + cam.y;
       if (e.button === 0) {
         if (state.placing) { tryPlace(mx, my, e.shiftKey); return; }
-        if (state.targeting) { fireTargeted(mx, my); return; }
+        if (state.targeting) { fireTargeted(mx, my, e.shiftKey); return; }
         state.drag = { x0: e.offsetX, y0: e.offsetY, x1: e.offsetX, y1: e.offsetY };
       } else if (e.button === 2) {
         if (state.placing) { state.placing = null; updateHud(); return; }
@@ -119,8 +119,8 @@
       const wx = (e.clientX - r.left) * (mmCanvas.width / r.width) * sc;
       const wy = (e.clientY - r.top) * (mmCanvas.height / r.height) * sc;
       if (e.button === 2 || state.targeting) {
-        if (state.targeting) { fireTargeted(wx, wy); return; }
-        smartOrder(wx, wy, false);
+        if (state.targeting) { fireTargeted(wx, wy, e.shiftKey); return; }
+        smartOrder(wx, wy, e.shiftKey);
         return;
       }
       state.minimapDrag = true;
@@ -147,6 +147,7 @@
       if (e.key === 'Enter') { openChat(); e.preventDefault(); return; }
       if (e.key === 'F10' || e.key === 'Escape') {
         if (state.placing || state.targeting) { state.placing = null; state.targeting = null; setCursor('default'); updateHud(); }
+        else if (state.subMenu) { state.subMenu = null; updateHud(); }
         else toggleMenu();
         e.preventDefault(); return;
       }
@@ -222,6 +223,7 @@
       if (x >= x0 && x <= x1 && y >= y0 && y <= y1) picked.push(u.id);
     }
     if (picked.length) {
+      if (!shift) state.subMenu = null;
       let sel = shift ? state.selection.concat(picked) : picked;
       sel = [...new Set(sel)].filter(id => { const u = SC.Engine.byId(game, id); return u && u.o === localPlayer && u.kind === 'unit'; });
       state.selection = sel.slice(0, 12);
@@ -252,6 +254,7 @@
       else if (state.selection.length < 12) state.selection.push(u.id);
     } else {
       state.selection = [u.id];
+      state.subMenu = null;
     }
     SC.Audio.play('select');
     updateHud();
@@ -308,7 +311,7 @@
     if (tgt && tgt.o === localPlayer) {
       const def = SC.DATA.all[tgt.tid];
       // 수송선/벙커 탑승
-      if ((def.slots || 0) > 0 && ids.length) {
+      if ((def.slots || 0) > 0 && tgt.complete && ids.length) {
         cmd({ k: 'lod', ids, t: tgt.id });
         SC.Audio.play('ack');
         return;
@@ -355,26 +358,18 @@
     const ids = units.map(u => u.id);
 
     if (units.length) {
-      switch (key) {
-        case 'a': startTargeting({ attack: true }); e.preventDefault(); return;
-        case 's': cmd({ k: 'stp', ids }); SC.Audio.play('click'); return;
-        case 'h': cmd({ k: 'hld', ids }); SC.Audio.play('click'); return;
-        case 'p': startTargeting({ patrol: true }); return;
-        case 'm': startTargeting({ move: true }); return;
-      }
-      // 워커 빌드 메뉴
-      const isW = units.some(u => SC.Engine.isWorker(u));
-      if (isW && key === 'b') { state.subMenu = 'build'; updateHud(); return; }
-      if (isW && key === 'v') { state.subMenu = 'buildAdv'; updateHud(); return; }
-      if (state.subMenu) {
+      // 1) 열린 건설 서브메뉴가 키를 우선 소비
+      if (state.subMenu === 'build' || state.subMenu === 'buildAdv') {
         const menu = SC.DATA.buildMenu[game.players[localPlayer].race][state.subMenu === 'build' ? 'basic' : 'adv'];
         for (const bid of menu) {
           const bdef = SC.DATA.all[bid];
           if (bdef.hk === key) { beginPlace(bid); return; }
         }
-        if (key === 'escape') { state.subMenu = null; updateHud(); return; }
       }
-      // 어빌리티 핫키
+      const isW = units.some(u => SC.Engine.isWorker(u));
+      if (isW && key === 'b') { state.subMenu = 'build'; updateHud(); return; }
+      if (isW && key === 'v') { state.subMenu = 'buildAdv'; updateHud(); return; }
+      // 2) 어빌리티 핫키 (일반 명령보다 우선 — 패러사이트 P, 환상 H 등)
       for (const u of units) {
         const abs = unitAbilities(u);
         for (const abId of abs) {
@@ -382,7 +377,7 @@
           if (ab && ab.hk === key) { triggerAbility(abId, units); return; }
         }
       }
-      // 라바 생산 핫키
+      // 3) 라바 생산
       const larvae = units.filter(u => u.tid === 'larva');
       if (larvae.length) {
         for (const uid of SC.DATA.larvaTrains) {
@@ -393,7 +388,7 @@
           }
         }
       }
-      // 유닛 변태 (러커/가디언/디바우러)
+      // 4) 유닛 변태 (러커/가디언/디바우러)
       for (const uid of ['lurker', 'guardian', 'devourer']) {
         const udef = SC.DATA.all[uid];
         if (udef.hk === key && units.some(u => u.tid === udef.morphFrom)) {
@@ -404,11 +399,11 @@
           }
         }
       }
-      // 아콘 합체
+      // 5) 아콘 합체 / 토글 / 내리기
       if (key === 'r' && units.filter(u => u.tid === 'high_templar' || u.tid === 'dark_templar').length >= 2) {
         cmd({ k: 'mrg', ids }); return;
       }
-      if (key === 'u') { // 잠복 토글
+      if (key === 'u') {
         const bur = units.filter(u => (SC.DATA.all[u.tid].flags || []).includes('burrowable'));
         if (bur.length) {
           const anyB = bur.some(u => u.st.burrow);
@@ -416,7 +411,7 @@
           return;
         }
       }
-      if (key === 'o') { // 시즈 토글
+      if (key === 'o') {
         const tanks = units.filter(u => u.tid === 'siege_tank');
         if (tanks.length) {
           const anyS = tanks.some(u => u.st.sieged);
@@ -427,8 +422,17 @@
       if (key === 'd' && units.some(u => (SC.DATA.all[u.tid].slots || 0) > 0)) {
         startTargeting({ unload: true }); return;
       }
+      // 6) 일반 명령 (라바만 선택된 경우 제외)
+      if (units.some(u => u.tid !== 'larva')) {
+        switch (key) {
+          case 'a': startTargeting({ attack: true }); e.preventDefault(); return;
+          case 's': cmd({ k: 'stp', ids }); SC.Audio.play('click'); return;
+          case 'h': cmd({ k: 'hld', ids }); SC.Audio.play('click'); return;
+          case 'p': startTargeting({ patrol: true }); return;
+          case 'm': startTargeting({ move: true }); return;
+        }
+      }
     }
-
     // 건물 핫키
     const b = sel.find(u => u.kind === 'building');
     if (b) {
@@ -477,15 +481,30 @@
     }
   }
 
-  const RESEARCH_HK = {};
+  const RESEARCH_HK = { t_inf_w:'w', t_inf_a:'a', t_veh_w:'w', t_veh_a:'a', t_ship_w:'s', t_ship_a:'p',
+    z_melee:'m', z_missile:'i', z_cara:'c', z_flyer_w:'w', z_flyer_a:'a',
+    p_ground_w:'w', p_ground_a:'a', p_shields:'s', p_air_w:'w', p_air_a:'a',
+    stim_pack:'t', u238:'u', caduceus:'c', restoration:'r', optical_flare:'o',
+    ion_thrusters:'i', spider_mines:'m', siege_tech:'s',
+    cloaking_field:'c', apollo_reactor:'a', emp_shockwave:'e', irradiate_tech:'i', titan_reactor:'t',
+    lockdown_tech:'l', personnel_cloaking:'c', ocular_implants:'o', moebius_reactor:'m',
+    yamato_tech:'y', colossus_reactor:'c', charon_boosters:'h',
+    burrow_tech:'w', metabolic_boost:'m', adrenal_glands:'a', muscular_augments:'m', grooved_spines:'g',
+    lurker_aspect:'l', ventral_sacs:'v', antennae:'a', pneumatized_carapace:'p',
+    ensnare_tech:'e', broodlings_tech:'b', gamete_meiosis:'g',
+    anabolic_synthesis:'a', chitinous_plating:'c', consume_tech:'c', plague_tech:'g', metasynaptic_node:'m',
+    singularity_charge:'s', leg_enhancements:'l', psionic_storm_tech:'t', hallucination_tech:'h',
+    khaydarin_amulet:'k', maelstrom_tech:'e', mind_control_tech:'c', argus_talisman:'a',
+    scarab_damage:'s', reaver_capacity:'r', gravitic_drive:'g', gravitic_boosters:'g', sensor_array:'s',
+    carrier_capacity:'c', disruption_web_tech:'d', argus_jewel:'j', apial_sensors:'p', gravitic_thrusters:'t',
+    recall_tech:'r', stasis_tech:'s', khaydarin_core:'k' };
   function researchHotkey(rid) {
-    if (RESEARCH_HK[rid]) return RESEARCH_HK[rid];
-    return rid[0];
+    return RESEARCH_HK[rid] || rid[0];
   }
 
   function unitAbilities(u) {
     const def = SC.DATA.all[u.tid];
-    let abs = (def.abilities || []).slice();
+    let abs = (def.abilities || []).filter(a => !a.startsWith('merge_'));
     if ((def.flags || []).includes('stim') || u.tid === 'marine' || u.tid === 'firebat') abs.unshift('stim');
     if (u.tid === 'siege_tank') abs = [u.st.sieged ? 'unsiege' : 'siege'];
     if ((def.flags || []).includes('burrowable') && u.tid !== 'lurker') abs.push(u.st.burrow ? 'unburrow' : 'burrow');
@@ -494,6 +513,10 @@
   }
 
   function triggerAbility(abId, units) {
+    if (abId === 'merge_archon' || abId === 'merge_dark_archon') {
+      cmd({ k: 'mrg', ids: units.map(u => u.id) });
+      return;
+    }
     const ab = SC.DATA.abilities[abId];
     const p = game.players[localPlayer];
     if (ab.req && !p.research[ab.req] && !['nuke_paint'].includes(abId)) {
@@ -515,7 +538,7 @@
     state.targeting = t;
     setCursor(t.attack ? 'red' : 'green');
   }
-  function fireTargeted(wx, wy) {
+  function fireTargeted(wx, wy, shift) {
     const t = state.targeting;
     state.targeting = null;
     setCursor('default');
@@ -524,14 +547,14 @@
     if (t.attack) {
       const tgt = unitAt(wx, wy);
       if (tgt && game.players[tgt.o].team !== game.players[localPlayer].team)
-        cmd({ k: 'atk', ids, t: tgt.id });
-      else cmd({ k: 'atk', ids, x: Math.round(wx * ONE), y: Math.round(wy * ONE) });
+        cmd({ k: 'atk', ids, t: tgt.id, q: shift });
+      else cmd({ k: 'atk', ids, x: Math.round(wx * ONE), y: Math.round(wy * ONE), q: shift });
       SC.Audio.play('ackAtk');
       flashOrder(wx, wy, '#f43f2e');
       return;
     }
-    if (t.move) { cmd({ k: 'mv', ids, x: Math.round(wx * ONE), y: Math.round(wy * ONE) }); SC.Audio.play('ack'); flashOrder(wx, wy, '#3ddc55'); return; }
-    if (t.patrol) { cmd({ k: 'pat', ids, x: Math.round(wx * ONE), y: Math.round(wy * ONE) }); SC.Audio.play('ack'); return; }
+    if (t.move) { cmd({ k: 'mv', ids, x: Math.round(wx * ONE), y: Math.round(wy * ONE), q: shift }); SC.Audio.play('ack'); flashOrder(wx, wy, '#3ddc55'); return; }
+    if (t.patrol) { cmd({ k: 'pat', ids, x: Math.round(wx * ONE), y: Math.round(wy * ONE), q: shift }); SC.Audio.play('ack'); return; }
     if (t.unload) {
       for (const u of sel) if ((SC.DATA.all[u.tid].slots || 0) > 0)
         cmd({ k: 'uld', t: u.id, x: Math.round(wx * ONE), y: Math.round(wy * ONE) });
@@ -797,6 +820,9 @@
           cells[7] = trainCell('guardian', () => cmd({ k: 'mor', ids: units.filter(u => u.tid === 'mutalisk').map(u => u.id), u: 'guardian' }));
           cells[8] = trainCell('devourer', () => cmd({ k: 'mor', ids: units.filter(u => u.tid === 'mutalisk').map(u => u.id), u: 'devourer' }));
         }
+        const morphing = units.filter(u => u.morph);
+        if (morphing.length)
+          cells[8] = { label: '변태 취소', cls: 'cancel', fn: () => { for (const mu of morphing) cmd({ k: 'cnb', t: mu.id }); } };
         if (units.filter(u => u.tid === 'high_templar').length >= 2)
           cells[8] = { label: '집정관 합체', hk: 'R', fn: () => cmd({ k: 'mrg', ids: units.map(u => u.id) }) };
         if (units.filter(u => u.tid === 'dark_templar').length >= 2)
@@ -808,47 +834,66 @@
         if (!b.complete) {
           cells[8] = { label: '건설 취소', hk: 'Esc', cls: 'cancel', fn: () => cmd({ k: 'cnb', t: b.id }) };
         } else {
-          let i = 0;
-          const trains = (bDef.trains || []).concat(b.addonDef ? (b.addonDef.trains || []) : []);
-          for (const uid of trains) { if (i < 6) cells[i++] = trainCell(uid, () => cmd({ k: 'trn', t: b.id, u: uid })); }
-          if ((bDef.flags || []).includes('larvaSpawner')) {
-            SC.DATA.larvaTrains.forEach((uid, j) => {
-              if (j < 9) cells[j] = trainCell(uid, () => {
-                const lv = game.units.filter(u => !u.dead && u.tid === 'larva' && u.hatch === b.id);
-                if (lv.length) cmd({ k: 'mor', ids: [lv[0].id], u: uid });
-                else { addMsg('애벌레가 없습니다'); SC.Audio.play('error'); }
-              });
-            });
-          }
-          let ri = (bDef.flags || []).includes('larvaSpawner') ? -1 : i;
-          const resList = (bDef.researches || []).concat(b.addonDef ? (b.addonDef.researches || []) : []);
-          if ((bDef.flags || []).includes('larvaSpawner')) { /* 연구는 서브 슬롯 */ }
-          let slot2 = i;
-          for (const rid of resList.concat((bDef.flags || []).includes('larvaSpawner') ? ['burrow_tech'] : [])) {
-            const r = SC.DATA.research[rid];
-            if (!r) continue;
-            const cur = p.research[rid] || 0;
-            if (cur >= r.lv) continue;
-            if (slot2 > 8) break;
-            cells[slot2++] = researchCell(rid, b);
-          }
-          // 변태/애드온
+          const isLarvaHall = (bDef.flags || []).includes('larvaSpawner');
+          const p3 = game.players[localPlayer];
+          const resList = (bDef.researches || []).concat(b.addonDef ? (b.addonDef.researches || []) : [])
+            .concat(isLarvaHall ? ['burrow_tech'] : []);
           const morphs = (bDef.morphTo ? [bDef.morphTo] : []).concat(bDef.morphChoices || []);
-          for (const mid of morphs) {
-            if (slot2 > 8) break;
-            const mdef = SC.DATA.all[mid];
-            if (SC.Engine.meetsReq(game, p, mdef)) cells[slot2++] = buildCell(mid, () => cmd({ k: 'morB', t: b.id, u: mid }));
+          const trainViaLarva = uid => () => {
+            const lv = game.units.filter(u => !u.dead && u.tid === 'larva' && u.hatch === b.id);
+            if (lv.length) cmd({ k: 'mor', ids: [lv[0].id], u: uid });
+            else { addMsg('애벌레가 없습니다'); SC.Audio.play('error'); }
+          };
+          if (isLarvaHall && state.subMenu !== 'hatchMore') {
+            SC.DATA.larvaTrains.slice(0, 8).forEach((uid, j) => { cells[j] = trainCell(uid, trainViaLarva(uid)); });
+            cells[8] = { label: '기타 ▸', fn: () => { state.subMenu = 'hatchMore'; updateHud(); } };
+          } else if (isLarvaHall) {
+            // 부화장 2페이지: 울트라리스크 / 연구 / 변태
+            let s2 = 0;
+            cells[s2++] = trainCell('ultralisk', trainViaLarva('ultralisk'));
+            for (const rid of resList) {
+              const r = SC.DATA.research[rid];
+              if (!r || (p3.research[rid] || 0) >= r.lv) continue;
+              if (s2 > 6) break;
+              cells[s2++] = researchCell(rid, b);
+            }
+            for (const mid of morphs) {
+              if (s2 > 6) break;
+              const mdef = SC.DATA.all[mid];
+              if (SC.Engine.meetsReq(game, p3, mdef)) cells[s2++] = buildCell(mid, () => cmd({ k: 'morB', t: b.id, u: mid }));
+            }
+            if (b.morph) cells[7] = { label: '변태 취소', cls: 'cancel', fn: () => cmd({ k: 'cnb', t: b.id }) };
+            cells[8] = { label: '◂ 뒤로', fn: () => { state.subMenu = null; updateHud(); } };
+          } else {
+            let i = 0;
+            const trains = (bDef.trains || []).concat(b.addonDef ? (b.addonDef.trains || []) : []);
+            for (const uid of trains) { if (i < 6) cells[i++] = trainCell(uid, () => cmd({ k: 'trn', t: b.id, u: uid })); }
+            let slot2 = i;
+            for (const rid of resList) {
+              const r = SC.DATA.research[rid];
+              if (!r) continue;
+              const cur = p3.research[rid] || 0;
+              if (cur >= r.lv) continue;
+              if (slot2 > 8) break;
+              cells[slot2++] = researchCell(rid, b);
+            }
+            for (const mid of morphs) {
+              if (slot2 > 8) break;
+              const mdef = SC.DATA.all[mid];
+              if (SC.Engine.meetsReq(game, p3, mdef)) cells[slot2++] = buildCell(mid, () => cmd({ k: 'morB', t: b.id, u: mid }));
+            }
+            if (!b.addon && !b.addonPending) for (const aid of (bDef.addons || [])) {
+              if (slot2 > 8) break;
+              const adef = SC.DATA.all[aid];
+              if (SC.Engine.meetsReq(game, p3, adef)) cells[slot2++] = buildCell(aid, () => cmd({ k: 'add', t: b.id, u: aid }));
+            }
+            // 스캔 (컴샛 부착 사령부 또는 컴샛 직접 선택)
+            if ((b.addonDef && (b.addonDef.abilities || []).includes('scan')) || (bDef.abilities || []).includes('scan')) {
+              cells[6] = { label: '궤도 정찰', hk: 'S', en: 50, fn: () => startTargeting({ ability: 'scan', ids: [b.id] }) };
+            }
+            if (b.tid === 'bunker') cells[7] = { label: '모두 내리기', hk: 'L', fn: () => cmd({ k: 'uld', t: b.id }) };
+            if (b.morph) cells[8] = { label: '취소', cls: 'cancel', fn: () => cmd({ k: 'cnb', t: b.id }) };
           }
-          if (!b.addon && !b.addonPending) for (const aid of (bDef.addons || [])) {
-            if (slot2 > 8) break;
-            const adef = SC.DATA.all[aid];
-            if (SC.Engine.meetsReq(game, p, adef)) cells[slot2++] = buildCell(aid, () => cmd({ k: 'add', t: b.id, u: aid }));
-          }
-          if (b.addonDef && (b.addonDef.abilities || []).includes('scan')) {
-            cells[6] = { label: '궤도 정찰', hk: 'S', en: 50, fn: () => startTargeting({ ability: 'scan', ids: [b.id] }) };
-          }
-          if (b.tid === 'bunker') cells[7] = { label: '모두 내리기', hk: 'L', fn: () => cmd({ k: 'uld', t: b.id }) };
-          if (b.morph) cells[8] = { label: '취소', cls: 'cancel', fn: () => cmd({ k: 'cnb', t: b.id }) };
         }
       }
     }
@@ -867,7 +912,7 @@
         cell.appendChild(lb);
         if (c.hk) { const hk = document.createElement('em'); hk.className = 'cmd-hk'; hk.textContent = c.hk; cell.appendChild(hk); }
         if (c.tip) cell.title = c.tip;
-        cell.addEventListener('mousedown', ev => { ev.stopPropagation(); SC.Audio.unlock(); if (!c.dim || true) c.fn(); });
+        cell.addEventListener('mousedown', ev => { ev.stopPropagation(); SC.Audio.unlock(); if (!c.dim) c.fn(); else SC.Audio.play('error'); });
       }
       card.appendChild(cell);
     }
@@ -919,6 +964,7 @@
         case 'supply': addMsg(game.players[localPlayer].race === 'Z' ? '대군주를 더 생산해야 합니다'
           : game.players[localPlayer].race === 'P' ? '수정탑을 더 건설해야 합니다' : '보급고를 더 건설해야 합니다'); SC.Audio.play('error'); break;
         case 'place': addMsg('그곳에 건설할 수 없습니다'); SC.Audio.play('error'); break;
+        case 'energy': addMsg('에너지가 부족합니다'); SC.Audio.play('error'); break;
         case 'built': SC.Audio.play('built'); break;
         case 'research': addMsg(`연구 완료: ${SC.DATA.research[a.r] ? SC.DATA.research[a.r].name : ''}`); SC.Audio.play('research'); break;
         case 'nuke': addMsg('☢ 핵 공격이 감지되었습니다!'); SC.Audio.play('nukeWarn'); break;
@@ -938,6 +984,8 @@
   function processSfx() {
     let n = 0;
     for (const s of game.sfx) {
+      if (s.seen) continue;
+      s.seen = true;
       if (n > 4) break;
       const x = s.x / ONE, y = s.y / ONE;
       const onScreen = x > cam.x - 200 && x < cam.x + viewW + 200 && y > cam.y - 200 && y < cam.y + viewH + 200;
